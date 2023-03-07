@@ -1,9 +1,21 @@
-var express = require('express');
-var router = express.Router();
+var express = require('express')
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+var userRouter = express.Router();
 
-module.exports = router;
+//const { isLoggedIn } = require('../middleware/authorization')
+const validation  = require('../middleware/validation.js')
+const { registerHandler, loginHandler,  deleteUser, changePassword, changeFullName } = require('../controllers/userController.js');
+
+
+//Registro de usuarios (middleware de validacion)
+//Cadena de responsabilidad: primero se validan las entradas, luego se registra
+userRouter.post('/register', validation.registerValidation, registerHandler);
+
+
+// userRouter.post('/login', loginHandler);
+
+
+// userRouter.delete('/delete', deleteUser);
+
+
+module.exports = userRouter 

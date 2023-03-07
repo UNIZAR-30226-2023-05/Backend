@@ -8,6 +8,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 //winston logger
 const winston = require('winston');
+const cors = require('cors');
 
 const logger = winston.createLogger({
   level: 'info',
@@ -42,6 +43,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+
 
 const port = 3000;
 
