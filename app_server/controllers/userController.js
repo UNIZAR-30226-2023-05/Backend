@@ -73,5 +73,46 @@ async function registerHandler(req, res) {
 
 }
 
+/* Si el login es correcto se devuelve un token de jwt (JSON Web Token) porque 
+ * es un estandar para la creacion de tokens de autenticación.
+ * Además de ser un estandar, es un estandar que se puede usar en cualquier 
+ * lenguaje de programacion */
+async function loginHandler(req, res){
+    //Recogemos los datos del usuario
+    //MISMOS NOMBRES QUE EN LAS TABLAS DE LA BASE DE DATOS
+    const { email, password } = req.body;
 
-module.exports = { registerHandler };
+    // Obtener el usuario de la base de datos utilizando Prisma
+    const user = await prisma.usuario.findUnique({ where: { email } });
+
+    // Comparar la contraseña proporcionada con la contraseña almacenada utilizando bcrypt
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if ( passwordMatch ) {
+        //Las contraseñas coinciden
+        //Creamos el token:
+        //El token se usa para que el usuario no tenga que estar introduciendo sus credenciales cada vez que quiera hacer algo
+        //El token lo generamos con el nombre de usuario
+        //Y si en 720h no se ha entrado en la cuenta, se vuelve a pedir el login
+        var token = jwt.sign({ name : email}, process.env.TOKEN_SECRET, { expiresIn: '720h' });
+
+        res.statusCode = StatusCodes.OK;
+        res.send({
+            ok: true,
+            msg: "Logged successfuly",
+            token,
+        })
+        return;
+    }
+    else {
+        //Las contraseñas no coinciden
+        res.statusCode = StatusCodes.UNAUTHORIZED;
+        res.send({
+            ok: false,
+            //no se muestra el mensaje de error concreto para no dar pistas a los hackers
+            msg: "Invalid email or password"
+        })
+        return;
+    }
+}
+
+module.exports = { registerHandler, loginHandler };

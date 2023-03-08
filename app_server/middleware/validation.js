@@ -13,6 +13,15 @@ const Joi = require('joi');
 //Usamos el paquete JOI para validar los datos de entrada:
 //https://joi.dev/api/?v=17.4.0
 
+//importamos el paquete http-status-codes para manejar los codigos de estado de las respuestas
+const { StatusCodes } = require('http-status-codes');   
+
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+/* Comprueba:
+* - Que el nombre del usuario y el email no estén ya en uso
+*/
 async function registerValidation(req, res, next) {
     //Creamos un objeto de validacion
     const schema = Joi.object({
@@ -93,4 +102,58 @@ async function registerValidation(req, res, next) {
     }
 }
 
-module.exports = { registerValidation }
+/* Comprueba:
+ * - Que el email existe
+ * - Que la contraseña tiene un formato válido
+*/
+async function loginValidation(req, res, next) {
+    //Creamos un objeto de validacion
+    const schema = Joi.object({
+        email: Joi.string().email().required(),
+        password: Joi.string().min(8).max(30).pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})')).required()
+    });
+
+    //Validamos el objeto de entrada
+    const { error } = schema.validate(req.body);
+
+    //Si hay algun error, se devuelve un mensaje de error
+    if (error) {
+        res.statusCode = StatusCodes.BAD_REQUEST;
+        res.send({
+            ok: false,
+            msg: "Lo sentimos, los datos introducidos no son validos."
+        });
+    } else {
+        //Despues de validar los datos, se comprueba que el email ya está en uso
+        const { email } = req.body;
+
+        //Comprobamos que el email se usa solo una vez
+        const emailInUse = await prisma.usuario.findUnique({
+            where: {
+                email: email
+            }
+        }).then(async function (emailInUse) {
+            //Si es nulo, el email no está en uso
+            if (emailInUse == null) {
+                res.statusCode = StatusCodes.BAD_REQUEST;
+                res.send({
+                    ok: false,
+                    msg: "Lo sentimos, ese email no tiene asociada ninguna cuenta."
+                });
+            }
+            else {
+                //Si no hay errores, se pasa al siguiente middleware
+                next();
+            }
+        }).catch( e => {
+            //Error de servidor
+            res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+            res.send({
+                ok: false,
+                msg: "Internal error"
+            });
+        });
+    }
+}
+
+module.exports = { registerValidation, loginValidation }

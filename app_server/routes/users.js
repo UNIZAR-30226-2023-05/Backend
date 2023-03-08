@@ -11,8 +11,7 @@ const { registerHandler, loginHandler,  deleteUser, changePassword, changeFullNa
 //Cadena de responsabilidad: primero se validan las entradas, luego se registra
 userRouter.post('/register', validation.registerValidation, registerHandler);
 
-
-// userRouter.post('/login', loginHandler);
+userRouter.post('/login', validation.loginValidation, loginHandler);
 
 
 // userRouter.delete('/delete', deleteUser);
