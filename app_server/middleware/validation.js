@@ -43,12 +43,15 @@ async function registerValidation(req, res, next) {
         });
     } else {
         //Despues de validar los datos, se comprueba que el nombre de usuario y el email no esten ya en uso
-        const { username, email } = req.body;
+        const { nombre, email } = req.body;
+        console.log(req.body)
+
+        console.log("Datos validos")
 
         //Comprobamos que el nombre de usuario no este en uso
-        const usernameInUse = await prisma.usuarios.findUnique({
+        const usernametInUse = await prisma.usuarios.findUnique({
             where: {
-                nombre: username
+                nombre: nombre
             }
         }).then(async function (usernameInUse) {
             //Si no es nulo, el nombre de usuario esta en uso
@@ -86,6 +89,8 @@ async function registerValidation(req, res, next) {
                         ok: false,
                         msg: "Internal error"
                     });
+
+                    console.log(e, "Error en la base de datos");
                 });
             }
                 
@@ -96,6 +101,7 @@ async function registerValidation(req, res, next) {
                 ok: false,
                 msg: "Internal error"
             });
+            console.log(e, "Error en la base de datos");
         });
 
        

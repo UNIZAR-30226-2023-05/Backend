@@ -15,6 +15,7 @@ const express = require("express");
 
 //importamos el paquete http-status-codes para manejar los codigos de estado de las respuestas
 const { StatusCodes } = require('http-status-codes');   
+const { Console } = require("winston/lib/winston/transports");
 
 
 
@@ -45,6 +46,8 @@ async function registerHandler(req, res) {
     //tomamos los parametros
     const { nombre, email, password } = req.body;
 
+    console.log("VALIDACION CORRECTA")
+
     //Encriptamos la contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -69,6 +72,8 @@ async function registerHandler(req, res) {
             ok: false,
             msg: "Internal error"
         });
+
+        console.log(e);
     });
 
 }
@@ -83,7 +88,7 @@ async function loginHandler(req, res){
     const { email, password } = req.body;
 
     // Obtener el usuario de la base de datos utilizando Prisma
-    const user = await prisma.usuario.findUnique({ where: { email } });
+    const user = await prisma.usuarios.findUnique({ where: { email } });
 
     // Comparar la contraseña proporcionada con la contraseña almacenada utilizando bcrypt
     const passwordMatch = await bcrypt.compare(password, user.password);
