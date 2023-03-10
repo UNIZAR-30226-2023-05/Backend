@@ -43,16 +43,16 @@ async function registerHandler(req, res) {
     //Las comprobaciones se han validado correctamente, se procede a registrar al usuario
 
     //tomamos los parametros
-    const { username, email, password } = req.body;
+    const { nombre, email, password } = req.body;
 
     //Encriptamos la contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     //Creamos el usuario en la base de datos
-    const user = await prisma.usuario.create({
+    const user = await prisma.usuarios.create({
         data: {
-            username: username,
+            nombre: nombre,
             email: email,
             password: hashedPassword
         }

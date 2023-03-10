@@ -25,7 +25,7 @@ const prisma = new PrismaClient();
 async function registerValidation(req, res, next) {
     //Creamos un objeto de validacion
     const schema = Joi.object({
-        username: Joi.string().min(3).max(50).required(),
+        nombre: Joi.string().min(3).max(50).required(),
         //.email() comprueba que el string sea un email valido 
         email: Joi.string().email().required(),
         password: Joi.string().min(8).max(30).pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})')).required()
@@ -46,9 +46,9 @@ async function registerValidation(req, res, next) {
         const { username, email } = req.body;
 
         //Comprobamos que el nombre de usuario no este en uso
-        const usernameInUse = await prisma.usuario.findUnique({
+        const usernameInUse = await prisma.usuarios.findUnique({
             where: {
-                username: username
+                nombre: username
             }
         }).then(async function (usernameInUse) {
             //Si no es nulo, el nombre de usuario esta en uso
@@ -63,7 +63,7 @@ async function registerValidation(req, res, next) {
             }
             else {
                 //Comprobamos que el email no este en uso
-                const emailInUse = await prisma.usuario.findUnique({
+                const emailInUse = await prisma.usuarios.findUnique({
                     where: {
                         email: email
                     }
@@ -128,7 +128,7 @@ async function loginValidation(req, res, next) {
         const { email } = req.body;
 
         //Comprobamos que el email se usa solo una vez
-        const emailInUse = await prisma.usuario.findUnique({
+        const emailInUse = await prisma.usuarios.findUnique({
             where: {
                 email: email
             }
