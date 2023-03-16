@@ -2,31 +2,49 @@
 
 -- Tabla de usuario
 CREATE TABLE Usuario(
-    nickname VARCHAR(20) NOT NULL,
-    contrasena VARCHAR(128) NOT NULL,
-    monedas INTEGER,
-    correoElectronico VARCHAR(128) NOT NULL UNIQUE,
-    fotoPerfil TEXT,
-    amigo_de VARCHAR(128) REFERENCES Usuario(correoElectronico),
+    id_usuario serial,
+    nickname VARCHAR(20) NOT NULL UNIQUE,
+    password VARCHAR(128) NOT NULL,
+    monedas INTEGER NOT NULL,
+    email VARCHAR(128) NOT NULL UNIQUE,
+    profilePhoto TEXT,
 
-    PRIMARY KEY (correoElectronico)
+    PRIMARY KEY (id_usuario)
 );
 
--- Tabla de sala
+-- Tabla de amigos
+CREATE TABLE Amigos(
+    id_usuario1 INTEGER,
+    id_usuario2 INTEGER,
+    
+    FOREIGN KEY (id_usuario1) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (id_usuario2) REFERENCES Usuario(id_usuario),
+    PRIMARY KEY (id_usuario1, id_usuario2)
+);
+
+-- Tabla de Sala
 CREATE TABLE Sala(
     id_sala serial,
-    correoElectronico VARCHAR(128),
-    modo INTEGER NOT NULL, -- 0 clásico, 1 alternativo (también se puede con un text y check)
+    modo INTEGER NOT NULL, -- 0 clásico, 1 alternativo
     nombre VARCHAR(50) NOT NULL,
 
-    PRIMARY KEY (id_sala),
-    FOREIGN KEY (correoElectronico) REFERENCES Usuario(correoElectronico)
+    PRIMARY KEY (id_sala)
 );
 
--- Tabla de partida
+-- Tabla de Forma Parte
+CREATE TABLE FormaParte(
+    usuario INTEGER,
+    sala INTEGER,
+    
+    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (sala) REFERENCES Sala(id_sala),
+    PRIMARY KEY (usuario, sala)
+);
+
+-- Tabla de Partida
 CREATE TABLE Partida(
     id_partida serial,
-    id_sala serial,
+    id_sala INTEGER,
 
     PRIMARY KEY (id_partida),
     FOREIGN KEY (id_sala) REFERENCES Sala(id_sala)
@@ -44,7 +62,7 @@ CREATE TABLE Skin(
 -- Tabla de tablero
 CREATE TABLE Tablero(
     id_tablero serial,
-    id_skin serial,
+    id_skin INTEGER,
 
     PRIMARY KEY (id_tablero),
     FOREIGN KEY (id_skin) REFERENCES Skin(id_skin)
@@ -53,7 +71,7 @@ CREATE TABLE Tablero(
 -- Tabla de ficha
 CREATE TABLE Ficha(
     id_ficha serial, 
-    id_skin serial,
+    id_skin INTEGER,
 
     PRIMARY KEY (id_ficha),
     FOREIGN KEY (id_skin) REFERENCES Skin(id_skin)
@@ -61,12 +79,12 @@ CREATE TABLE Ficha(
 
 -- Tabla de posee
 CREATE TABLE Posee(
-    correoElectronico VARCHAR(128),
-    id_skin serial,
+    usuario INTEGER,
+    id_skin INTEGER,
 
-    PRIMARY KEY (correoElectronico, id_skin),
-    FOREIGN KEY (correoElectronico) REFERENCES Usuario(correoElectronico),
-    FOREIGN KEY (id_skin) REFERENCES Skin(id_skin)
+    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (id_skin) REFERENCES Skin(id_skin),
+    PRIMARY KEY (usuario, id_skin)
 );
 
 -- Tabla chat
@@ -79,59 +97,60 @@ CREATE TABLE Chat(
 -- Tabla de mensaje
 CREATE TABLE Mensaje(
     id_mensaje serial,
-    fecha VARCHAR(10) NOT NULL,
-    hora VARCHAR(8) NOT NULL,
+    fecha VARCHAR(10) NOT NULL, -- estilo DD/MM/AAAA
+    hora VARCHAR(8) NOT NULL, -- estilo HH:MM:SS
     contenido TEXT NOT NULL,
-    id_chat serial, -- pertenece a un chat
-    correoElectronico VARCHAR(128) NOT NULL UNIQUE, --remitente
+    chat INTEGER NOT NULL, -- pertenece a un chat
+    remitente INTEGER NOT NULL, --remitente
 
-    PRIMARY KEY (id_mensaje),
-    FOREIGN KEY (id_chat) REFERENCES Chat(id_chat),
-    FOREIGN KEY (correoElectronico) REFERENCES Usuario(correoElectronico)
+    FOREIGN KEY (chat) REFERENCES Chat(id_chat),
+    FOREIGN KEY (remitente) REFERENCES Usuario(id_usuario),
+    PRIMARY KEY (id_mensaje)
 );
 
 -- Tabla de privado
 CREATE TABLE chatPrivado(
-    id_chatPrivado serial,
-    correoElectronico1 VARCHAR(128),
-    correoElectronico2 VARCHAR(128),
-    
-    PRIMARY KEY (id_chatPrivado),    
+    id_chatPrivado INTEGER,
+    usuario1 INTEGER,
+    usuario2 INTEGER,
+        
     FOREIGN KEY (id_chatPrivado) REFERENCES Chat(id_chat),
-    FOREIGN KEY (correoElectronico1) REFERENCES Usuario(correoElectronico),
-    FOREIGN KEY (correoElectronico2) REFERENCES Usuario(correoElectronico)
+    FOREIGN KEY (usuario1) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (usuario2) REFERENCES Usuario(id_usuario),
+    PRIMARY KEY (id_chatPrivado)
 );
 
 -- Tabla de partida
 CREATE TABLE chatPartida(
-    id_chatPartida serial,
-    id_partida serial,
-
-    PRIMARY KEY (id_chatPartida),
-    FOREIGN KEY (id_partida) REFERENCES Partida(id_partida)
+    id_chatPartida INTEGER,
+    id_partida INTEGER,
+    
+    FOREIGN KEY (id_chatPartida) REFERENCES Chat(id_chat),
+    FOREIGN KEY (id_partida) REFERENCES Partida(id_partida),
+    PRIMARY KEY (id_chatPartida)
 );
 
 -- Tabla de estadisticasAcumuladas 
 CREATE TABLE EstadisticasAcumuladas(
-    correoElectronico VARCHAR(128), -- usuario al que pertenecen las estadísticas
+    usuario INTEGER, -- usuario al que pertenecen las estadísticas
     vecesCaido INTEGER NOT NULL, -- veces que ha caído en la oca
     tiros INTEGER NOT NULL,
     veces6 INTEGER NOT NULL, -- veces que ha tocado 6
     partidasGanadas INTEGER NOT NULL, 
     vecesCalavera INTEGER NOT NULL, -- veces que ha caído en la calavera
 
-    PRIMARY KEY (correoElectronico),
-    FOREIGN KEY (correoElectronico) REFERENCES Usuario(correoElectronico)
+    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario),
+    PRIMARY KEY (usuario)
 );
 
 -- Tabla situacion (N:M)
 CREATE TABLE Situacion(
-    correoElectronico VARCHAR(128),
-    id_partida serial,
+    usuario INTEGER,
+    id_partida INTEGER,
     casilla INTEGER NOT NULL,
     turno INTEGER NOT NULL, -- booleano
     
-    PRIMARY KEY (correoElectronico, id_partida),
-    FOREIGN KEY (correoElectronico) REFERENCES Usuario(correoElectronico),
-    FOREIGN KEY (id_partida) REFERENCES Partida(id_partida)
+    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (id_partida) REFERENCES Partida(id_partida),
+    PRIMARY KEY (usuario, id_partida)
 );
