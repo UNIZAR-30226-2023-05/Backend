@@ -7,9 +7,120 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model usuarios {
-  idusuario Int    @id @default(autoincrement())
-  nombre    String @db.VarChar(200) @unique
-  email     String @db.VarChar(200) @unique
-  password  String @db.VarChar(200)
+model chat {
+  id_chat     Int          @id @default(autoincrement())
+  chatprivado chatprivado?
+  mensaje     mensaje[]
+}
+
+model chatpartida {
+  id_chatpartida Int     @id @default(autoincrement())
+  id_partida     Int     @default(autoincrement())
+  partida        partida @relation(fields: [id_partida], references: [id_partida], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model chatprivado {
+  id_chatprivado                                  Int      @id @default(autoincrement())
+  correoelectronico1                              String?  @db.VarChar(128)
+  correoelectronico2                              String?  @db.VarChar(128)
+  usuario_chatprivado_correoelectronico1Tousuario usuario? @relation("chatprivado_correoelectronico1Tousuario", fields: [correoelectronico1], references: [correoelectronico], onDelete: NoAction, onUpdate: NoAction)
+  usuario_chatprivado_correoelectronico2Tousuario usuario? @relation("chatprivado_correoelectronico2Tousuario", fields: [correoelectronico2], references: [correoelectronico], onDelete: NoAction, onUpdate: NoAction)
+  chat                                            chat     @relation(fields: [id_chatprivado], references: [id_chat], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model estadisticasacumuladas {
+  correoelectronico String  @id @db.VarChar(128)
+  vecescaido        Int
+  tiros             Int
+  veces6            Int
+  partidasganadas   Int
+  vecescalavera     Int
+  usuario           usuario @relation(fields: [correoelectronico], references: [correoelectronico], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ficha {
+  id_ficha Int  @id @default(autoincrement())
+  id_skin  Int  @default(autoincrement())
+  skin     skin @relation(fields: [id_skin], references: [id_skin], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model mensaje {
+  id_mensaje        Int     @id @default(autoincrement())
+  fecha             String  @db.VarChar(10)
+  hora              String  @db.VarChar(8)
+  contenido         String
+  id_chat           Int     @default(autoincrement())
+  correoelectronico String  @unique @db.VarChar(128)
+  usuario           usuario @relation(fields: [correoelectronico], references: [correoelectronico], onDelete: NoAction, onUpdate: NoAction)
+  chat              chat    @relation(fields: [id_chat], references: [id_chat], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model partida {
+  id_partida  Int           @id @default(autoincrement())
+  id_sala     Int           @default(autoincrement())
+  chatpartida chatpartida[]
+  sala        sala          @relation(fields: [id_sala], references: [id_sala], onDelete: NoAction, onUpdate: NoAction)
+  situacion   situacion[]
+}
+
+model posee {
+  correoelectronico String  @db.VarChar(128)
+  id_skin           Int     @default(autoincrement())
+  usuario           usuario @relation(fields: [correoelectronico], references: [correoelectronico], onDelete: NoAction, onUpdate: NoAction)
+  skin              skin    @relation(fields: [id_skin], references: [id_skin], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([correoelectronico, id_skin])
+}
+
+model sala {
+  id_sala           Int       @id @default(autoincrement())
+  correoelectronico String?   @db.VarChar(128)
+  modo              Int
+  nombre            String    @db.VarChar(50)
+  partida           partida[]
+  usuario           usuario?  @relation(fields: [correoelectronico], references: [correoelectronico], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model situacion {
+  correoelectronico String  @db.VarChar(128)
+  id_partida        Int     @default(autoincrement())
+  casilla           Int
+  turno             Int
+  usuario           usuario @relation(fields: [correoelectronico], references: [correoelectronico], onDelete: NoAction, onUpdate: NoAction)
+  partida           partida @relation(fields: [id_partida], references: [id_partida], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([correoelectronico, id_partida])
+}
+
+model skin {
+  id_skin Int       @id @default(autoincrement())
+  imagen  String
+  precio  Int
+  ficha   ficha[]
+  posee   posee[]
+  tablero tablero[]
+}
+
+model tablero {
+  id_tablero Int  @id @default(autoincrement())
+  id_skin    Int  @default(autoincrement())
+  skin       skin @relation(fields: [id_skin], references: [id_skin], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model usuario {
+  nickname                                            String                  @db.VarChar(20)
+  contrasena                                          String                  @db.VarChar(128)
+  monedas                                             Int?
+  correoelectronico                                   String                  @id @db.VarChar(128)
+  fotoperfil                                          String?
+  amigo_de                                            String?                 @db.VarChar(128)
+  chatprivado_chatprivado_correoelectronico1Tousuario chatprivado[]           @relation("chatprivado_correoelectronico1Tousuario")
+  chatprivado_chatprivado_correoelectronico2Tousuario chatprivado[]           @relation("chatprivado_correoelectronico2Tousuario")
+  estadisticasacumuladas                              estadisticasacumuladas?
+  mensaje                                             mensaje?
+  posee                                               posee[]
+  sala                                                sala[]
+  situacion                                           situacion[]
+  usuario                                             usuario?                @relation("usuarioTousuario", fields: [amigo_de], references: [correoelectronico], onDelete: NoAction, onUpdate: NoAction)
+  other_usuario                                       usuario[]               @relation("usuarioTousuario")
 }
