@@ -1,11 +1,5 @@
-//PARA TODOS LOS CONTROLLERS SE IMPORTARAN PRISMA Y EXPRESS
-
-//El user controller se encarga de manejar las peticiones que se hacen a la base de datos referentes a los usuarios (CRUD -> Create, Read, Update, Delete)
-//Trataria login, registro, ver perfil (tanto de chef como de usuario)
-//import { PrismaClient } from "@prisma/client";
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-
 
 const jwt = require('jsonwebtoken');    //importamos jwt para generar el token de autenticacion del usuario 
 const bcrypt = require("bcryptjs");     //bcrypt es una libreria que nos permite encriptar contraseñas
@@ -13,8 +7,7 @@ const bcrypt = require("bcryptjs");     //bcrypt es una libreria que nos permite
 //importamos express (require)
 const express = require("express");
 
-//importamos el paquete http-status-codes para manejar los codigos de estado de las respuestas
-const { StatusCodes } = require('http-status-codes');   
+//importamos el paquete http-status-codes para manejar los codigos de estado de las respuestas   
 const { Console } = require("winston/lib/winston/transports");
 
 
@@ -44,7 +37,8 @@ async function registerHandler(req, res) {
     //Las comprobaciones se han validado correctamente, se procede a registrar al usuario
 
     //tomamos los parametros
-    const { nombre, email, password } = req.body;
+    const { nickname, correoelectronico, password } = req.body;
+
 
     console.log("VALIDACION CORRECTA")
 
@@ -53,11 +47,15 @@ async function registerHandler(req, res) {
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     //Creamos el usuario en la base de datos
-    const user = await prisma.usuarios.create({
+    const user = await prisma.usuario.create({
         data: {
-            nombre: nombre,
-            email: email,
-            password: hashedPassword
+            nickname: nickname,
+            correoelectronico: correoelectronico,
+            contrasena: hashedPassword,
+            monedas: 0,
+            fotoperfil: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
+            // TODO: Cambiar esto para que un usuario tenga más de un amigo
+            amigo_de: null
         }
     }).then(async function () {
         res.statusCode = StatusCodes.CREATED;
@@ -85,13 +83,13 @@ async function registerHandler(req, res) {
 async function loginHandler(req, res){
     //Recogemos los datos del usuario
     //MISMOS NOMBRES QUE EN LAS TABLAS DE LA BASE DE DATOS
-    const { email, password } = req.body;
+    const { email, contrasena } = req.body;
 
     // Obtener el usuario de la base de datos utilizando Prisma
-    const user = await prisma.usuarios.findUnique({ where: { email } });
+    const user = await prisma.usuario.findUnique({ where: { email } });
 
     // Comparar la contraseña proporcionada con la contraseña almacenada utilizando bcrypt
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(contrasena, user.contrasena);
     if ( passwordMatch ) {
         //Las contraseñas coinciden
         //Creamos el token:
