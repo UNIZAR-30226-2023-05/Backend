@@ -25,8 +25,8 @@ async function registerValidation(req, res, next) {
   const schema = Joi.object({
     nickname: Joi.string().min(3).max(50).required(),
     //.email() comprueba que el string sea un email valido
-    correoelectronico: Joi.string().email().required(),
-    contrasena: Joi.string()
+    email: Joi.string().email().required(),
+    password: Joi.string()
       .min(8)
       .max(30)
       .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})"))
@@ -45,13 +45,13 @@ async function registerValidation(req, res, next) {
     });
   } else {
     //Despues de validar los datos, se comprueba que el nombre de usuario y el email no esten ya en uso
-    const { nickname, correoelectronico } = req.body;
+    const { nickname, email } = req.body;
     console.log(req.body);
 
     console.log("Datos validos");
 
     //Comprobamos que el nombre de usuario no este en uso
-    const usernametInUse = await prisma.usuario
+    const usernameInUse = await prisma.usuario
       .findUnique({
         where: {
           nickname: nickname,
@@ -70,7 +70,7 @@ async function registerValidation(req, res, next) {
           const emailInUse = await prisma.usuario
             .findUnique({
               where: {
-                correoelectronico: correoelectronico,
+                email: email,
               },
             })
             .then(async function (emailInUse) {
@@ -116,8 +116,8 @@ async function registerValidation(req, res, next) {
 async function loginValidation(req, res, next) {
   //Creamos un objeto de validacion
   const schema = Joi.object({
-    correoelectronico: Joi.string().email().required(),
-    contrasena: Joi.string()
+    email: Joi.string().email().required(),
+    password: Joi.string()
       .min(8)
       .max(30)
       .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})"))
@@ -136,13 +136,13 @@ async function loginValidation(req, res, next) {
     });
   } else {
     //Despues de validar los datos, se comprueba que el email ya está en uso
-    const { correoelectronico } = req.body;
+    const { email } = req.body;
 
     //Comprobamos que el email se usa solo una vez
     const emailInUse = await prisma.usuario
       .findUnique({
         where: {
-          correoelectronico: correoelectronico,
+          email: email,
         },
       })
       .then(async function (emailInUse) {
