@@ -96,6 +96,7 @@ CREATE TABLE chatPrivado(
     correoElectronico1 VARCHAR(128),
     correoElectronico2 VARCHAR(128),
     
+    PRIMARY KEY (id_chatPrivado),    
     FOREIGN KEY (id_chatPrivado) REFERENCES Chat(id_chat),
     FOREIGN KEY (correoElectronico1) REFERENCES Usuario(correoElectronico),
     FOREIGN KEY (correoElectronico2) REFERENCES Usuario(correoElectronico)
