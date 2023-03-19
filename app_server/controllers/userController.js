@@ -11,9 +11,6 @@ const express = require("express");
 //importamos el paquete http-status-codes para manejar los codigos de estado de las respuestas   
 const { Console } = require("winston/lib/winston/transports");
 
-//importamos el paquete http-status-codes para manejar los codigos de estado de las respuestas
-const { StatusCodes } = require("http-status-codes");
-
 //Función de registro de usuarios
 // Parameters: req, res
 // Returns: void

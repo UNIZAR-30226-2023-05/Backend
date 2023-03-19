@@ -12,6 +12,12 @@ const swaggerUi = require('swagger-ui-express');
 const winston = require('winston');
 const cors = require('cors');
 
+const fs = require("fs")
+const YAML = require('yaml')
+
+const file  = fs.readFileSync('./swagger.yaml', 'utf8')
+const swaggerDocument = YAML.parse(file)
+
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
@@ -48,10 +54,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 //swagger
-app.use('/api-docs', express.static(__dirname + '/node_modules/swagger-ui-dist'));
-app.get('/api-docs', function (req, res) {
-  res.sendFile(__dirname + '/node_modules/swagger-ui-dist/index.html');
-});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 const port = process.env.PORT || 3000;
 
