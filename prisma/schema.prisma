@@ -108,10 +108,10 @@ model tablero {
 }
 
 model usuario {
-  nickname                                            String                  @db.VarChar(20)
+  nickname                                            String                  @db.VarChar(20) @unique
   contrasena                                          String                  @db.VarChar(128)
-  monedas                                             Int?
-  correoelectronico                                   String                  @id @db.VarChar(128)
+  monedas                                             Int? 
+  correoelectronico                                   String                  @id @db.VarChar(128) @unique
   fotoperfil                                          String?
   amigo_de                                            String?                 @db.VarChar(128)
   chatprivado_chatprivado_correoelectronico1Tousuario chatprivado[]           @relation("chatprivado_correoelectronico1Tousuario")

@@ -51,7 +51,7 @@ async function registerValidation(req, res, next) {
     console.log("Datos validos");
 
     //Comprobamos que el nombre de usuario no este en uso
-    const usernametInUse = await prisma.usuario
+    const usernameInUse = await prisma.usuario
       .findUnique({
         where: {
           nickname: nickname,

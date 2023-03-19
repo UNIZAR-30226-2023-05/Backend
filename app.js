@@ -6,6 +6,8 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+//swagger
+const swaggerUi = require('swagger-ui-express');
 //winston logger
 const winston = require('winston');
 const cors = require('cors');
@@ -45,6 +47,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
+//swagger
+app.use('/api-docs', express.static(__dirname + '/node_modules/swagger-ui-dist'));
+app.get('/api-docs', function (req, res) {
+  res.sendFile(__dirname + '/node_modules/swagger-ui-dist/index.html');
+});
 
 const port = process.env.PORT || 3000;
 
