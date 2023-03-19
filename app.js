@@ -56,6 +56,9 @@ app.use(cors());
 //swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+//El css de swagger
+app.use('/swagger-ui.css', express.static(path.join(__dirname, 'node_modules/swagger-ui-dist', 'swagger-ui.css')));
+
 
 const port = process.env.PORT || 3000;
 
