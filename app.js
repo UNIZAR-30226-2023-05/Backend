@@ -15,7 +15,7 @@ const cors = require('cors');
 const fs = require("fs")
 const YAML = require('yaml')
 
-const file  = fs.readFileSync('./swagger.yaml', 'utf8')
+const file  = fs.readFileSync('./public/swagger.yaml', 'utf8')
 const swaggerDocument = YAML.parse(file)
 
 const logger = winston.createLogger({
