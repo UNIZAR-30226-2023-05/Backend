@@ -11,7 +11,8 @@ const express = require("express");
 //importamos el paquete http-status-codes para manejar los codigos de estado de las respuestas   
 const { Console } = require("winston/lib/winston/transports");
 
-
+//importamos el paquete http-status-codes para manejar los codigos de estado de las respuestas
+const { StatusCodes } = require("http-status-codes");
 
 //Función de registro de usuarios
 // Parameters: req, res
@@ -19,7 +20,7 @@ const { Console } = require("winston/lib/winston/transports");
 
 //req{
 //  body: {
-//    username: string,
+//    nickname: string,
 //    email: string,
 //    password: string
 //}
@@ -51,12 +52,10 @@ async function registerHandler(req, res) {
     const user = await prisma.usuario.create({
         data: {
             nickname: nickname,
-            correoelectronico: correoelectronico,
-            contrasena: hashedPassword,
+            email: email,
+            password: hashedPassword,
             monedas: 0,
-            fotoperfil: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
-            // TODO: Cambiar esto para que un usuario tenga más de un amigo
-            amigo_de: null
+            profilephoto: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
         }
     }).then(async function () {
         res.statusCode = StatusCodes.CREATED;
@@ -90,7 +89,7 @@ async function loginHandler(req, res){
     const user = await prisma.usuario.findUnique({ where: { correoelectronico } });
 
     // Comparar la contraseña proporcionada con la contraseña almacenada utilizando bcrypt
-    const passwordMatch = await bcrypt.compare(contrasena, user.contrasena);
+    const passwordMatch = await bcrypt.compare(password, user.password);
     if ( passwordMatch ) {
         //Las contraseñas coinciden
         //Creamos el token:
