@@ -36,14 +36,14 @@ async function registerHandler(req, res) {
     //Las comprobaciones se han validado correctamente, se procede a registrar al usuario
 
     //tomamos los parametros
-    const { nickname, correoelectronico, contrasena } = req.body;
+    const { nickname, email, password } = req.body;
 
 
     console.log("VALIDACION CORRECTA")
 
     //Encriptamos la contraseña
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(req.body.contrasena, salt);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     //Creamos el usuario en la base de datos
     const user = await prisma.usuario.create({
@@ -80,10 +80,10 @@ async function registerHandler(req, res) {
 async function loginHandler(req, res){
     //Recogemos los datos del usuario
     //MISMOS NOMBRES QUE EN LAS TABLAS DE LA BASE DE DATOS
-    const { correoelectronico, contrasena } = req.body;
+    const { email, password } = req.body;
 
     // Obtener el usuario de la base de datos utilizando Prisma
-    const user = await prisma.usuario.findUnique({ where: { correoelectronico } });
+    const user = await prisma.usuario.findUnique({ where: { email } });
 
     // Comparar la contraseña proporcionada con la contraseña almacenada utilizando bcrypt
     const passwordMatch = await bcrypt.compare(password, user.password);
@@ -93,7 +93,7 @@ async function loginHandler(req, res){
         //El token se usa para que el usuario no tenga que estar introduciendo sus credenciales cada vez que quiera hacer algo
         //El token lo generamos con el nombre de usuario
         //Y si en 720h no se ha entrado en la cuenta, se vuelve a pedir el login
-        var token = jwt.sign({ name : correoelectronico}, process.env.TOKEN_SECRET, { expiresIn: '720h' });
+        var token = jwt.sign({ name : email}, process.env.TOKEN_SECRET, { expiresIn: '720h' });
 
         res.statusCode = StatusCodes.OK;
         res.send({
