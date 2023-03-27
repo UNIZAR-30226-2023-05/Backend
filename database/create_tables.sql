@@ -17,8 +17,18 @@ CREATE TABLE Amigos(
     id_usuario1 INTEGER,
     id_usuario2 INTEGER,
     
-    FOREIGN KEY (id_usuario1) REFERENCES Usuario(id_usuario),
-    FOREIGN KEY (id_usuario2) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (id_usuario1) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario2) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    PRIMARY KEY (id_usuario1, id_usuario2)
+);
+
+-- Tabla de solicitudes de amistad
+CREATE TABLE Solicitudes(
+    id_usuario1 INTEGER,
+    id_usuario2 INTEGER,
+    
+    FOREIGN KEY (id_usuario1) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario2) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id_usuario1, id_usuario2)
 );
 
@@ -36,8 +46,8 @@ CREATE TABLE FormaParte(
     usuario INTEGER,
     sala INTEGER,
     
-    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario),
-    FOREIGN KEY (sala) REFERENCES Sala(id_sala),
+    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (sala) REFERENCES Sala(id_sala) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (usuario, sala)
 );
 
@@ -47,7 +57,7 @@ CREATE TABLE Partida(
     id_sala INTEGER,
 
     PRIMARY KEY (id_partida),
-    FOREIGN KEY (id_sala) REFERENCES Sala(id_sala)
+    FOREIGN KEY (id_sala) REFERENCES Sala(id_sala) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- Tabla de skin
@@ -65,7 +75,7 @@ CREATE TABLE Tablero(
     id_skin INTEGER,
 
     PRIMARY KEY (id_tablero),
-    FOREIGN KEY (id_skin) REFERENCES Skin(id_skin)
+    FOREIGN KEY (id_skin) REFERENCES Skin(id_skin) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- Tabla de ficha
@@ -74,7 +84,7 @@ CREATE TABLE Ficha(
     id_skin INTEGER,
 
     PRIMARY KEY (id_ficha),
-    FOREIGN KEY (id_skin) REFERENCES Skin(id_skin)
+    FOREIGN KEY (id_skin) REFERENCES Skin(id_skin) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- Tabla de posee
@@ -82,8 +92,8 @@ CREATE TABLE Posee(
     usuario INTEGER,
     id_skin INTEGER,
 
-    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario),
-    FOREIGN KEY (id_skin) REFERENCES Skin(id_skin),
+    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_skin) REFERENCES Skin(id_skin) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (usuario, id_skin)
 );
 
@@ -103,8 +113,8 @@ CREATE TABLE Mensaje(
     chat INTEGER NOT NULL, -- pertenece a un chat
     remitente INTEGER NOT NULL, --remitente
 
-    FOREIGN KEY (chat) REFERENCES Chat(id_chat),
-    FOREIGN KEY (remitente) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (chat) REFERENCES Chat(id_chat) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (remitente) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id_mensaje)
 );
 
@@ -114,9 +124,9 @@ CREATE TABLE chatPrivado(
     usuario1 INTEGER,
     usuario2 INTEGER,
         
-    FOREIGN KEY (id_chatPrivado) REFERENCES Chat(id_chat),
-    FOREIGN KEY (usuario1) REFERENCES Usuario(id_usuario),
-    FOREIGN KEY (usuario2) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (id_chatPrivado) REFERENCES Chat(id_chat) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (usuario1) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (usuario2) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id_chatPrivado)
 );
 
@@ -125,8 +135,8 @@ CREATE TABLE chatPartida(
     id_chatPartida INTEGER,
     id_partida INTEGER,
     
-    FOREIGN KEY (id_chatPartida) REFERENCES Chat(id_chat),
-    FOREIGN KEY (id_partida) REFERENCES Partida(id_partida),
+    FOREIGN KEY (id_chatPartida) REFERENCES Chat(id_chat) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_partida) REFERENCES Partida(id_partida) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id_chatPartida)
 );
 
@@ -139,7 +149,7 @@ CREATE TABLE EstadisticasAcumuladas(
     partidasGanadas INTEGER NOT NULL, 
     vecesCalavera INTEGER NOT NULL, -- veces que ha caído en la calavera
 
-    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (usuario)
 );
 
@@ -150,7 +160,7 @@ CREATE TABLE Situacion(
     casilla INTEGER NOT NULL,
     turno INTEGER NOT NULL, -- booleano
     
-    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario),
-    FOREIGN KEY (id_partida) REFERENCES Partida(id_partida),
+    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_partida) REFERENCES Partida(id_partida) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (usuario, id_partida)
 );
