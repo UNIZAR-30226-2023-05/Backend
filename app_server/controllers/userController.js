@@ -117,7 +117,7 @@ async function loginHandler(req, res){
 
 //Definimos una función asíncrona para manejar el registro de usuarios (y que no se quede colgado el servidor mientras accede a la base de datos)
 async function updateUserHandler(req, res) {
-    console.log("VALIDACION CORRECTA")
+    console.log("VALIDACION CORRECTA updateUserHandler")
 
     //Las comprobaciones se han validado correctamente, se procede a actualizar la info del usuario
 
@@ -170,7 +170,7 @@ async function updateUserHandler(req, res) {
 
 //Definimos una función asíncrona para eliminar un usuario (y que no se quede colgado el servidor mientras accede a la base de datos)
 async function deleteUserHandler(req, res) {
-    console.log("VALIDACION CORRECTA")
+    console.log("VALIDACION CORRECTA deleteUserHandler")
 
     //Las comprobaciones se han validado correctamente, se procede a eliminar el usuario
 
@@ -199,4 +199,49 @@ async function deleteUserHandler(req, res) {
     });
 }
 
-module.exports = { registerHandler, loginHandler, updateUserHandler, deleteUserHandler };
+//Definimos una función asíncrona para eliminar un usuario (y que no se quede colgado el servidor mientras accede a la base de datos)
+async function getUserIdHandler(req, res) {
+    console.log("VALIDACION CORRECTA getUserIdHandler")
+
+    //Las comprobaciones se han validado correctamente, se procede a eliminar el usuario
+
+    //Tomamos los parametros que haya en el body
+    const { nickname, email } = req.body;
+
+    const whereClause = {};
+
+    if (nickname !== undefined) {
+        whereClause.nickname = nickname;
+    }
+
+    if (email !== undefined) {
+        whereClause.email = email;
+    }
+
+    let consultaId;
+
+    try {
+        consultaId = await prisma.usuario.findUnique({
+            where: whereClause,
+        });
+    } catch (error) {
+        console.log("GETID ERROR DEL SERVIDOR")
+        //Error de servidor
+        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        res.send({
+            ok: false,
+            msg: "Internal error"
+        });
+        console.log(error);
+        return;
+    }
+
+    res.statusCode = StatusCodes.OK;
+    res.send({
+        ok: true,
+        id_usuario: consultaId.id_usuario,
+        message: "Usuario existente."
+    })
+}
+
+module.exports = { registerHandler, loginHandler, updateUserHandler, deleteUserHandler, getUserIdHandler };

@@ -328,4 +328,108 @@ async function deleteUserValidation(req, res, next) {
   }
 }
 
-module.exports = { registerValidation, loginValidation, updateUserValidation, deleteUserValidation };
+/* Comprueba:
+ * - Que se le pasa un nickname que está en uso (opcional)
+ * - Que se le pasa un email que está en uso (opcional)
+ * - Que se le pasa un parámetro
+ */
+async function getUserIdValidation(req, res, next) {
+  //Creamos un objeto de validacion
+  const schema = Joi.object({
+    nickname: Joi.string().min(3).max(50),
+    email: Joi.string().email(),
+  });
+
+  //Validamos el objeto de entrada
+  const { error } = schema.validate(req.body);
+  //Si hay algun error, se devuelve un mensaje de error
+  if (error) {
+    res.statusCode = StatusCodes.BAD_REQUEST;
+    res.send({
+      ok: false,
+      msg: "Lo sentimos, los datos introducidos no son validos.",
+    });
+  } else {
+    //Despues de validar los datos, se comprueba que el id de usuario existe
+    const { nickname, email } = req.body;
+    console.log(req.body);
+
+    //Comprobamos que se ha recibido un parametro
+    if ((nickname == undefined && email !== undefined) || (nickname !== undefined && email == undefined)) {
+      if (nickname !== undefined) { //Se ha recibido nickname
+        const usernameInUse = await prisma.usuario
+        .findUnique({
+           where: {
+               nickname: nickname,
+           },
+        })
+        .then(async function (usernameInUse) {
+           //Si es nulo, el nombre de usuario no existe
+           if (usernameInUse == null) {
+              res.statusCode = StatusCodes.BAD_REQUEST;
+              res.send({
+              ok: false,
+              msg: "Lo sentimos, el nombre de usuario no existe.",
+            });
+            return;
+          }
+          else{
+            //Si no hay errores, se pasa al siguiente middleware
+            next();
+          }
+        })
+        .catch((e) => {
+          //Error de servidor
+          res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+          res.send({
+            ok: false,
+            msg: "Internal error",
+          });
+          console.log(e, "Error en la base de datos");
+        });
+      }
+      else { //Se ha recibido email
+        const emailInUse = await prisma.usuario
+        .findUnique({
+           where: {
+               email: email,
+           },
+        })
+        .then(async function (emailInUse) {
+           //Si es nulo, el email de usuario no existe
+           if (emailInUse == null) {
+              res.statusCode = StatusCodes.BAD_REQUEST;
+              res.send({
+              ok: false,
+              msg: "Lo sentimos, el email de usuario no existe.",
+            });
+            return;
+          }
+          else{
+            //Si no hay errores, se pasa al siguiente middleware
+            next();
+          }
+        })
+        .catch((e) => {
+          //Error de servidor
+          res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+          res.send({
+            ok: false,
+            msg: "Internal error",
+          });
+          console.log(e, "Error en la base de datos");
+        });
+      }
+    } else {
+      res.statusCode = StatusCodes.BAD_REQUEST;
+      res.send({
+          ok: false,
+          msg: "Lo sentimos, debe proporcionar un parámetro.",
+        });
+      return;
+    }
+    console.log("Datos validos");
+  }
+}
+
+module.exports = { registerValidation, loginValidation, updateUserValidation, deleteUserValidation, getUserIdValidation };
