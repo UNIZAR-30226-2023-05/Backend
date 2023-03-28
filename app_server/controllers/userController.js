@@ -168,4 +168,35 @@ async function updateUserHandler(req, res) {
     });
 }
 
-module.exports = { registerHandler, loginHandler, updateUserHandler };
+//Definimos una función asíncrona para eliminar un usuario (y que no se quede colgado el servidor mientras accede a la base de datos)
+async function deleteUserHandler(req, res) {
+    console.log("VALIDACION CORRECTA")
+
+    //Las comprobaciones se han validado correctamente, se procede a eliminar el usuario
+
+    //Tomamos los parametros que haya en el body
+    const { id_usuario } = req.body;
+
+    const usuarioEliminado = await prisma.usuario.delete({
+        where: { id_usuario: id_usuario },
+    }).then(async function () {
+        res.statusCode = StatusCodes.OK;
+        res.send({
+            ok: true,
+            message: "Usuario eliminado correctamente."
+        })
+        return;
+    }).catch( e => {
+        console.log("DELETE ERROR DEL SERVIDOR")
+        //Error de servidor
+        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        res.send({
+            ok: false,
+            msg: "Internal error"
+        });
+
+        console.log(e);
+    });
+}
+
+module.exports = { registerHandler, loginHandler, updateUserHandler, deleteUserHandler };

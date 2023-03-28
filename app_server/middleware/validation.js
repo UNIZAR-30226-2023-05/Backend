@@ -271,4 +271,61 @@ async function updateUserValidation(req, res, next) {
   }
 }
 
-module.exports = { registerValidation, loginValidation, updateUserValidation };
+/*
+  * Comprueba:
+  * - Que se le pasa un id de usuario que existe
+*/
+async function deleteUserValidation(req, res, next) {
+  //Creamos un objeto de validacion
+  const schema = Joi.object({
+    id_usuario: Joi.number().required(),
+  });
+
+  //Validamos el objeto de entrada
+  const { error } = schema.validate(req.body);
+  //Si hay algun error, se devuelve un mensaje de error
+  if (error) {
+    res.statusCode = StatusCodes.BAD_REQUEST;
+    res.send({
+      ok: false,
+      msg: "Lo sentimos, los datos introducidos no son validos.",
+    });
+  } else {
+    //Despues de validar los datos, se comprueba que el id de usuario existe
+    const { id_usuario } = req.body;
+    console.log(req.body);
+
+    //Comprobamos que el id de usuario existe
+    const userExists = await prisma.usuario
+      .findUnique({
+        where: {
+          id_usuario: id_usuario,
+        },
+      })
+      .then(async function (userExists) {
+        //Si es nulo, el id de usuario no esta en uso (debe existir para poder hacer cambios)
+        if (userExists == null) {
+          res.statusCode = StatusCodes.BAD_REQUEST;
+          res.send({
+            ok: false,
+            msg: "Lo sentimos, el id del usuario que quiere eliminar no existe.",
+          });
+        } else {
+          //Si no hay errores, se pasa al siguiente middleware
+          next();
+        }
+      })
+      .catch((e) => {
+        //Error de servidor
+        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        res.send({
+          ok: false,
+          msg: "Internal error",
+        });
+        console.log(e, "Error en la base de datos");
+      });
+    console.log("Datos validos");
+  }
+}
+
+module.exports = { registerValidation, loginValidation, updateUserValidation, deleteUserValidation };

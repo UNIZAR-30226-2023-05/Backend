@@ -4,7 +4,7 @@ var userRouter = express.Router();
 
 //const { isLoggedIn } = require('../middleware/authorization')
 const validation  = require('../middleware/validation.js')
-const { registerHandler, loginHandler, updateUserHandler,  deleteUser, changePassword, changeFullName } = require('../controllers/userController.js');
+const { registerHandler, loginHandler, updateUserHandler,  deleteUserHandler } = require('../controllers/userController.js');
 
 
 //Registro de usuarios (middleware de validacion)
@@ -13,9 +13,11 @@ userRouter.post('/register', validation.registerValidation, registerHandler);
 
 userRouter.put('/register', validation.updateUserValidation, updateUserHandler);
 
+userRouter.delete('/register', validation.deleteUserValidation, deleteUserHandler);
+
 userRouter.post('/login', validation.loginValidation, loginHandler);
 
-// userRouter.delete('/delete', deleteUser);
+
 
 
 module.exports = userRouter 
