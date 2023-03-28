@@ -169,4 +169,106 @@ async function loginValidation(req, res, next) {
   }
 }
 
-module.exports = { registerValidation, loginValidation };
+/* Comprueba:
+ * - Que se le pasa un id de usuario que existe
+ * - Que se le pasa un nickname que no está en uso (opcional)
+ * - Que se le pasa una contraseña que cumpla el formato (opcional)
+ * - Que se le pasa un numero de monedas positivo (opcional)
+ * - Que se le pasa una foto de perfil (opcional)
+ */
+async function updateUserValidation(req, res, next) {
+  //Creamos un objeto de validacion
+  const schema = Joi.object({
+    id_usuario: Joi.number().required(),
+    nickname: Joi.string().min(3).max(50),
+    //email: Joi.string().email(), no permite cambiar email
+    password: Joi.string()
+      .min(8)
+      .max(30)
+      .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})")),
+    monedas: Joi.number().min(0),
+    profilephoto: Joi.string(),
+  });
+
+  //Validamos el objeto de entrada
+  const { error } = schema.validate(req.body);
+  //Si hay algun error, se devuelve un mensaje de error
+  if (error) {
+    res.statusCode = StatusCodes.BAD_REQUEST;
+    res.send({
+      ok: false,
+      msg: "Lo sentimos, los datos introducidos no son validos.",
+    });
+  } else {
+    //Despues de validar los datos, se comprueba que el id de usuario existe
+    const { id_usuario, nickname } = req.body;
+    console.log(req.body);
+
+    //Comprobamos que el id de usuario existe
+    const userExists = await prisma.usuario
+      .findUnique({
+        where: {
+          id_usuario: id_usuario,
+        },
+      })
+      .then(async function (userExists) {
+        //Si es nulo, el id de usuario no esta en uso (debe existir para poder hacer cambios)
+        if (userExists == null) {
+          res.statusCode = StatusCodes.BAD_REQUEST;
+          res.send({
+            ok: false,
+            msg: "Lo sentimos, el id del usuario al que quiere cambiar sus datos no existe.",
+          });
+        } else {
+          //Comprobamos que el nombre de usuario no este en uso si se ha recibido
+          if (nickname !== undefined) {
+            const usernameInUse = await prisma.usuario
+              .findUnique({
+                where: {
+                  nickname: nickname,
+                },
+              })
+              .then(async function (usernameInUse) {
+                //Si no es nulo, el nombre de usuario esta en uso
+                if (usernameInUse !== null) {
+                  res.statusCode = StatusCodes.BAD_REQUEST;
+                  res.send({
+                    ok: false,
+                    msg: "Lo sentimos, el nombre de usuario ya esta en uso.",
+                  });
+                } else {
+                  //Si no hay errores, se pasa al siguiente middleware
+                  next();
+                }
+              })
+              .catch((e) => {
+                //Error de servidor
+                res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+                res.send({
+                  ok: false,
+                  msg: "Internal error",
+                });
+                console.log(e, "Error en la base de datos");
+              });
+          }
+          else{
+            //No hay que comprobar nada de nickname y schema correcto: se pasa al siguiente middleware
+            next();
+          }
+        }
+      })
+      .catch((e) => {
+        //Error de servidor
+        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        res.send({
+          ok: false,
+          msg: "Internal error",
+        });
+        console.log(e, "Error en la base de datos");
+      });
+
+    console.log("Datos validos");
+  }
+}
+
+module.exports = { registerValidation, loginValidation, updateUserValidation };

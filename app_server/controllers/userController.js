@@ -43,7 +43,7 @@ async function registerHandler(req, res) {
 
     //Encriptamos la contraseña
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     //Creamos el usuario en la base de datos
     const user = await prisma.usuario.create({
@@ -115,4 +115,57 @@ async function loginHandler(req, res){
     }
 }
 
-module.exports = { registerHandler, loginHandler };
+//Definimos una función asíncrona para manejar el registro de usuarios (y que no se quede colgado el servidor mientras accede a la base de datos)
+async function updateUserHandler(req, res) {
+    console.log("VALIDACION CORRECTA")
+
+    //Las comprobaciones se han validado correctamente, se procede a actualizar la info del usuario
+
+    //tomamos los parametros que haya en el body
+    const { id_usuario, nickname, password, monedas, profilephoto } = req.body;
+
+    const datosActualizados = {};
+
+    if (nickname !== undefined) {
+        datosActualizados.nickname = nickname;
+    }
+
+    if (password !== undefined) {
+        //Encriptamos la contraseña
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        datosActualizados.password = hashedPassword;
+    }
+
+    if (monedas !== undefined) {
+        datosActualizados.monedas = monedas;
+    }
+
+    if (profilephoto !== undefined) {
+        datosActualizados.profilephoto = profilephoto;
+    }
+
+    const usuarioActualizado = await prisma.usuario.update({
+        where: { id_usuario: id_usuario },
+        data: datosActualizados,
+    }).then(async function () {
+        res.statusCode = StatusCodes.OK;
+        res.send({
+            ok: true,
+            message: "Usuario actualizado correctamente."
+        })
+        return;
+    }).catch( e => {
+        console.log("UPDATE ERROR DEL SERVIDOR")
+        //Error de servidor
+        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        res.send({
+            ok: false,
+            msg: "Internal error"
+        });
+
+        console.log(e);
+    });
+}
+
+module.exports = { registerHandler, loginHandler, updateUserHandler };
