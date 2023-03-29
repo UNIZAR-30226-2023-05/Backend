@@ -277,25 +277,15 @@ async function updateUserValidation(req, res, next) {
 */
 async function deleteUserValidation(req, res, next) {
   //Creamos un objeto de validacion
-  const schema = Joi.object({
-    id_usuario: Joi.number().required(),
-  });
-
-  //Validamos el objeto de entrada
-  const { error } = schema.validate(req.body);
-  //Si hay algun error, se devuelve un mensaje de error
-  if (error) {
+  if (req.params.id_usuario == undefined || isNaN(req.params.id_usuario)) {
     res.statusCode = StatusCodes.BAD_REQUEST;
     res.send({
       ok: false,
       msg: "Lo sentimos, los datos introducidos no son validos.",
     });
   } else {
+    const id_usuario = parseInt(req.params.id_usuario);
     //Despues de validar los datos, se comprueba que el id de usuario existe
-    const { id_usuario } = req.body;
-    console.log(req.body);
-
-    //Comprobamos que el id de usuario existe
     const userExists = await prisma.usuario
       .findUnique({
         where: {

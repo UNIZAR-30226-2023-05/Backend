@@ -15,7 +15,7 @@ userRouter.get('/register', validation.getUserIdValidation, getUserIdHandler);
 
 userRouter.put('/register', validation.updateUserValidation, updateUserHandler);
 
-userRouter.delete('/register', validation.deleteUserValidation, deleteUserHandler);
+userRouter.delete('/register/:id_usuario', validation.deleteUserValidation, deleteUserHandler);
 
 userRouter.post('/login', validation.loginValidation, loginHandler);
 

@@ -175,7 +175,7 @@ async function deleteUserHandler(req, res) {
     //Las comprobaciones se han validado correctamente, se procede a eliminar el usuario
 
     //Tomamos los parametros que haya en el body
-    const { id_usuario } = req.body;
+    const id_usuario = parseInt(req.params.id_usuario);
 
     const usuarioEliminado = await prisma.usuario.delete({
         where: { id_usuario: id_usuario },
