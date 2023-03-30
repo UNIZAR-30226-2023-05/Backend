@@ -25,7 +25,7 @@ paths:
         description: Datos del usuario
         required: true
         content:
-          application/json:
+          row/json:
             schema:
               $ref: '#/components/schemas/regUsuario'
       responses:
@@ -37,6 +37,74 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+        - Usuario
+      summary: Obtención ID de usuario
+      requestBody:
+        description: nickname o email del usuario (uno de los dos)
+        required: true
+        content:
+          row/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/nickname'
+                - $ref: '#/components/schemas/email'
+      responses:
+        '200':
+          description: Usuario existente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags:
+        - Usuario
+      summary: Actualización atributos de usuario
+      requestBody:
+        description: Id del usuario y todas las componentes que se quieran actualizar
+        required: true
+        content:
+          row/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/idUsuario'
+                - anyOf:
+                  - $ref: '#/components/schemas/nickname'
+                  - $ref: '#/components/schemas/password'
+                  - $ref: '#/components/schemas/monedas'
+                  - $ref: '#/components/schemas/profilephoto'
+
+  /users/register/:{idUsuario}:
+    delete:
+      tags:
+        - Usuario
+      summary: Borrar cuenta de usuario
+      parameters:
+        - in: path
+          name: idUsuario
+          schema:
+            type: integer
+          required: true
+          description: Id del usuario que se desea eliminar
+      responses:
+        '200':
+          description: Usuario eliminado correctamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
 
   /users/login:
     post:
@@ -48,7 +116,7 @@ paths:
         description: Datos del usuario
         required: true
         content:
-          application/json:
+          row/json:
             schema:
               $ref: '#/components/schemas/logUsuario'
       responses:
@@ -60,6 +128,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
 
 
 components:
@@ -71,8 +141,8 @@ components:
       description: Unauthorized
     NotFound:
       description: Not Found
-    InternalServerError:
-      description: Internal Server Error
+    InternalError:
+      description: Internal Error
       
   
   schemas:
@@ -93,6 +163,50 @@ components:
           description: Contraseña del usuario (8-16 caracteres, alfanuméricos)
           pattern: "^[A-Za-z0-9]{8,16}$"
 
+    nickname:
+      type: object
+      properties:
+        nickname:
+          type: string
+          description: Nickname del usuario
+
+    email:
+      type: object
+      properties:  
+        email:
+          type: string
+          description: Email del usuario
+          format: email
+
+    idUsuario:
+      type: object
+      properties:
+        id_usuario:
+          type: integer
+          description: Id del usuario que queremos actualizar
+
+    password:
+      type: object
+      properties:
+        password:
+          type: string
+          description: Contraseña del usuario (8-16 caracteres, alfanuméricos)
+          pattern: "^[A-Za-z0-9]{8,16}$"
+
+    monedas:
+      type: object
+      properties:
+        monedas:
+          type: integer
+          minimum: 0
+          description: Saldo de monedas ingame del usuario
+          
+    profilephoto:
+      type: object
+      properties:
+        prophilephoto:
+          type: string
+          description: URL de foto de perfil del usuario
 
     logUsuario:
       type: object
