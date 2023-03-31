@@ -422,4 +422,105 @@ async function getUserIdValidation(req, res, next) {
   }
 }
 
-module.exports = { registerValidation, loginValidation, updateUserValidation, deleteUserValidation, getUserIdValidation };
+//SOCIAL
+
+/* Comprueba:
+ * - Que se le pasan dos id de usuario que existen
+ */
+async function friendRequestValidation(req, res, next) {
+  //Creamos un objeto de validacion
+  const schema = Joi.object({
+    id_usuario_envia: Joi.number().required(),
+    id_usuario_recibe: Joi.number().required(),
+  });
+
+  //Validamos el objeto de entrada
+  const { error } = schema.validate(req.body);
+  //Si hay algun error, se devuelve un mensaje de error
+  if (error) {
+    res.statusCode = StatusCodes.BAD_REQUEST;
+    res.send({
+      ok: false,
+      msg: "Lo sentimos, los datos introducidos no son validos.",
+    });
+  } else {
+    //Despues de validar los datos, se comprueba que los id de usuario existen
+    const { id_usuario_envia, id_usuario_recibe } = req.body;
+    console.log(req.body);
+
+    //Comprobamos que se ha recibido un parametro
+    if (id_usuario_envia !== undefined && id_usuario_recibe !== undefined && id_usuario_envia !== id_usuario_recibe) {
+      const userExists = await prisma.usuario
+        .findUnique({
+          where: {
+            id_usuario: id_usuario_envia,
+          },
+        })
+        .then(async function (userExists) {
+          //Si es nulo, el id de usuario no esta en uso (debe existir para poder hacer cambios)
+          if (userExists == null) {
+            res.statusCode = StatusCodes.BAD_REQUEST;
+            res.send({
+              ok: false,
+              msg: "Lo sentimos, el id del usuario que manda la petición no existe.",
+            });
+            return;
+          }
+          else{
+            //Comprobamos segundo usuario
+            const userExists2 = await prisma.usuario
+              .findUnique({
+                where: {
+                  id_usuario: id_usuario_recibe,
+                },
+              })
+              .then(async function (userExists2) {
+                //Si es nulo, el id de usuario no esta en uso (debe existir para poder hacer cambios)
+                if (userExists2 == null) {
+                  res.statusCode = StatusCodes.BAD_REQUEST;
+                  res.send({
+                    ok: false,
+                    msg: "Lo sentimos, el id del usuario que recibiría la petición no existe.",
+                  });
+                  return;
+                }
+                else{
+                  //Si no hay errores, se pasa al siguiente middleware
+                  next();
+                }
+              })
+              .catch((e) => {
+                //Error de servidor
+                res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+                res.send({
+                  ok: false,
+                  msg: "Internal error",
+                });
+                console.log(e, "Error en la base de datos");
+              });
+          }
+        })
+        .catch((e) => {
+          //Error de servidor
+          res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+          res.send({
+            ok: false,
+            msg: "Internal error",
+          });
+          console.log(e, "Error en la base de datos");
+        });
+    } else {
+      res.statusCode = StatusCodes.BAD_REQUEST;
+      res.send({
+          ok: false,
+          msg: "Lo sentimos, debe proporcionar dos id de usuarios distintos.",
+        });
+      return;
+    }
+    console.log("Datos validos friend request validation");
+  }
+}
+
+
+//exportamos las funciones de validacion
+module.exports = { registerValidation, loginValidation, updateUserValidation, deleteUserValidation, getUserIdValidation, friendRequestValidation };

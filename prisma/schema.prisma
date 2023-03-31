@@ -142,15 +142,15 @@ model usuario {
   mensaje                                                        mensaje[]
   posee_posee_usuarioTousuario                                   posee[]                 @relation("posee_usuarioTousuario")
   situacion_situacion_usuarioTousuario                           situacion[]             @relation("situacion_usuarioTousuario")
-  solicitudes_solicitudes_id_usuario1Tousuario                   solicitudes[]           @relation("solicitudes_id_usuario1Tousuario")
-  solicitudes_solicitudes_id_usuario2Tousuario                   solicitudes[]           @relation("solicitudes_id_usuario2Tousuario")
+  solicitud_solicitud_id_usuario_enviaTousuario                  solicitud[]             @relation("solicitud_id_usuario_enviaTousuario")
+  solicitud_solicitud_id_usuario_recibeTousuario                 solicitud[]             @relation("solicitud_id_usuario_recibeTousuario")
 }
 
-model solicitudes {
-  id_usuario1                              Int
-  id_usuario2                              Int
-  usuario_solicitudes_id_usuario1Tousuario usuario @relation("solicitudes_id_usuario1Tousuario", fields: [id_usuario1], references: [id_usuario], onDelete: Cascade)
-  usuario_solicitudes_id_usuario2Tousuario usuario @relation("solicitudes_id_usuario2Tousuario", fields: [id_usuario2], references: [id_usuario], onDelete: Cascade)
+model solicitud {
+  id_usuario_envia                             Int
+  id_usuario_recibe                            Int
+  usuario_solicitud_id_usuario_enviaTousuario  usuario @relation("solicitud_id_usuario_enviaTousuario", fields: [id_usuario_envia], references: [id_usuario], onDelete: Cascade)
+  usuario_solicitud_id_usuario_recibeTousuario usuario @relation("solicitud_id_usuario_recibeTousuario", fields: [id_usuario_recibe], references: [id_usuario], onDelete: Cascade)
 
-  @@id([id_usuario1, id_usuario2])
+  @@id([id_usuario_envia, id_usuario_recibe])
 }

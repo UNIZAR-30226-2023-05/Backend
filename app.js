@@ -63,6 +63,7 @@ app.use('/swagger-ui.css', express.static(path.join(__dirname, 'node_modules/swa
 const port = process.env.PORT || 3000;
 
 app.use("/users", require("./app_server/routes/users"));
+app.use("/social", require("./app_server/routes/social"));
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
