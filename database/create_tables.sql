@@ -29,7 +29,7 @@ CREATE TABLE Solicitud(
     
     FOREIGN KEY (id_usuario_envia) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (id_usuario_recibe) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
-    PRIMARY KEY (id_usuario1, id_usuario2)
+    PRIMARY KEY (id_usuario_envia, id_usuario_recibe)
 );
 
 -- Tabla de Sala
