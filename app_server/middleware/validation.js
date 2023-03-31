@@ -60,7 +60,7 @@ async function registerValidation(req, res, next) {
       .then(async function (usernameInUse) {
         //Si no es nulo, el nombre de usuario esta en uso
         if (usernameInUse !== null) {
-          res.statusCode = StatusCodes.BAD_REQUEST;
+          res.statusCode = StatusCodes.CONFLICT;
           res.send({
             ok: false,
             msg: "Lo sentimos, el nombre de usuario ya esta en uso.",
@@ -75,7 +75,7 @@ async function registerValidation(req, res, next) {
             })
             .then(async function (emailInUse) {
               if (emailInUse !== null) {
-                res.statusCode = StatusCodes.BAD_REQUEST;
+                res.statusCode = StatusCodes.CONFLICT;
                 res.send({
                   ok: false,
                   msg: "Lo sentimos, el email ya esta en uso.",
