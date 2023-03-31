@@ -23,7 +23,7 @@ CREATE TABLE Amigos(
 );
 
 -- Tabla de solicitudes de amistad
-CREATE TABLE Solicitudes(
+CREATE TABLE Solicitud(
     id_usuario_envia INTEGER,
     id_usuario_recibe INTEGER,
     
