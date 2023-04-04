@@ -61,6 +61,7 @@ app.use('/swagger-ui.css', express.static(path.join(__dirname, 'node_modules/swa
 
 
 app.use("/users", require("./app_server/routes/users"));
+app.use("/social", require("./app_server/routes/social"));
 
 module.exports = { app };
 module.exports = { app };
