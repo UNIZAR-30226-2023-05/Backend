@@ -235,7 +235,7 @@ async function getFriendsHandler(req, res) {
 
     const id_usuario = parseInt(req.params.id_usuario);
     try {
-        // Ejecutar la primera consulta
+        //Ejecutar la primera consulta
         const amigos = await prisma.amigos.findMany({
           select: {
             usuario_amigos_id_usuario1Tousuario: {
@@ -247,7 +247,7 @@ async function getFriendsHandler(req, res) {
           }
         });
         
-        // Ejecutar la segunda consulta
+        //Ejecutar la segunda consulta
         const amigos2 = await prisma.amigos.findMany({
           select: {
             usuario_amigos_id_usuario2Tousuario: {
@@ -259,24 +259,24 @@ async function getFriendsHandler(req, res) {
           }
         });
         
-        // Concatenar los resultados de ambas consultas
+        //Concatenar los resultados de ambas consultas
         const listaAmigos = amigos.concat(amigos2);
         
-         // Extraer solo los nombres de usuario de la lista de amigos
-  const nombresAmigos = listaAmigos.map((amigo) => {
-    const usuario1 = amigo.usuario_amigos_id_usuario1Tousuario;
-    const usuario2 = amigo.usuario_amigos_id_usuario2Tousuario;
-    
-    if (usuario1 && usuario1.nickname) {
-      return usuario1.nickname;
-    } else if (usuario2 && usuario2.nickname) {
-      return usuario2.nickname;
-    } else {
-      return null;
-    }
-  }).filter(Boolean);
+        //Extraer solo los nicknames de la lista de amigos
+        const nombresAmigos = listaAmigos.map((amigo) => {
+            const usuario1 = amigo.usuario_amigos_id_usuario1Tousuario;
+            const usuario2 = amigo.usuario_amigos_id_usuario2Tousuario;
+            
+            if (usuario1 && usuario1.nickname) {
+            return usuario1.nickname;
+            } else if (usuario2 && usuario2.nickname) {
+            return usuario2.nickname;
+            } else {
+            return null;
+            }
+        }).filter(Boolean);
         
-        // Enviar respuesta
+        //Enviar respuesta
         res.statusCode = StatusCodes.OK;
         res.send({
           ok: true,
