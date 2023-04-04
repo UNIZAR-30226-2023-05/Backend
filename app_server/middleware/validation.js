@@ -426,6 +426,9 @@ async function getUserIdValidation(req, res, next) {
 
 /* Comprueba:
  * - Que se le pasan dos id de usuario que existen
+ * - Que los id de usuarios son distintos
+ * - Que no existe una solicitud de amistad igual entre los dos usuarios
+ * - Que no existe una amistad entre los dos usuarios
  */
 async function friendRequestValidation(req, res, next) {
   //Creamos un objeto de validacion
@@ -444,131 +447,53 @@ async function friendRequestValidation(req, res, next) {
       msg: "Lo sentimos, los datos introducidos no son validos.",
     });
   } else {
-    //Despues de validar los datos, se comprueba que los id de usuario existen
-    const { id_usuario_envia, id_usuario_recibe } = req.body;
-    console.log(req.body);
-
-    //Comprobamos que se ha recibido un parametro
-    if (id_usuario_envia !== undefined && id_usuario_recibe !== undefined && id_usuario_envia !== id_usuario_recibe) {
-      //Comprobamos que existe el usuario que envia la solicitud
-      const userExists = await prisma.usuario
-        .findUnique({
+    try {
+      const { id_usuario_envia, id_usuario_recibe } = req.body;
+      if (id_usuario_envia === undefined || id_usuario_recibe === undefined || id_usuario_envia === id_usuario_recibe) {
+        throw new Error("Lo sentimos, debe proporcionar dos id de usuarios distintos.");
+      }
+      const [senderUser, receiverUser, requestExists, friendExists] = await Promise.all([
+        prisma.usuario.findUnique({ where: { id_usuario: id_usuario_envia } }),
+        prisma.usuario.findUnique({ where: { id_usuario: id_usuario_recibe } }),
+        prisma.solicitud.findFirst({
           where: {
-            id_usuario: id_usuario_envia,
+            AND: [
+              { id_usuario_envia: id_usuario_envia },
+              { id_usuario_recibe: id_usuario_recibe },
+            ],
           },
-        })
-        .then(async function (userExists) {
-          //Si es nulo, el id de usuario no esta en uso (debe existir para poder hacer cambios)
-          if (userExists == null) {
-            res.statusCode = StatusCodes.BAD_REQUEST;
-            res.send({
-              ok: false,
-              msg: "Lo sentimos, el id del usuario que manda la petición no existe.",
-            });
-            return;
-          }
-          else{
-            //Comprobamos que existe el usuario que recibe la solicitud
-            const userExists2 = await prisma.usuario
-              .findUnique({
-                where: {
-                  id_usuario: id_usuario_recibe,
-                },
-              })
-              .then(async function (userExists2) {
-                //Si es nulo, el id de usuario no esta en uso (debe existir para poder hacer cambios)
-                if (userExists2 == null) {
-                  res.statusCode = StatusCodes.BAD_REQUEST;
-                  res.send({
-                    ok: false,
-                    msg: "Lo sentimos, el id del usuario que recibiría la petición no existe.",
-                  });
-                  return;
-                }
-                else{
-                  //Comprobamos que la petición no existe en la BBDD
-                  const requestExists = await prisma.solicitud
-                    .findUnique({
-                      where: {
-                        id_usuario_envia: id_usuario_envia,
-                        id_usuario_recibe: id_usuario_recibe,
-                      },
-                    })
-                    .then(async function (requestExists) {
-                      //Si es nulo, la solicitud no existe
-                      if (requestExists !== null) {
-                        res.statusCode = StatusCodes.BAD_REQUEST;
-                        res.send({
-                          ok: false,
-                          msg: "Lo sentimos, ya existe una solicitud entre estos dos usuarios.",
-                        });
-                        return;
-                      }
-                      const friendExists = await prisma.amigos.findFirst({
-                        where: {
-                          OR: [
-                            {
-                              id_usuario1: id_usuario_envia,
-                              id_usuario2: id_usuario_recibe,
-                            },
-                            {
-                              id_usuario1: id_usuario_recibe,
-                              id_usuario2: id_usuario_envia,
-                            },
-                          ],
-                        },
-                      });
-                      if (friendExists !== null) {
-                        res.statusCode = StatusCodes.BAD_REQUEST;
-                        res.send({
-                          ok: false,
-                          msg: "Lo sentimos, ya existe una relación de amigos entre estos dos usuarios.",
-                        });
-                        return;
-                      }
-                      //Si no hay errores, se pasa al siguiente middleware
-                      next();
-                    })
-                    .catch((e) => {
-                      //Error de servidor
-                      res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-                      res.send({
-                        ok: false,
-                        msg: "Internal error",
-                      });
-                      console.log(e, "Error en la base de datos");
-                    });
-                }
-              })
-              .catch((e) => {
-                //Error de servidor
-                res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-                res.send({
-                  ok: false,
-                  msg: "Internal error",
-                });
-                console.log(e, "Error en la base de datos");
-              });
-          }
-        })
-        .catch((e) => {
-          //Error de servidor
-          res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-          res.send({
-            ok: false,
-            msg: "Internal error",
-          });
-          console.log(e, "Error en la base de datos");
-        });
-    } else {
-      res.statusCode = StatusCodes.BAD_REQUEST;
-      res.send({
-          ok: false,
-          msg: "Lo sentimos, debe proporcionar dos id de usuarios distintos.",
-        });
-      return;
+        }),
+        prisma.amigos.findFirst({
+          where: {
+            OR: [
+              { id_usuario1: id_usuario_envia, id_usuario2: id_usuario_recibe },
+              { id_usuario1: id_usuario_recibe, id_usuario2: id_usuario_envia },
+            ],
+          },
+        }),
+      ]);
+      console.log("Por ahora va bien")
+      
+      if (!senderUser) {
+        throw new Error("Lo sentimos, el id del usuario que manda la petición no existe.");
+      }
+      if (!receiverUser) {
+        throw new Error("Lo sentimos, el id del usuario que recibiría la petición no existe.");
+      }
+      if (requestExists) {
+        throw new Error("Lo sentimos, ya existe una solicitud entre estos dos usuarios.");
+      }
+      if (friendExists) {
+        throw new Error("Lo sentimos, ya existe una relación de amigos entre estos dos usuarios.");
+      }
+      
+      next();
+    } catch (error) {
+      res.status(StatusCodes.BAD_REQUEST).send({
+      ok: false,
+      msg: error.message,
+      });
     }
-    console.log("Datos validos friend request validation");
   }
 }
 

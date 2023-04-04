@@ -109,10 +109,12 @@ async function friendRequestHandler(req, res) {
 
     //Si existe una solicitud inversa se añaden como amigos automáticamente y se borra dicha solicitud
     const requestExists = await prisma.solicitud
-        .findUnique({
+        .findFirst({
             where: {
-            id_usuario_envia: id_usuario_recibe,
-            id_usuario_recibe: id_usuario_envia,
+                AND: [
+                    { id_usuario_envia: id_usuario_recibe },
+                    { id_usuario_recibe: id_usuario_envia },
+                  ],
             },
         })
         .then(async function (requestExists) {
@@ -150,7 +152,7 @@ async function friendRequestHandler(req, res) {
                         id_usuario2: id_usuario_recibe
                       }
                     }),
-                    prisma.solicitud.delete({
+                    prisma.solicitud.deleteMany({
                       where: {
                         id_usuario_envia: id_usuario_recibe,
                         id_usuario_recibe: id_usuario_envia
