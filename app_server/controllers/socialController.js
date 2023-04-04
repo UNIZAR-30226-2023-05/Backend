@@ -213,7 +213,7 @@ async function getFriendRequestsHandler(req, res) {
         res.statusCode = StatusCodes.OK;
         res.send({
             ok: true,
-            message: "Usuarios:",
+            message: "Solicitudes para el usuario:",
             solicitudes
         })
         return;
@@ -229,4 +229,70 @@ async function getFriendRequestsHandler(req, res) {
     });    
 }
 
-module.exports = { friendRequestHandler, getFriendRequestsHandler };
+/*Devuelve lista de nicknames de usuarios amigos del usuario que se ha pasado en la URL*/
+async function getFriendsHandler(req, res) {
+    console.log("VALIDACION CORRECTA getFriendsHandler");
+
+    const id_usuario = parseInt(req.params.id_usuario);
+    try {
+        // Ejecutar la primera consulta
+        const amigos = await prisma.amigos.findMany({
+          select: {
+            usuario_amigos_id_usuario1Tousuario: {
+              select: { nickname: true }
+            }
+          },
+          where: {
+            id_usuario2: id_usuario
+          }
+        });
+        
+        // Ejecutar la segunda consulta
+        const amigos2 = await prisma.amigos.findMany({
+          select: {
+            usuario_amigos_id_usuario2Tousuario: {
+              select: { nickname: true }
+            }
+          },
+          where: {
+            id_usuario1: id_usuario
+          }
+        });
+        
+        // Concatenar los resultados de ambas consultas
+        const listaAmigos = amigos.concat(amigos2);
+        
+         // Extraer solo los nombres de usuario de la lista de amigos
+  const nombresAmigos = listaAmigos.map((amigo) => {
+    const usuario1 = amigo.usuario_amigos_id_usuario1Tousuario;
+    const usuario2 = amigo.usuario_amigos_id_usuario2Tousuario;
+    
+    if (usuario1 && usuario1.nickname) {
+      return usuario1.nickname;
+    } else if (usuario2 && usuario2.nickname) {
+      return usuario2.nickname;
+    } else {
+      return null;
+    }
+  }).filter(Boolean);
+        
+        // Enviar respuesta
+        res.statusCode = StatusCodes.OK;
+        res.send({
+          ok: true,
+          message: "Amigos del usuario:",
+          amigos: nombresAmigos
+        });
+    } catch (e) {
+        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        res.send({
+          ok: false,
+          msg: "Internal error",
+        });
+        console.log(e, "Error en la base de datos");
+    }
+      
+
+}
+
+module.exports = { friendRequestHandler, getFriendRequestsHandler, getFriendsHandler};
