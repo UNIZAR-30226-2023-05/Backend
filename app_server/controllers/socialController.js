@@ -152,6 +152,10 @@ async function friendRequestHandler(req, res) {
                         id_usuario2: id_usuario_recibe
                       }
                     }),
+                    //Se supone que solo se borra la solicitud inversa y ninguna más
+                    //No deja hacer delete con un AND y es obligatorio hacer deleteMany para satisfacer ambas condiciones
+                    //Es probable que borre también otras solicitudes, pero en la comprobación ha funcionado bien
+                    //Seguir echándole un ojo al funcionamiento de esto por si acaso funciona mal
                     prisma.solicitud.deleteMany({
                       where: {
                         id_usuario_envia: id_usuario_recibe,
