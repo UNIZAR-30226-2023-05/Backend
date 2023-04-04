@@ -291,8 +291,43 @@ async function getFriendsHandler(req, res) {
         });
         console.log(e, "Error en la base de datos");
     }
-      
-
 }
 
-module.exports = { friendRequestHandler, getFriendRequestsHandler, getFriendsHandler};
+async function deleteFriendRequestHandler(req, res) {
+    console.log("VALIDACION CORRECTA deleteFriendRequestHandler")
+
+    //tomamos los parametros que haya en el body
+    const { id_usuario_envia, id_usuario_recibe } = req.body;
+
+        //WARNING: ESTO PUEDE BORRAR MÁS SOLICITUDES DE LAS QUE DEBERÍA
+        //Se supone que solo se borra la solicitud inversa y ninguna más
+        //No deja hacer delete con un AND y es obligatorio hacer deleteMany para satisfacer ambas condiciones
+        //Es probable que borre también otras solicitudes, pero en la comprobación ha funcionado bien
+        //Seguir echándole un ojo al funcionamiento de esto por si acaso funciona mal
+    await prisma.solicitud.deleteMany({
+          where: {
+            id_usuario_envia: id_usuario_envia,
+            id_usuario_recibe: id_usuario_recibe
+          }
+        })
+    .then(async function () {
+        res.statusCode = StatusCodes.OK;
+        res.send({
+            ok: true,
+            message: "Se ha rechazado y eliminado la solicitud de amistad."
+        })
+        return;
+    }).catch( e => {
+        console.log("FRIENDREQUEST ERROR DEL SERVIDOR")
+        //Error de servidor
+        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        res.send({
+            ok: false,
+            msg: "Internal error"
+        });
+
+        console.log(e);
+    });
+}
+
+module.exports = { friendRequestHandler, getFriendRequestsHandler, getFriendsHandler, deleteFriendRequestHandler };

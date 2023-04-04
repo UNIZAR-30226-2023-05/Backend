@@ -472,7 +472,6 @@ async function friendRequestValidation(req, res, next) {
           },
         }),
       ]);
-      console.log("Por ahora va bien")
       
       if (!senderUser) {
         throw new Error("Lo sentimos, el id del usuario que manda la petición no existe.");
@@ -497,5 +496,60 @@ async function friendRequestValidation(req, res, next) {
   }
 }
 
+async function deletefriendRequestValidation(req, res, next) {
+  //Creamos un objeto de validacion
+  const schema = Joi.object({
+    id_usuario_envia: Joi.number().required(),
+    id_usuario_recibe: Joi.number().required(),
+  });
+
+  //Validamos el objeto de entrada
+  const { error } = schema.validate(req.body);
+  //Si hay algun error, se devuelve un mensaje de error
+  if (error) {
+    res.statusCode = StatusCodes.BAD_REQUEST;
+    res.send({
+      ok: false,
+      msg: "Lo sentimos, los datos introducidos no son validos.",
+    });
+  } else {
+    try {
+      const { id_usuario_envia, id_usuario_recibe } = req.body;
+      if (id_usuario_envia === undefined || id_usuario_recibe === undefined || id_usuario_envia === id_usuario_recibe) {
+        throw new Error("Lo sentimos, debe proporcionar dos id de usuarios distintos.");
+      }
+      const [senderUser, receiverUser, requestExists] = await Promise.all([
+        prisma.usuario.findUnique({ where: { id_usuario: id_usuario_envia } }),
+        prisma.usuario.findUnique({ where: { id_usuario: id_usuario_recibe } }),
+        prisma.solicitud.findFirst({
+          where: {
+            AND: [
+              { id_usuario_envia: id_usuario_envia },
+              { id_usuario_recibe: id_usuario_recibe },
+            ],
+          },
+        }),
+      ]);
+      
+      if (!senderUser) {
+        throw new Error("Lo sentimos, el id del usuario que manda la petición no existe.");
+      }
+      if (!receiverUser) {
+        throw new Error("Lo sentimos, el id del usuario que recibiría la petición no existe.");
+      }
+      if (!requestExists) {
+        throw new Error("Lo sentimos, no existe una solicitud entre estos dos usuarios.");
+      }
+      
+      next();
+    } catch (error) {
+      res.status(StatusCodes.BAD_REQUEST).send({
+      ok: false,
+      msg: error.message,
+      });
+    }
+  }
+}
+
 //exportamos las funciones de validacion
-module.exports = { registerValidation, loginValidation, updateUserValidation, urlUserValidation, getUserIdValidation, friendRequestValidation };
+module.exports = { registerValidation, loginValidation, updateUserValidation, urlUserValidation, getUserIdValidation, friendRequestValidation, deletefriendRequestValidation };
