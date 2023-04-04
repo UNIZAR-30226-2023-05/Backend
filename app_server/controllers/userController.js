@@ -244,4 +244,42 @@ async function getUserIdHandler(req, res) {
     })
 }
 
-module.exports = { registerHandler, loginHandler, updateUserHandler, deleteUserHandler, getUserIdHandler };
+async function getUserHandler(req, res, next) {
+    console.log("VALIDACION CORRECTA getUserHandler")
+
+    //Las comprobaciones se han validado correctamente, se procede a obtener la info del usuario
+
+    //Tomamos los parametros que haya en la URL
+    const id_usuario = parseInt(req.params.id_usuario);
+
+    const datos = await prisma.usuario.findMany({
+        select: {
+            id_usuario: true,
+            nickname: true,
+            monedas: true,
+            email: true,
+            profilephoto: true
+          },
+        where: { id_usuario: id_usuario },
+    }).then(async function (datos) {
+        res.statusCode = StatusCodes.OK;
+        res.send({
+            ok: true,
+            message: "Petición correcta.",
+            datos
+        })
+        return;
+    }).catch( e => {
+        console.log("getUserHandler ERROR DEL SERVIDOR")
+        //Error de servidor
+        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        res.send({
+            ok: false,
+            msg: "Internal error"
+        });
+
+        console.log(e);
+    });
+}
+
+module.exports = { registerHandler, loginHandler, updateUserHandler, deleteUserHandler, getUserIdHandler, getUserHandler};
