@@ -152,6 +152,7 @@ async function friendRequestHandler(req, res) {
                         id_usuario2: id_usuario_recibe
                       }
                     }),
+                    //WARNING: ESTO PUEDE BORRAR MÁS SOLICITUDES DE LAS QUE DEBERÍA
                     //Se supone que solo se borra la solicitud inversa y ninguna más
                     //No deja hacer delete con un AND y es obligatorio hacer deleteMany para satisfacer ambas condiciones
                     //Es probable que borre también otras solicitudes, pero en la comprobación ha funcionado bien
