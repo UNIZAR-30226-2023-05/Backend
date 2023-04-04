@@ -97,11 +97,8 @@ async function loginHandler(req, res){
 }
 
 //Definimos una función asíncrona para registrar solicitudes de amistad (y que no se quede colgado el servidor mientras accede a la base de datos)
-//TODO: Comprobar que si hay dos peticiones iguales no se registren dos veces
-//TODO: Comprobar que no se pueda enviar una solicitud a uno mismo
+//TODO: Comprobar que no se pueda enviar una solicitud a uno mismo (debe hacerse en el front)
 //TODO: Comprobar que no se pueda enviar una solicitud a alguien que ya es amigo
-//TODO: Comprobar que no se pueda enviar una solicitud a alguien que ya tiene una solicitud pendiente
-//TODO: Hacer amigos automáticamente si existe una petición inversa
 async function friendRequestHandler(req, res) {
     console.log("VALIDACION CORRECTA updateUserHandler")
 
@@ -110,29 +107,88 @@ async function friendRequestHandler(req, res) {
     //tomamos los parametros que haya en el body
     const { id_usuario_envia, id_usuario_recibe } = req.body;
 
-    await prisma.solicitud.create({
-        data: {
-            id_usuario_envia: id_usuario_envia,
-            id_usuario_recibe: id_usuario_recibe
-        }
-    }).then(async function () {
-        res.statusCode = StatusCodes.OK;
-        res.send({
-            ok: true,
-            message: "Solicitud enviada correctamente."
+    //Si existe una solicitud inversa se añaden como amigos automáticamente y se borra dicha solicitud
+    const requestExists = await prisma.solicitud
+        .findUnique({
+            where: {
+            id_usuario_envia: id_usuario_recibe,
+            id_usuario_recibe: id_usuario_envia,
+            },
         })
-        return;
-    }).catch( e => {
-        console.log("FRIENDREQUEST ERROR DEL SERVIDOR")
-        //Error de servidor
-        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-        res.send({
+        .then(async function (requestExists) {
+            //Si es nulo, la solicitud inversa no existe
+            if (requestExists == null) {
+                await prisma.solicitud.create({
+                    data: {
+                        id_usuario_envia: id_usuario_envia,
+                        id_usuario_recibe: id_usuario_recibe
+                    }
+                }).then(async function () {
+                    res.statusCode = StatusCodes.OK;
+                    res.send({
+                        ok: true,
+                        message: "Solicitud enviada correctamente."
+                    })
+                    return;
+                }).catch( e => {
+                    console.log("FRIENDREQUEST ERROR DEL SERVIDOR")
+                    //Error de servidor
+                    res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+                    res.send({
+                        ok: false,
+                        msg: "Internal error"
+                    });
+            
+                    console.log(e);
+                });
+            }
+            else{
+                await prisma.$transaction([
+                    prisma.amigos.create({
+                      data: {
+                        id_usuario1: id_usuario_envia,
+                        id_usuario2: id_usuario_recibe
+                      }
+                    }),
+                    prisma.solicitud.delete({
+                      where: {
+                        id_usuario_envia: id_usuario_recibe,
+                        id_usuario_recibe: id_usuario_envia
+                      }
+                    })
+                  ]).then(async function () {
+                    res.statusCode = StatusCodes.OK;
+                    res.send({
+                        ok: true,
+                        message: "Se añaden como amigos porque existía solicitud inversa."
+                    })
+                    return;
+                }).catch( e => {
+                    console.log("FRIENDREQUEST ERROR DEL SERVIDOR")
+                    //Error de servidor
+                    res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+                    res.send({
+                        ok: false,
+                        msg: "Internal error"
+                    });
+            
+                    console.log(e);
+                });
+            }
+        })
+        .catch((e) => {
+            //Error de servidor
+            res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+            res.send({
             ok: false,
-            msg: "Internal error"
+            msg: "Internal error",
+            });
+            console.log(e, "Error en la base de datos");
         });
 
-        console.log(e);
-    });
+
+
+    
 }
 
 module.exports = { friendRequestHandler };
