@@ -275,7 +275,7 @@ async function updateUserValidation(req, res, next) {
   * Comprueba:
   * - Que se le pasa un id de usuario que existe
 */
-async function deleteUserValidation(req, res, next) {
+async function urlUserValidation(req, res, next) {
   //Creamos un objeto de validacion
   if (req.params.id_usuario == undefined || isNaN(req.params.id_usuario)) {
     res.statusCode = StatusCodes.BAD_REQUEST;
@@ -298,7 +298,7 @@ async function deleteUserValidation(req, res, next) {
           res.statusCode = StatusCodes.BAD_REQUEST;
           res.send({
             ok: false,
-            msg: "Lo sentimos, el id del usuario que quiere eliminar no existe.",
+            msg: "Lo sentimos, el id del usuario no existe.",
           });
         } else {
           //Si no hay errores, se pasa al siguiente middleware
@@ -497,6 +497,5 @@ async function friendRequestValidation(req, res, next) {
   }
 }
 
-
 //exportamos las funciones de validacion
-module.exports = { registerValidation, loginValidation, updateUserValidation, deleteUserValidation, getUserIdValidation, friendRequestValidation };
+module.exports = { registerValidation, loginValidation, updateUserValidation, urlUserValidation, getUserIdValidation, friendRequestValidation };

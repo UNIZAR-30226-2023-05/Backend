@@ -98,11 +98,8 @@ async function loginHandler(req, res){
 
 //Definimos una función asíncrona para registrar solicitudes de amistad (y que no se quede colgado el servidor mientras accede a la base de datos)
 //TODO: Comprobar que no se pueda enviar una solicitud a uno mismo (debe hacerse en el front)
-//TODO: Comprobar que no se pueda enviar una solicitud a alguien que ya es amigo
 async function friendRequestHandler(req, res) {
-    console.log("VALIDACION CORRECTA updateUserHandler")
-
-    //Las comprobaciones se han validado correctamente, se procede a actualizar la info del usuario
+    console.log("VALIDACION CORRECTA friendRequestHandler")
 
     //tomamos los parametros que haya en el body
     const { id_usuario_envia, id_usuario_recibe } = req.body;
@@ -192,10 +189,44 @@ async function friendRequestHandler(req, res) {
             });
             console.log(e, "Error en la base de datos");
         });
-
-
-
-    
 }
 
-module.exports = { friendRequestHandler };
+/*Devuelve lista de nicknames de usuarios que han enviado una solicitud de 
+amistad al usuario que se ha pasado en la URL*/
+async function getFriendRequestsHandler(req, res) {
+    console.log("VALIDACION CORRECTA getFriendRequestsHandler")
+
+    //Tomamos los parametros que hay en la URL
+    const id_usuario = parseInt(req.params.id_usuario);
+
+    const solicitudes = await prisma.solicitud.findMany({
+        select: {
+            usuario_solicitud_id_usuario_enviaTousuario: {
+                select: { nickname: true }
+            }
+        },
+        where: {
+            id_usuario_recibe: id_usuario
+        }
+    })
+    .then(async function (solicitudes) {
+        res.statusCode = StatusCodes.OK;
+        res.send({
+            ok: true,
+            message: "Usuarios:",
+            solicitudes
+        })
+        return;
+    })
+    .catch((e) => {
+        //Error de servidor
+        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        res.send({
+            ok: false,
+            msg: "Internal error",
+        });
+        console.log(e, "Error en la base de datos");
+    });    
+}
+
+module.exports = { friendRequestHandler, getFriendRequestsHandler };
