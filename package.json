@@ -2,10 +2,10 @@
   "name": "backend",
   "version": "0.0.0",
   "private": true,
-  "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "postinstall": "prisma generate"
+    "start": "node ./server.js",
+    "postinstall": "prisma generate",
+    "test": "jest"
   },
   "dependencies": {
     "@prisma/client": "^4.11.0",
@@ -24,6 +24,8 @@
     "yaml": "^2.2.1"
   },
   "devDependencies": {
-    "prisma": "^4.11.0"
+    "jest": "^29.5.0",
+    "prisma": "^4.11.0",
+    "supertest": "^6.3.3"
   }
 }

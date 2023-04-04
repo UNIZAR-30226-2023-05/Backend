@@ -1,0 +1,15 @@
+var port = process.env.PORT || 5000;
+
+//server.js
+const { app } = require("./app");
+var port = process.env.PORT || 5000;
+
+//server.js
+const { app } = require("./app");
+
+app.listen(port, () => {
+    console.log(`Escuchando en puerto... ${port}`);
+});
+app.listen(port, () => {
+    console.log(`Escuchando en puerto... ${port}`);
+});

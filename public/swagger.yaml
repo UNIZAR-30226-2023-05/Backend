@@ -219,4 +219,3 @@ components:
         password:
           type: string
           description: Contraseña del usuario
-    

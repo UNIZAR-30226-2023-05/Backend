@@ -22,5 +22,4 @@ userRouter.post('/login', validation.loginValidation, loginHandler);
 //Obtener datos de un usuario excepto la contraseña cifrada
 userRouter.get('/:id_usuario', validation.urlUserValidation, getUserHandler);
 
-
 module.exports = userRouter 
