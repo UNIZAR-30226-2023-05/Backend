@@ -15,6 +15,31 @@ tags:
 
 paths:
 
+  /users/:{id_usuario}:
+    get:
+      tags:
+        - Usuario
+      summary: Obtención información de usuario (id, nickname, email, monedas, profilephoto)
+      parameters:
+        - in: path
+          name: id_usuario
+          schema:
+            type: integer
+          required: true
+          description: Id del usuario que se desea consultar información
+      responses:
+        '200':
+          description: Usuario existente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+
   /users/register:
     post:
       tags:
@@ -81,14 +106,14 @@ paths:
                   - $ref: '#/components/schemas/monedas'
                   - $ref: '#/components/schemas/profilephoto'
 
-  /users/register/:{idUsuario}:
+  /users/register/:{id_usuario}:
     delete:
       tags:
         - Usuario
       summary: Borrar cuenta de usuario
       parameters:
         - in: path
-          name: idUsuario
+          name: id_usuario
           schema:
             type: integer
           required: true
@@ -131,7 +156,96 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
-
+  /social/friends:
+    post:
+      tags:
+        - Social
+      summary: Enviar o aceptar solicitud de amistad
+      requestBody:
+        description: Se necesita el usuario que envía una solicitud y el que la recibe.
+          Para aceptar una solicitud que ya existe debe enviarse una solicitud inversa.
+        required: true
+        content:
+          row/json:
+            schema:
+              $ref: '#/components/schemas/friendRequest'
+      responses:
+        '200':
+          description: Solicitud enviada correctamente. / Se añaden como amigos porque existía solicitud inversa.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      tags:
+        - Social
+      summary: Obtener solicitudes pendientes para un usuario.
+      parameters:
+        - in: path
+          name: id_usuario
+          schema:
+            type: integer
+          required: true
+          description: Id del usuario del que se desean consultar las solicitudes pendientes.
+      responses:
+        '200':
+          description: Solicitudes para el usuario {solicitudes}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+        - Social
+      summary: Obtener amigos de un usuario.
+      parameters:
+        - in: path
+          name: id_usuario
+          schema:
+            type: integer
+          required: true
+          description: Id del usuario del que se desean consultar los amigos.
+      responses:
+        '200':
+          description: Amigos del usuario {amigos}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      tags:
+        - Social
+      summary: Rechazar / Eliminar solicitud de amistad
+      requestBody:
+        description: Se necesita el usuario que envía una solicitud y el que la recibe.
+        required: true
+        content:
+          row/json:
+            schema:
+              $ref: '#/components/schemas/friendRequest'
+      responses:
+        '200':
+          description: Se ha rechazado y eliminado la solicitud de amistad.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
 components:
 
   responses:
@@ -219,3 +333,13 @@ components:
         password:
           type: string
           description: Contraseña del usuario
+    
+    friendRequest:
+      type: object
+      properties:
+        id_usuario_envia:
+          type: integer
+          description: Id del usuario que envía la solicitud de amistad
+        id_usuario_recibe:
+          type: integer
+          description: Id del usuario que recibe la solicitud de amistad
