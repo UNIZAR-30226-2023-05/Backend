@@ -22,7 +22,7 @@ function regTest(nickname, email, password, expected) {
   );
 }
 
-function logTest(email, password,expected) {
+function logTest(email, password, expected) {
     return (
         request(app)
             .post("/users/login")
@@ -47,10 +47,37 @@ const delTestUser = async () => {
         });
 };
 
+function updateUserTest(id_usuario, nickname, password, monedas, profilephoto, expected) {
+  return (
+      request(app)
+          .put(`/users/register`)
+          .set("Accept", "application/json")
+          .send({id_usuario: id_usuario,
+            nickname: nickname,
+            password: password,
+            monedas: monedas,
+            profilephoto: profilephoto})
+          .then(async (response) => {
+              await expected(response);
+          })
+  );
+}
+
+function getUserTest(id_usuario, expected) {
+  return (
+      request(app)
+          .get(`/users/${id_usuario}`)
+          .set("Accept", "application/json")
+          .then(async (response) => {
+              await expected(response);
+          })
+
+  );
+}
 
 const testRegistro = () => {
   //test de registro
-  describe("Test de Usuarios", () => {
+  describe("Test de usuarios", () => {
     describe("Test de registro", () => {
       describe("Test de registro con datos correctos", () => {
         test("Registro con datos correctos", async () => {
@@ -145,6 +172,10 @@ const testRegistro = () => {
             }
           );
         });
+      });
+      afterAll(async () => {
+        //Borramos todos los usuarios de la base de datos (De momento estos test no necesitan que persistan los datos)
+        await prisma.usuario.deleteMany({});
       });
     });
   });
@@ -242,7 +273,49 @@ const testLogin = () => {
     });
 };
 
+const testUpdateUser = () => {
+    describe("Test de usuarios", () => {
+      //Antes de ejecutar los test, creamos un usuario en la base de datos
+      beforeAll(async () => {
+        var sal = await bcrypt.genSalt(10); //encriptamos la contraseña
+        var hash = await bcrypt.hash("AAinolosecontrasena!!!!!33", sal);
+
+        //creamos un usuario en la base de datos
+        await prisma.usuario.create({
+            data: {
+                id_usuario: 1,
+                nickname: "test",
+                email: "traspas@gmail.com",
+                password: hash,
+                monedas: 0,
+                profilephoto: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+            }
+        });
+      });
+
+      describe("Test de update", () => {
+        describe("Test de update con datos correctos", () => {
+          test("Update con datos correctos", async () => {
+            return updateUserTest(
+              1,
+              "test2",
+              "traspas@gmail.com",
+              "Passsincifrar1!",
+              33,
+              "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
+              async (response) => {
+                expect(response.statusCode).toBe(StatusCodes.OK);
+              }
+            );
+          });
+        });
+      });
+    });
+};
+
+
+        
 
                         
 
-module.exports = { testRegistro, testLogin, delTestUser };
+module.exports = { testRegistro, testLogin, delTestUser, testUpdateUser};
