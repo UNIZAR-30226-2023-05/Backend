@@ -231,11 +231,13 @@ const testLogin = () => {
                         expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
                     }
                 );
-                  });
+            });
         });
 
-
-
+        afterAll(async () => {
+            //Borramos todos los usuarios de la base de datos (De momento estos test no necesitan que persistan los datos)
+            await prisma.usuario.deleteMany({});
+        });
 
     });
 };
