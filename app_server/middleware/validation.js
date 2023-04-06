@@ -61,7 +61,6 @@ async function registerValidation(req, res, next) {
         //Si no es nulo, el nombre de usuario esta en uso
         if (usernameInUse !== null) {
           res.statusCode = StatusCodes.CONFLICT;
-          res.statusCode = StatusCodes.CONFLICT;
           res.send({
             ok: false,
             msg: "Lo sentimos, el nombre de usuario ya esta en uso.",
