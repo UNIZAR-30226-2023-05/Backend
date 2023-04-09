@@ -299,7 +299,6 @@ const testUpdateUser = () => {
             return updateUserTest(
               1,
               "test2",
-              "traspas@gmail.com",
               "Passsincifrar1!",
               33,
               "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
@@ -309,6 +308,10 @@ const testUpdateUser = () => {
             );
           });
         });
+      });
+      afterAll(async () => {
+        //Borramos todos los usuarios de la base de datos (De momento estos test no necesitan que persistan los datos)
+        await prisma.usuario.deleteMany({});
       });
     });
 };
