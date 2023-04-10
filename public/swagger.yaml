@@ -180,6 +180,30 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalError'
+    delete:
+      tags:
+        - Social
+      summary: Rechazar / Eliminar solicitud de amistad
+      requestBody:
+        description: Se necesita el usuario que envía una solicitud y el que la recibe.
+        required: true
+        content:
+          row/json:
+            schema:
+              $ref: '#/components/schemas/friendRequest'
+      responses:
+        '200':
+          description: Se ha rechazado y eliminado la solicitud de amistad.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /social/friends/:{id_usuario}:
     put:
       tags:
         - Social
@@ -224,28 +248,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalError'
-    delete:
-      tags:
-        - Social
-      summary: Rechazar / Eliminar solicitud de amistad
-      requestBody:
-        description: Se necesita el usuario que envía una solicitud y el que la recibe.
-        required: true
-        content:
-          row/json:
-            schema:
-              $ref: '#/components/schemas/friendRequest'
-      responses:
-        '200':
-          description: Se ha rechazado y eliminado la solicitud de amistad.
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+
 components:
 
   responses:
