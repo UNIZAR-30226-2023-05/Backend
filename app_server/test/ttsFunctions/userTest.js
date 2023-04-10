@@ -279,7 +279,7 @@ const testLogin = () => {
                     );
                 });
             });
-            
+
         });
 
         afterAll(async () => {
@@ -365,9 +365,51 @@ const testUpdateUser = () => {
     });
 };
 
+const testGetUserInfo = () => {
+  describe("Test de usuarios", () => {
+    //Antes de ejecutar los test, creamos un usuario en la base de datos
+    beforeAll(async () => {
+      var sal = await bcrypt.genSalt(10); //encriptamos la contraseña
+      var hash = await bcrypt.hash("AAinolosecontrasena!!!!!33", sal);
 
-        
+      //creamos un usuario en la base de datos
+      await prisma.usuario.create({
+          data: {
+              id_usuario: 1,
+              nickname: "test",
+              email: "traspas@gmail.com",
+              password: hash,
+              monedas: 0,
+              profilephoto: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+          }
+      });
+    });
 
+    describe("Test de obtener info de un usuario", () => {
+      describe("Test de obtener info con id existente", () => {
+        test("Test de obtener info con un id existente", async () => {
+          return getUserTest(
+            1,
+            async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.OK);
+            }
+          );
+        });
+      });
+
+      describe("Test de obtener info con id no existente", () => {
+        test("Test de obtener info con un id no existente", async () => {
+          return getUserTest(
+            "10ab1", //Este usuario no existe
+            async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+            }
+          );
+        });
+      });
+    });
+  });
+}
                         
 
-module.exports = { testRegistro, testLogin, delTestUser, testUpdateUser};
+module.exports = { testRegistro, testLogin, delTestUser, testUpdateUser, testGetUserInfo };
