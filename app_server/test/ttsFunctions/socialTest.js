@@ -50,6 +50,24 @@ function getAmigosTest(id_usuario, expected) {
       })
   );
 }
+
+function rechazarSolicitudTest(id_usuario_envia, id_usuario_recibe, expected) {
+  return (
+    request(app)
+      // tenemos que poner la ruta a la que queremos acceder
+      .delete("/social/friends")
+      .set("Accept", "application/json") //set headers
+      .send({
+        id_usuario_envia: id_usuario_envia,
+        id_usuario_recibe: id_usuario_recibe
+      }) //set body
+      .then(async (response) => {
+        await expected(response);
+        console.log(response.body);
+      })
+  );
+}
+
 const testSolicitud = () => {
   describe("Test de social", () => {
     describe("Test de solicitudes de amistad", () => {
@@ -167,7 +185,7 @@ const testGetSolicitudes = () => {
       beforeAll(async () => {
         var sal = await bcrypt.genSalt(10); //encriptamos la contraseña
         var hash = await bcrypt.hash("AAinolosecontrasena!!!!!33", sal);
-        //creamos dos usuarios en la base de datos
+        //creamos tres usuarios en la base de datos
         await prisma.usuario.create({
           data: {
               id_usuario: 1,
@@ -251,7 +269,7 @@ const testGetAmigos = () => {
       beforeAll(async () => {
         var sal = await bcrypt.genSalt(10); //encriptamos la contraseña
         var hash = await bcrypt.hash("AAinolosecontrasena!!!!!33", sal);
-        //creamos dos usuarios en la base de datos
+        //creamos tres usuarios en la base de datos
         await prisma.usuario.create({
           data: {
               id_usuario: 1,
@@ -331,5 +349,72 @@ const testGetAmigos = () => {
   });
 };
 
+const testRechazarSolicitudes = () => {
+  describe("Test de social", () => {
+    describe("Test rechazar solicitudes", () => {
+      beforeAll(async () => {
+        var sal = await bcrypt.genSalt(10); //encriptamos la contraseña
+        var hash = await bcrypt.hash("AAinolosecontrasena!!!!!33", sal);
+        //creamos dos usuarios en la base de datos
+        await prisma.usuario.create({
+          data: {
+              id_usuario: 1,
+              nickname: "test",
+              email: "traspas@gmail.com",
+              password: hash,
+              monedas: 0,
+              profilephoto: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+          }
+        });
 
-module.exports = {testSolicitud, testGetSolicitudes, testGetAmigos};
+        await prisma.usuario.create({
+          data: {
+              id_usuario: 2,
+              nickname: "test2",
+              email: "traspas2@gmail.com",
+              password: hash,
+              monedas: 0,
+              profilephoto: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+          }
+        });
+
+        //Creamos la solicitud que vamos a borrar
+        await prisma.solicitud.create({
+          data: {
+            id_usuario_envia: 1,
+            id_usuario_recibe: 2
+          }
+        });
+      });
+
+      describe("Test de rechazar solicitud existente", () => {
+        test("Test de rechazar solicitud existente", async () => {
+          return rechazarSolicitudTest(
+            1, 2, async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.OK);
+            }
+          );
+        });
+
+        test("Test de rechazar solicitud que no existe", async () => {
+          return rechazarSolicitudTest(
+            1, 2, async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+            }
+          );
+        });
+      });
+
+      afterAll(async () => {
+        //Borramos todo de la BD (De momento estos test no necesitan que persistan los datos)
+        await prisma.usuario.deleteMany({});
+      });
+    });
+  });
+};
+
+
+
+
+
+module.exports = {testSolicitud, testGetSolicitudes, testGetAmigos, testRechazarSolicitudes};
