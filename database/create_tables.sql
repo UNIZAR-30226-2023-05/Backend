@@ -23,13 +23,13 @@ CREATE TABLE Amigos(
 );
 
 -- Tabla de solicitudes de amistad
-CREATE TABLE Solicitudes(
-    id_usuario1 INTEGER,
-    id_usuario2 INTEGER,
+CREATE TABLE Solicitud(
+    id_usuario_envia INTEGER,
+    id_usuario_recibe INTEGER,
     
-    FOREIGN KEY (id_usuario1) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (id_usuario2) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
-    PRIMARY KEY (id_usuario1, id_usuario2)
+    FOREIGN KEY (id_usuario_envia) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario_recibe) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    PRIMARY KEY (id_usuario_envia, id_usuario_recibe)
 );
 
 -- Tabla de Sala
