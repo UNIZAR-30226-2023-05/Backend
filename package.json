@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node ./server.js",
     "postinstall": "prisma generate",
-    "test": "jest"
+    "test:user": "jest --testMatch='**/app_server/test/**/user.test.js' --runInBand",
+    "test:social": "jest --testMatch='**/app_server/test/**/social.test.js' --runInBand",
+    "test": "npm run test:user && npm run test:social"
   },
   "dependencies": {
     "@prisma/client": "^4.11.0",
