@@ -91,6 +91,43 @@ function getUserTest(id_usuario, expected) {
   );
 }
 
+function getUserIdConNickname(nickname, expected) {
+  return (
+      request(app)
+          .get(`/users/register`)
+          .set("Accept", "application/json")
+          .send({nickname: nickname})
+          .then(async (response) => {
+              await expected(response);
+          })
+  );
+}
+
+function getUserIdConEmail(email, expected) {
+  return (
+      request(app)
+          .get(`/users/register`)
+          .set("Accept", "application/json")
+          .send({email: email})
+          .then(async (response) => {
+              await expected(response);
+          })
+  );
+}
+
+function getUserIdConDosParam(nickname, email, expected) {
+  return (
+      request(app)
+          .get(`/users/register`)
+          .set("Accept", "application/json")
+          .send({nickname: nickname,
+            email: email})
+          .then(async (response) => {
+              await expected(response);
+          })
+  );
+}
+
 const testRegistro = () => {
   //test de registro
   describe("Test de usuarios", () => {
@@ -408,8 +445,93 @@ const testGetUserInfo = () => {
         });
       });
     });
+
+    afterAll(async () => {
+      //Borramos todos los usuarios de la base de datos (De momento estos test no necesitan que persistan los datos)
+      await prisma.usuario.deleteMany({});
+    });
+
   });
 }
                         
+const testGetUserId = () => {
+  describe("Test de usuarios", () => {
+    //Antes de ejecutar los test, creamos un usuario en la base de datos
+    beforeAll(async () => {
+      var sal = await bcrypt.genSalt(10); //encriptamos la contraseña
+      var hash = await bcrypt.hash("AAinolosecontrasena!!!!!33", sal);
 
-module.exports = { testRegistro, testLogin, delTestUser, testUpdateUser, testGetUserInfo };
+      //creamos un usuario en la base de datos
+      await prisma.usuario.create({
+          data: {
+              id_usuario: 1,
+              nickname: "test",
+              email: "traspas@gmail.com",
+              password: hash,
+              monedas: 0,
+              profilephoto: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+          }
+      });
+    });
+
+    describe("Test de obtener id de un usuario", () => {
+      describe("Test de obtener id con datos correctos", () => {
+        test("Test de obtener id con un nickname existente", async () => {
+          return getUserIdConNickname(
+            "test",
+            async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.OK);
+            }
+          );
+        });
+
+        test("Test de obtener id con un email existente", async () => {
+          return getUserIdConEmail(
+            "traspas@gmail.com",
+            async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.OK);
+            }
+          );
+        });
+      });
+
+      describe("Test de obtener info con id no existente", () => {
+        test("Test de obtener id con un nickname no existente", async () => {
+          return getUserIdConNickname(
+            "noExiste",
+            async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+            }
+          );
+        });
+
+        test("Test de obtener id con un email no existente", async () => {
+          return getUserIdConEmail(
+            "noExiste@gmail.com",
+            async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+            }
+          );
+        });
+
+        test("Test de obtener id con email y nickname", async () => {
+          return getUserIdConDosParam(
+            "test",
+            "noExiste@gmail.com",
+            async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+            }
+          );
+        });
+      });
+    });
+
+    afterAll(async () => {
+      //Borramos todos los usuarios de la base de datos (De momento estos test no necesitan que persistan los datos)
+      await prisma.usuario.deleteMany({});
+    });
+    
+  });
+}
+
+module.exports = { testRegistro, testLogin, delTestUser, testUpdateUser, testGetUserInfo, testGetUserId };

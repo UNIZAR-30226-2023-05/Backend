@@ -1,6 +1,6 @@
 //Importar los ficheros de test y ejecutarlos
 //
-const { testRegistro, testLogin, delTestUser, testUpdateUser, testGetUserInfo } = require("./ttsFunctions/userTest");
+const { testRegistro, testLogin, delTestUser, testUpdateUser, testGetUserInfo, testGetUserId } = require("./ttsFunctions/userTest");
 
 //Ejecutar los tests al mismo tiempo
 describe('Tests', () => {
@@ -9,4 +9,5 @@ describe('Tests', () => {
     testLogin();
     testUpdateUser();
     testGetUserInfo();
+    testGetUserId();
 });
