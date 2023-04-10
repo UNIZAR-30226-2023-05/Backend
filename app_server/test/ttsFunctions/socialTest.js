@@ -26,6 +26,18 @@ function solicitudTest(id_usuario_envia, id_usuario_recibe, expected) {
   );
 }
 
+function getSolicitudesTest(id_usuario, expected) {
+  return (
+    request(app)
+      //.post tenemos que poner la ruta a la que queremos acceder
+      .put(`/social/friends/${id_usuario}`)
+      .set("Accept", "application/json") //set headers
+      .then(async (response) => {
+        await expected(response);
+      })
+  );
+}
+
 const testSolicitud = () => {
   describe("Test de social", () => {
     describe("Test de solicitudes de amistad", () => {
@@ -111,7 +123,7 @@ const testSolicitud = () => {
         prisma.amigos.deleteMany({});
 
         //Creamos solicitud de amistad que luego repetiremos
-        prisma.amigos.create({
+        prisma.solicitud.create({
           data: {
             id_usuario_envia: 1,
             id_usuario_recibe: 2
@@ -135,6 +147,92 @@ const testSolicitud = () => {
 
     });
   });
-};       
+};
 
-module.exports = {testSolicitud};
+const testGetSolicitudes = () => {
+  describe("Test de social", () => {
+    describe("Test get solicitudes de amistad", () => {
+      beforeAll(async () => {
+        var sal = await bcrypt.genSalt(10); //encriptamos la contraseña
+        var hash = await bcrypt.hash("AAinolosecontrasena!!!!!33", sal);
+        //creamos dos usuarios en la base de datos
+        await prisma.usuario.create({
+          data: {
+              id_usuario: 1,
+              nickname: "test",
+              email: "traspas@gmail.com",
+              password: hash,
+              monedas: 0,
+              profilephoto: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+          }
+        });
+
+        await prisma.usuario.create({
+          data: {
+              id_usuario: 2,
+              nickname: "test2",
+              email: "traspas2@gmail.com",
+              password: hash,
+              monedas: 0,
+              profilephoto: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+          }
+        });
+
+        await prisma.usuario.create({
+          data: {
+              id_usuario: 3,
+              nickname: "test3",
+              email: "traspas3@gmail.com",
+              password: hash,
+              monedas: 0,
+              profilephoto: "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+          }
+        });
+
+        prisma.solicitud.create({
+          data: {
+            id_usuario_envia: 1,
+            id_usuario_recibe: 2
+          }
+        });
+
+        prisma.solicitud.create({
+          data: {
+            id_usuario_envia: 3,
+            id_usuario_recibe: 2
+          }
+        });
+      });
+
+      describe("Test de get solicitudes de amistad con datos correctos", () => {
+        test("Test de get solicitudes de amistad con datos correctos", async () => {
+          return getSolicitudesTest(
+            2, async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.OK);
+            }
+          );
+        });
+      });
+
+      describe("Test de get solicitudes de amistad con datos incorrectos", () => {
+        test("Test de get solicitudes de amistad que no existe el usuario", async () => {
+          return getSolicitudesTest(
+            4, async (response) => {
+              expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+            }
+          );
+        });
+      });
+
+      afterAll(async () => {
+        //Borramos todo de la BD (De momento estos test no necesitan que persistan los datos)
+        await prisma.usuario.deleteMany({});
+        await prisma.solicitud.deleteMany({});
+      });
+    });
+  });
+};
+
+
+
+module.exports = {testSolicitud, testGetSolicitudes};
