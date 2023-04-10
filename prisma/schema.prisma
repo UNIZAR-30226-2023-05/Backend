@@ -10,8 +10,8 @@ datasource db {
 model amigos {
   id_usuario1                         Int
   id_usuario2                         Int
-  usuario_amigos_id_usuario1Tousuario usuario @relation("amigos_id_usuario1Tousuario", fields: [id_usuario1], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
-  usuario_amigos_id_usuario2Tousuario usuario @relation("amigos_id_usuario2Tousuario", fields: [id_usuario2], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+  usuario_amigos_id_usuario1Tousuario usuario @relation("amigos_id_usuario1Tousuario", fields: [id_usuario1], references: [id_usuario], onDelete: Cascade)
+  usuario_amigos_id_usuario2Tousuario usuario @relation("amigos_id_usuario2Tousuario", fields: [id_usuario2], references: [id_usuario], onDelete: Cascade)
 
   @@id([id_usuario1, id_usuario2])
 }
@@ -26,17 +26,17 @@ model chat {
 model chatpartida {
   id_chatpartida Int      @id
   id_partida     Int?
-  chat           chat     @relation(fields: [id_chatpartida], references: [id_chat], onDelete: NoAction, onUpdate: NoAction)
-  partida        partida? @relation(fields: [id_partida], references: [id_partida], onDelete: NoAction, onUpdate: NoAction)
+  chat           chat     @relation(fields: [id_chatpartida], references: [id_chat], onDelete: Cascade)
+  partida        partida? @relation(fields: [id_partida], references: [id_partida], onDelete: Cascade)
 }
 
 model chatprivado {
   id_chatprivado                        Int      @id
   usuario1                              Int?
   usuario2                              Int?
-  chat                                  chat     @relation(fields: [id_chatprivado], references: [id_chat], onDelete: NoAction, onUpdate: NoAction)
-  usuario_chatprivado_usuario1Tousuario usuario? @relation("chatprivado_usuario1Tousuario", fields: [usuario1], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
-  usuario_chatprivado_usuario2Tousuario usuario? @relation("chatprivado_usuario2Tousuario", fields: [usuario2], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+  chat                                  chat     @relation(fields: [id_chatprivado], references: [id_chat], onDelete: Cascade)
+  usuario_chatprivado_usuario1Tousuario usuario? @relation("chatprivado_usuario1Tousuario", fields: [usuario1], references: [id_usuario], onDelete: Cascade)
+  usuario_chatprivado_usuario2Tousuario usuario? @relation("chatprivado_usuario2Tousuario", fields: [usuario2], references: [id_usuario], onDelete: Cascade)
 }
 
 model estadisticasacumuladas {
@@ -46,20 +46,20 @@ model estadisticasacumuladas {
   veces6                                          Int
   partidasganadas                                 Int
   vecescalavera                                   Int
-  usuario_estadisticasacumuladas_usuarioTousuario usuario @relation("estadisticasacumuladas_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+  usuario_estadisticasacumuladas_usuarioTousuario usuario @relation("estadisticasacumuladas_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: Cascade)
 }
 
 model ficha {
   id_ficha Int   @id @default(autoincrement())
   id_skin  Int?
-  skin     skin? @relation(fields: [id_skin], references: [id_skin], onDelete: NoAction, onUpdate: NoAction)
+  skin     skin? @relation(fields: [id_skin], references: [id_skin], onDelete: Cascade)
 }
 
 model formaparte {
   usuario                             Int
   sala                                Int
-  sala_formaparte_salaTosala          sala    @relation("formaparte_salaTosala", fields: [sala], references: [id_sala], onDelete: NoAction, onUpdate: NoAction)
-  usuario_formaparte_usuarioTousuario usuario @relation("formaparte_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+  sala_formaparte_salaTosala          sala    @relation("formaparte_salaTosala", fields: [sala], references: [id_sala], onDelete: Cascade)
+  usuario_formaparte_usuarioTousuario usuario @relation("formaparte_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: Cascade)
 
   @@id([usuario, sala])
 }
@@ -71,23 +71,23 @@ model mensaje {
   contenido               String
   chat                    Int
   remitente               Int
-  chat_mensaje_chatTochat chat    @relation("mensaje_chatTochat", fields: [chat], references: [id_chat], onDelete: NoAction, onUpdate: NoAction)
-  usuario                 usuario @relation(fields: [remitente], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+  chat_mensaje_chatTochat chat    @relation("mensaje_chatTochat", fields: [chat], references: [id_chat], onDelete: Cascade)
+  usuario                 usuario @relation(fields: [remitente], references: [id_usuario], onDelete: Cascade)
 }
 
 model partida {
   id_partida  Int           @id @default(autoincrement())
   id_sala     Int?
   chatpartida chatpartida[]
-  sala        sala?         @relation(fields: [id_sala], references: [id_sala], onDelete: NoAction, onUpdate: NoAction)
+  sala        sala?         @relation(fields: [id_sala], references: [id_sala], onDelete: Cascade)
   situacion   situacion[]
 }
 
 model posee {
   usuario                        Int
   id_skin                        Int
-  skin                           skin    @relation(fields: [id_skin], references: [id_skin], onDelete: NoAction, onUpdate: NoAction)
-  usuario_posee_usuarioTousuario usuario @relation("posee_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+  skin                           skin    @relation(fields: [id_skin], references: [id_skin], onDelete: Cascade)
+  usuario_posee_usuarioTousuario usuario @relation("posee_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: Cascade)
 
   @@id([usuario, id_skin])
 }
@@ -105,8 +105,8 @@ model situacion {
   id_partida                         Int
   casilla                            Int
   turno                              Int
-  partida                            partida @relation(fields: [id_partida], references: [id_partida], onDelete: NoAction, onUpdate: NoAction)
-  usuario_situacion_usuarioTousuario usuario @relation("situacion_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction)
+  partida                            partida @relation(fields: [id_partida], references: [id_partida], onDelete: Cascade)
+  usuario_situacion_usuarioTousuario usuario @relation("situacion_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: Cascade)
 
   @@id([usuario, id_partida])
 }
@@ -123,7 +123,7 @@ model skin {
 model tablero {
   id_tablero Int   @id @default(autoincrement())
   id_skin    Int?
-  skin       skin? @relation(fields: [id_skin], references: [id_skin], onDelete: NoAction, onUpdate: NoAction)
+  skin       skin? @relation(fields: [id_skin], references: [id_skin], onDelete: Cascade)
 }
 
 model usuario {
@@ -142,4 +142,15 @@ model usuario {
   mensaje                                                        mensaje[]
   posee_posee_usuarioTousuario                                   posee[]                 @relation("posee_usuarioTousuario")
   situacion_situacion_usuarioTousuario                           situacion[]             @relation("situacion_usuarioTousuario")
+  solicitud_solicitud_id_usuario_enviaTousuario                  solicitud[]             @relation("solicitud_id_usuario_enviaTousuario")
+  solicitud_solicitud_id_usuario_recibeTousuario                 solicitud[]             @relation("solicitud_id_usuario_recibeTousuario")
+}
+
+model solicitud {
+  id_usuario_envia                             Int
+  id_usuario_recibe                            Int
+  usuario_solicitud_id_usuario_enviaTousuario  usuario @relation("solicitud_id_usuario_enviaTousuario", fields: [id_usuario_envia], references: [id_usuario], onDelete: Cascade)
+  usuario_solicitud_id_usuario_recibeTousuario usuario @relation("solicitud_id_usuario_recibeTousuario", fields: [id_usuario_recibe], references: [id_usuario], onDelete: Cascade)
+
+  @@id([id_usuario_envia, id_usuario_recibe])
 }

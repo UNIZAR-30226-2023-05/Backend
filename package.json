@@ -2,10 +2,12 @@
   "name": "backend",
   "version": "0.0.0",
   "private": true,
-  "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "postinstall": "prisma generate"
+    "start": "node ./server.js",
+    "postinstall": "prisma generate && npm test",
+    "test:user": "jest --testMatch='**/app_server/test/**/user.test.js' --runInBand",
+    "test:social": "jest --testMatch='**/app_server/test/**/social.test.js' --runInBand",
+    "test": "npm run test:user && npm run test:social"
   },
   "dependencies": {
     "@prisma/client": "^4.11.0",
@@ -24,6 +26,8 @@
     "yaml": "^2.2.1"
   },
   "devDependencies": {
-    "prisma": "^4.11.0"
+    "jest": "^29.5.0",
+    "prisma": "^4.11.0",
+    "supertest": "^6.3.3"
   }
 }
