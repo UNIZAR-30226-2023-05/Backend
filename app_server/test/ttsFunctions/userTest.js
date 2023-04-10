@@ -63,6 +63,22 @@ function updateUserTest(id_usuario, nickname, password, monedas, profilephoto, e
   );
 }
 
+function updateUserTestEmail(id_usuario, email, password, monedas, profilephoto, expected) {
+  return (
+      request(app)
+          .put(`/users/register`)
+          .set("Accept", "application/json")
+          .send({id_usuario: id_usuario,
+            email: email,
+            password: password,
+            monedas: monedas,
+            profilephoto: profilephoto})
+          .then(async (response) => {
+              await expected(response);
+          })
+  );
+}
+
 function getUserTest(id_usuario, expected) {
   return (
       request(app)
@@ -220,49 +236,50 @@ const testLogin = () => {
                 });
             });
 
-        });
 
-        //Login con datos incorrectos
-        describe("Test de login con datos incorrectos", () => {
-            test("E-mail inexistente", async () => {
-                return logTest(
-                  //E-mail inexistente: no existe en la base de datos
-                    "huevo@gmail.com",
-                    "AAinolosecontrasena!!!!!33",
-                    async (response) => {
-                        expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
-                    }
-                );
-                  });
-            test("Contraseña incorrecta", async () => {
-                return logTest(
-                    "traspas@gmail.com",
-                    "AAinolosecontrasena!!!!!33333",
-                    async (response) => {
-                        expect(response.statusCode).toBe(StatusCodes.UNAUTHORIZED);
-                    }
-                );
-            });
+            //Login con datos incorrectos
+            describe("Test de login con datos incorrectos", () => {
+                test("E-mail inexistente", async () => {
+                    return logTest(
+                      //E-mail inexistente: no existe en la base de datos
+                        "huevo@gmail.com",
+                        "AAinolosecontrasena!!!!!33",
+                        async (response) => {
+                            expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+                        }
+                    );
+                      });
+                test("Contraseña incorrecta", async () => {
+                    return logTest(
+                        "traspas@gmail.com",
+                        "AAinolosecontrasena!!!!!33333",
+                        async (response) => {
+                            expect(response.statusCode).toBe(StatusCodes.UNAUTHORIZED);
+                        }
+                    );
+                });
 
-            test("E-mail vacío", async () => {
-                return logTest(
-                    "",
-                    "AAinolosecontrasena!!!!!33",
-                    async (response) => {
-                        expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
-                    }
-                );
-            });
+                test("E-mail vacío", async () => {
+                    return logTest(
+                        "",
+                        "AAinolosecontrasena!!!!!33",
+                        async (response) => {
+                            expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+                        }
+                    );
+                });
 
-            test("Contraseña inválida (consideramos cualquier caso erróneo)", async () => {
-                return logTest(
-                    "traspas@gmail.com",
-                    "AAinolosecontrasena!!!!!",
-                    async (response) => {
-                        expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
-                    }
-                );
+                test("Contraseña inválida (consideramos cualquier caso erróneo)", async () => {
+                    return logTest(
+                        "traspas@gmail.com",
+                        "AAinolosecontrasena!!!!!",
+                        async (response) => {
+                            expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+                        }
+                    );
+                });
             });
+            
         });
 
         afterAll(async () => {
@@ -308,7 +325,39 @@ const testUpdateUser = () => {
             );
           });
         });
+
+        describe("Test de update con parámetro email", () => {
+          test("Update con parámetro email", async () => {
+            return updateUserTestEmail(
+              1,
+              "test@testemail.com",
+              "Passsincifrar1!",
+              33,
+              "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
+              async (response) => {
+                expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+              }
+            );
+          });
+        });
+      
+        describe("Test de update de un usuario que no existe", () => {
+          test("Update de un usuario que no existe", async () => {
+            return updateUserTest(
+              1000, // Id de usuario inexistente
+              "test2",
+              "Passsincifrar1!",
+              33,
+              "http://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
+              async (response) => {
+                expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST);
+              }
+            );
+          });
+        });
+
       });
+
       afterAll(async () => {
         //Borramos todos los usuarios de la base de datos (De momento estos test no necesitan que persistan los datos)
         await prisma.usuario.deleteMany({});
