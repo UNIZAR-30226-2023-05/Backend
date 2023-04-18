@@ -1,5 +1,5 @@
-const register = require("../../controllers/userController").registerHandler;
-const login = require("../../controllers/userController").loginHandler;
+const register = require("../../controllers/users/userController").registerHandler;
+const login = require("../../controllers/users/userController").loginHandler;
 
 const request = require("supertest");
 const { app } = require("../../../app");

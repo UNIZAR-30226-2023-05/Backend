@@ -1,7 +1,12 @@
-//server.js
-const { app } = require("./app");
-var port = process.env.PORT || 3000;
+var port = process.env.port || 3000;
 
-app.listen(port, () => {
-    console.log(`Escuchando en puerto... ${port}`);
+var { app, server, io} = require("./app");
+
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
+
+//------------------OLD CODE------------------
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });

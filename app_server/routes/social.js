@@ -4,7 +4,7 @@ var socialRouter = express.Router();
 
 //const { isLoggedIn } = require('../middleware/authorization')
 const validation  = require('../middleware/validation.js')
-const { friendRequestHandler, getFriendRequestsHandler, getFriendsHandler, deleteFriendRequestHandler } = require('../controllers/socialController.js');
+const { friendRequestHandler, getFriendRequestsHandler, getFriendsHandler, deleteFriendRequestHandler } = require('../controllers/users/socialController.js');
 
 //Solicitudes de amistad de usuarios (middleware de validacion)
 //Cadena de responsabilidad: primero se validan las entradas, luego se trata la solicitud

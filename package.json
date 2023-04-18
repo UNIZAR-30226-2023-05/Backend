@@ -7,7 +7,8 @@
     "postinstall": "prisma generate && npm test",
     "test:user": "jest --testMatch='**/app_server/test/**/user.test.js' --runInBand",
     "test:social": "jest --testMatch='**/app_server/test/**/social.test.js' --runInBand",
-    "test": "npm run test:user && npm run test:social"
+    "test:ws": "jest --testMatch='**/app_server/test/**/ws.test.js' --runInBand",
+    "test": "npm run test:user && npm run test:social && npm run test:ws"
   },
   "dependencies": {
     "@prisma/client": "^4.11.0",
@@ -20,6 +21,8 @@
     "http-status-codes": "^2.2.0",
     "joi": "^17.8.3",
     "jsonwebtoken": "^9.0.0",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
     "swagger-ui-dist": "^4.18.1",
     "swagger-ui-express": "^4.6.2",
     "winston": "^3.8.2",
