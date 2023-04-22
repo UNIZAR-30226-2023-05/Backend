@@ -78,6 +78,7 @@ app.use(
 //rutas
 var userRouter = require("./app_server/routes/users");
 var socialRouter = require("./app_server/routes/social");
+const { GameController } = require("./app_server/controllers/online/gameController");
 
 app.use("/users", userRouter);
 app.use("/social", socialRouter);
@@ -119,12 +120,14 @@ chatHandler = require("./app_server/controllers/chat/roomChatHandler");
 gameSessionHandler = require("./app_server/controllers/online/gameSessionHandler");
 RoomController = require("./app_server/controllers/online/roomController");
 GameSessionController = require("./app_server/controllers/online/gameSessionController");
+GameControllerClass = require("./app_server/controllers/online/gameController");
 privateChatHandler = require("./app_server/controllers/chat/privChatHandler");
 privateChatController = require("./app_server/controllers/chat/privChatController");
 
 roomController = new RoomController(); //Instancia del controlador de las salas
 gameSessionStorage = new GameSessionController(); //Instancia del controlador de las sesiones
 privChat = new privateChatController(io, gameSessionStorage); //Instancia del controlador de los chats privados
+// gameController = new GameControllerClass(io, gameSessionStorage); //Instancia del controlador de los juegos
 
 //Socket.io
 

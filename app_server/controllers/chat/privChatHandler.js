@@ -28,7 +28,19 @@ const privChatHandler = (socket,privChatController) => {
     /**
      * receiver-sender is the chat between the two users
      */
-    privChatController.getMessages(sender, receiver, callback);
+    privChatController.recoverChat(receiver, sender).then((messages) => {
+      callback({
+        messages: messages,
+        status: "ok",
+        });
+
+    }).catch((err) => {
+      callback({
+        status: "error",
+        error: err,
+      });
+    });
+
   }
 
   //Listeners

@@ -5,11 +5,15 @@ class Player {
   //--Atributos
   nickname;
   socket;
+  currentCell;
+  turnosPendientes;
 
   //--Constructor
   constructor(nickname, socket) {
     this.nickname = nickname;
     this.socket = socket;
+    this.currentCell = 0; // rectángulo inicial
+    this.turnosPendientes = 0;
   }
 
   //--Métodos
@@ -19,6 +23,14 @@ class Player {
 
   getSocket() {
     return this.socket;
+  }
+
+  getCurrentCell() {
+    return this.currentCell;
+  }
+
+  getTurnosPendientes(){
+    return this.turnosPendientes;
   }
 }
 

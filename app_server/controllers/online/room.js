@@ -14,7 +14,7 @@ class Room {
   startTime = config.startTime;
 
   //--Constructor--
-  constructor(user, roomName, players, gamemode,roomId) {
+  constructor(user, roomName, players, gamemode, roomId) {
     this.roomName = roomName;
     this.roomId = roomId;
     //Que no supere los límites
@@ -31,7 +31,6 @@ class Room {
     this.gamemode = gamemode;
 
     this.roomLeader = user.nickname;
-    
   }
 
   //--Métodos--
@@ -80,59 +79,57 @@ class Room {
   }
 
   //is player in room
-  isPlayerInRoom(player)
-  {
+  isPlayerInRoom(player) {
     return this.players[player.nickname] != undefined;
   }
 
   //Send message to all players in the room
-  sendMessage(message,io)
-  {
+  sendMessage(message, io) {
     //Broadcast message to all players in the room
-    io.to(this.roomId).emit("serverRoomMessage", `[${this.roomName}]`+message);
+    io.to(this.roomId).emit(
+      "serverRoomMessage",
+      `[${this.roomName}]` + message
+    );
   }
 
   //eliminar jugador de la sala (PENDING)
-  removePlayer(remover,player)
-  {
+  removePlayer(remover, player) {
     //Primero: se comprueba que no te puedas eliminar a ti mismo
-    if (remover.nickname == player.nickname){
+    if (remover.nickname == player.nickname) {
       throw new Error("No puedes eliminarte a ti mismo");
-    }
-    else{
+    } else {
       //Segundo: se comprueba que el jugador que elimina a otro es el líder de la sala
-      if (this.isLeader(remover)){
+      if (this.isLeader(remover)) {
         //Tercero: se comprueba que el jugador que se quiere eliminar está en la sala
-        if (this.isPlayerInRoom(player)){
+        if (this.isPlayerInRoom(player)) {
           //Cuarto: se elimina al jugador de la sala
           this.leaveRoom(player);
-        }
-        else{
+        } else {
           throw new Error("El jugador no está en la sala");
         }
-      }
-      else{
+      } else {
         throw new Error("No eres el líder de la sala");
       }
     }
   }
 
   //is leader
-  isLeader(player)
-  {
+  isLeader(player) {
     return this.roomLeader == player.nickname;
   }
 
-  delRoom(user)
-  {
+  delRoom(user) {
     // this.printPlayers();
-    if (this.isLeader(user)){
+    if (this.isLeader(user)) {
       //1. Eliminamos a todos los jugadores de la sala
       for (let player in this.players) {
         // console.log("Eliminando jugador " + player);
         //evitamos borrarse a si mismo
-        if (player != user.nickname && this.isPlayerInRoom(this.players[player])){
-          this.removePlayer(user,this.players[player]);
+        if (
+          player != user.nickname &&
+          this.isPlayerInRoom(this.players[player])
+        ) {
+          this.removePlayer(user, this.players[player]);
         }
         // else
         // {
@@ -141,20 +138,22 @@ class Room {
       }
       //2. Eliminamos la sala
       delete this.roomId;
-    }
-    else{
+    } else {
       throw new Error("No eres el líder de la sala");
     }
   }
   //print players in the room
-  printPlayers()
-  {
+  printPlayers() {
     console.log("Jugadores en la sala " + this.roomId + ":");
     for (let player in this.players) {
       console.log(player);
     }
   }
 
+  //get players in the room
+  getPlayers() {
+    return this.players;
+  }
 }
 
 module.exports = Room;

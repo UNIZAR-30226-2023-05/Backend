@@ -49,6 +49,7 @@ class PrivChatController{
         //sender
         const sender = msg.sender;
 
+
         //We check if the receiver is connected
         console.log("receiver: ",receiver);
         console.log("sender: ",sender);
@@ -63,6 +64,26 @@ class PrivChatController{
         }
             // //We store the message in the database (prisma)
             // //We create the message
+
+            //Search for the id by the nickname
+            // const userSender = await this.prisma.usuario.findUnique({
+            //     where: {
+            //         nickname: sender,
+            //     },
+            // });
+            // const send_id = user.id;
+            // console.log("id: ",id);
+
+            // const userReceiver = await this.prisma.usuario.findUnique({
+            //     where: {
+            //         nickname: receiver,
+            //     },
+            // });
+            // const rec_id = user.id;
+            // console.log("id: ",id);
+
+
+
             // const message = await this.prisma.mensaje.create({
             //     data: {
             //         //id: autoincremental
@@ -70,12 +91,12 @@ class PrivChatController{
             //         contenido : msg.message,
             //         //id_usuario_emisor
             //         //id_usuario_receptor
-            //         destinatario : receiver,
-            //         emisor : sender
+            //         destinatario : rec_id,
+            //         emisor : send_id,
             //     },
             // });
             // console.log("Nuevo mensaje almacenado: ",message);
-            
+
     }
 
 
