@@ -11,7 +11,7 @@ const express = require("express");
 //importamos el paquete http-status-codes para manejar los codigos de estado de las respuestas
 const { Console } = require("winston/lib/winston/transports");
 
-var { signToken } = require("../middleware/auth");
+var { usrToken } = require("../../middleware/auth");
 
 //Función de registro de usuarios
 // Parameters: req, res
@@ -94,7 +94,7 @@ async function loginHandler(req, res) {
     //El token se usa para que el usuario no tenga que estar introduciendo sus credenciales cada vez que quiera hacer algo
     //El token lo generamos con el nombre de usuario
     //Y si en 72h no se ha entrado en la cuenta, se vuelve a pedir el login
-    var token = signToken(user.email);
+    var token = usrToken(user.email);
 
     res.statusCode = StatusCodes.OK;
     res.send({
