@@ -105,20 +105,30 @@ class PrivChatController{
         //If the user connects and checks the chat with someone, we send him all the messages
         // that were stored in the database
 
-        //We get all the messages between the two users
+        //We get all the messages between the two users (user and otherUser) and (otherUser and user)
+        //We get the messages between user and otherUser
+        
+        /*
+        SELECT * FROM mensaje WHERE (id_usuario_emisor = user AND id_usuario_receptor = otherUser) OR (id_usuario_emisor = otherUser AND id_usuario_receptor = user)
+        */
+
         // const messages = await this.prisma.mensaje.findMany({
         //     where: {
-        //         AND: [
+        //         OR: [
         //             {
         //                 emisor: user,
+        //                 destinatario: otherUser,
         //             },
         //             {
-        //                 destinatario: otherUser,
+        //                 emisor: otherUser,
+        //                 destinatario: user,
         //             },
         //         ],
         //     },
         // });
-        
+
+
+
         // return messages;
 
     }
