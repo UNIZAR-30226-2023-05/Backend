@@ -44,6 +44,8 @@ const gameHandler = (socket, roomController, io) => {
         //Finalmente se crea el controlador de la partida
         let gameController = new GameController(room,turnTimeout,socket);
 
+        //Añadimos (por tener referencia) el controlador de la partida al controlador de las salas
+        roomController.addGameController(roomId, gameController);image.png
 
         //Se envía el evento de inicio de partida a todos los jugadores de la sala
         callback({
