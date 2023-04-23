@@ -6,9 +6,9 @@ class Tablero {
 
     // Recibe un indice y llama al método execute de la celda correspondiente
     execute(i) {
-        i += 1;
+        i -= 1;
         return this.celdas[i].execute();
     }
 }
 
-module.exports = Tablero;
+module.exports = {Tablero};

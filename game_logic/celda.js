@@ -20,7 +20,7 @@ class CeldaNormal extends Celda {
 }
 
 class CeldaOca extends Celda{
-    cosntructor(id) {
+    constructor(id) {
         switch (id) {
             case 5:
                 super(id, 9, true, 0);
