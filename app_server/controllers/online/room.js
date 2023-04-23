@@ -12,6 +12,7 @@ class Room {
   roomLeader; //jugador que ha creado la sala
   players; //objeto con los jugadores de la sala (id, player(objeto de la clase Player))
   startTime = config.startTime;
+  gameController; //objeto de la clase GameController
 
   //--Constructor--
   constructor(user, roomName, players, gamemode, roomId) {
@@ -31,6 +32,9 @@ class Room {
     this.gamemode = gamemode;
 
     this.roomLeader = user.nickname;
+
+    //Inicialmente no tiene game controller -> es una referencia
+    this.gameController = undefined;
   }
 
   //--Métodos--
@@ -153,6 +157,10 @@ class Room {
   //get players in the room
   getPlayers() {
     return this.players;
+  }
+
+  setController(controller) {
+    this.gameController = controller;
   }
 }
 

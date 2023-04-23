@@ -104,7 +104,11 @@ class RoomController {
     getRoom(roomID) {
         return this.activeRooms[roomID];
     }
-    
+
+    addGameController(roomID, gameController) {
+        this.activeRooms[roomID].setController(gameController);
+    }
+
 
 
 }
