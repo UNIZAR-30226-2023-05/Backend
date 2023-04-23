@@ -108,10 +108,17 @@ class CeldaCarcel extends Celda {
     }
 }
 
-// La casilla de dado 53 es una casilla normal
 class CeldaDados extends Celda {
     constructor(id) {
-        super(id, 53, true, 0);
+        if(id == 53) {
+            super(id, 26, true, 0);
+        }
+        else if(id == 26) {
+            super(id, 53, true, 0);
+        }
+        else {
+            throw new Error("Error: el id de la celda no es válido");
+        }
     }
 }
 
@@ -121,7 +128,8 @@ class CeldaCalavera extends Celda {
     }
 }
 
-// La casilla final programarla como una casilla normal que se necesita num exacto
+// La casilla final programarla como una casilla normal que se necesita num exacto y si no se retrocede
+// Hacer esto en el controlador del juego
 
 module.exports = { CeldaNormal, CeldaOca, CeldaPuente, CeldaPosada, CeldaPozo, 
     CeldaLaberinto, CeldaCarcel, CeldaDados, CeldaCalavera };
