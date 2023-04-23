@@ -15,7 +15,7 @@ class Celda {
 
 class CeldaNormal extends Celda {
     constructor(id) {
-        super(id, id, false), 0; //No avanza ni retrocede,no se vuelve a tener el turno y no se pierde ningún turno adicional
+        super(id, id, false, 0); //No avanza ni retrocede,no se vuelve a tener el turno y no se pierde ningún turno adicional
     }
 }
 
