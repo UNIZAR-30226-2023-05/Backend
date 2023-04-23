@@ -32,6 +32,10 @@ class Player {
   getTurnosPendientes(){
     return this.turnosPendientes;
   }
+
+  setCurrCell(cell) {
+    this.currentCell = cell;
+  }
 }
 
 module.exports = Player;

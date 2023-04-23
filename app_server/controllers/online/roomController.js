@@ -101,6 +101,11 @@ class RoomController {
         return false;
     }
 
+    getRoom(roomID) {
+        return this.activeRooms[roomID];
+    }
+    
+
 
 }
 
