@@ -217,9 +217,16 @@ const roomHandler = (socket, roomController, io) => {
 
   //eliminar jugador de la sala (pendiente de aceptar)
   //--> PENDIENTE
-  function removePlayerFromRoomHandler(roomID, user,callback) {
+  function removePlayerFromRoomHandler(roomID, userNickname,callback) {
 
-    userLeader = roomController.getPlayer(socket,roomID);
+    //Mostrar todos los jugadores de la sala
+    // roomController.allPlayers(roomID);
+
+    let userLeader = roomController.getPlayer(socket,roomID);
+    // console.log("nickname: " + userNickname);
+    let userToRemove = roomController.getPlayerByNickname(userNickname, roomID);
+    // console.log(userLeader);
+    // console.log(userToRemove);
 
     //checkear si el usuario esta en la sala (nunca debería pasar)
     if (!roomController.isPlayerInRoom(roomID, userLeader)) {
@@ -230,9 +237,10 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
-    roomController.removePlayer(userLeader,roomID, user);
+
+    roomController.removePlayer(userLeader,roomID, userToRemove);
     //mensaje a todos los jugadores de la sala
-    roomController.sendMessageToRoom(roomID, `El jugador ${user.nickname} ha sido eliminado de la sala`, io);
+    roomController.sendMessageToRoom(roomID, `El jugador ${userToRemove.nickname} ha sido eliminado de la sala`, io);
 
     callback({
       message: "El jugador ha sido eliminado de la sala",

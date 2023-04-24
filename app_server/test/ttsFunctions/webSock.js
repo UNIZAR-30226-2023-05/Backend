@@ -132,9 +132,35 @@ const testSalas = () => {
       test("Unirse a una sala", (done) => {
         unirUsuariosSala(usuarios, 0, 3, done);
       });
-    });
 
-    //Fin por ahora de los test de salas
+
+      test("Mandar mensaje a la sala", (done) => {
+        const texto = "Hola a todos";
+        usuarios[0].emit("sendMessage", 0, texto, (data) => {
+          expect(data).toHaveProperty("msg");
+          expect(data).toHaveProperty("status");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.msg).toBe("message sent");
+          expect(data.status).toBe("ok");
+
+          done();
+        });
+      });
+
+      test("Eliminar a un usuario de la sala -> siendo líder", (done) => {
+        const user = "Usuario_1"
+        usuarios[0].emit("removePlayerFromRoom", 0, user, (data) => {
+          expect(data).toHaveProperty("message");
+          expect(data).toHaveProperty("status");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("El jugador ha sido eliminado de la sala");
+          expect(data.status).toBe("ok");
+
+          done();
+        });
+      });
+
+    });
   });
 };
 

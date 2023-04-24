@@ -49,8 +49,8 @@ class Room {
     if (this.numPlayers == Object.keys(this.players).length) {
       throw new Error("Sala llena");
     } else {
-      //Se añade el jugador al diccionario
-      this.players[player.nickname] = player;
+      //Se añade el jugador al diccionario (socket, nickname)
+      this.players[player.nickname] = player; 
     }
   }
 
@@ -79,6 +79,22 @@ class Room {
       }
     }
     //Si no se encuentra el jugador, se devuelve undefined
+    return undefined;
+  }
+
+  //Devuelve un player dado un nickname
+  getPlayerByNickname(nickname) {
+    
+    //Se recorre el diccionario de jugadores
+    for (let player in this.players) {
+      //Si el nickname del jugador es igual al nickname pasado por parámetro, se devuelve el jugador
+      if (this.players[player].nickname == nickname) {
+        console.log("Se ha encontrado el jugador");
+        return this.players[player];
+      }
+      //Si no se encuentra el jugador, se devuelve undefined
+    }
+
     return undefined;
   }
 
@@ -150,7 +166,10 @@ class Room {
   printPlayers() {
     console.log("Jugadores en la sala " + this.roomId + ":");
     for (let player in this.players) {
-      console.log(player);
+      //Mostrar tanto nickname como socket
+      console.log(
+        "Nickname: " + this.players[player].nickname + " Socket: " + this.players[player].socket
+      );
     }
   }
 

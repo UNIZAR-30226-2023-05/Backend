@@ -90,6 +90,12 @@ class RoomController {
         return this.activeRooms[roomID].getPlayerBySocket(socket);
     }
 
+    //Misma función que la de arriba, pero con el nickname
+    getPlayerByNickname(nickname,roomID) {
+        // console.log("Buscando jugador por nickname: " + nickname);
+        return this.activeRooms[roomID].getPlayerByNickname(nickname);
+    }
+
     isRoomNameInUse(roomName) {
         console.log("Comprobando si el nombre de sala está en uso: " + roomName);
         for (let room in this.activeRooms) {
