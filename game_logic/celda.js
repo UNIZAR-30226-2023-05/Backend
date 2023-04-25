@@ -1,15 +1,15 @@
 // Clase celda
 class Celda {
-    constructor(id, nueva, turno, turnosperdidos) {
+    constructor(id, nueva, turno, penalizacion) {
         this.id = id; //Número de la celda en el tablero
         this.nueva = nueva; //Número de la nueva casilla en la que se encuentra
         this.turno = turno; //Booleano que indica si se vuelve a tener el turno o no
-        this.turnosperdidos = turnosperdidos; //Número de turnos perdidos
+        this.penalizacion = penalizacion; //Número de turnos perdidos
     }
     
     // Método execute. Será implementado por las clases hijas.
     execute() {
-        return [this.nueva, this.turno, this.turnosperdidos]
+        return { nueva: this.nueva, turno: this.turno, penalizacion: this.penalizacion };
     }
 }
 
