@@ -160,6 +160,18 @@ const testSalas = () => {
         });
       });
 
+      test("Comenzar partida", (done) => {
+        usuarios[0].emit("startGame", 0, 12000, (data) => {
+          expect(data).toHaveProperty("message");
+          expect(data).toHaveProperty("status");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe(
+            "Partida iniciada"
+          );
+          done();
+        });
+      });
+
       test("Borrar sala", (done) => {
         usuarios[0].emit("destroyRoom", 0, (data) => {
           expect(data).toHaveProperty("message");

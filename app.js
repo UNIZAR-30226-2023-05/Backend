@@ -78,7 +78,6 @@ app.use(
 //rutas
 var userRouter = require("./app_server/routes/users");
 var socialRouter = require("./app_server/routes/social");
-const { GameController } = require("./app_server/controllers/online/gameController");
 
 app.use("/users", userRouter);
 app.use("/social", socialRouter);
@@ -117,6 +116,7 @@ io.use((socket, next) => {
 //Controllers
 roomHandler = require("./app_server/controllers/online/roomHandler");
 chatHandler = require("./app_server/controllers/chat/roomChatHandler");
+gameHandler = require("./app_server/controllers/online/gameHandler");
 gameSessionHandler = require("./app_server/controllers/online/gameSessionHandler");
 RoomController = require("./app_server/controllers/online/roomController");
 GameSessionController = require("./app_server/controllers/online/gameSessionController");
@@ -146,6 +146,9 @@ io.on("connection", async (socket) => {
 
   //Controlador de los chats privados
   privateChatHandler(socket, privChat, io);
+
+  //Controlador de los juegos
+  gameHandler(socket, roomController, io);
 
   //Aquí se pueden añadir más controladores de eventos (WebSockets)
 

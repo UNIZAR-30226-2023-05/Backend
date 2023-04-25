@@ -86,6 +86,11 @@ class RoomController {
         this.activeRooms[roomID].removePlayer(userLeader,player);
     }
 
+    //Devolver un room dado un id
+    getRoom(roomID) {
+        return this.activeRooms[roomID];
+    }
+
     getPlayer(socket,roomID) {
         return this.activeRooms[roomID].getPlayerBySocket(socket);
     }

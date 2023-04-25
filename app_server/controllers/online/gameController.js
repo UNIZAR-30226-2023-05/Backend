@@ -78,6 +78,8 @@ class GameController {
     });
 
     this.start = true;
+
+    //Llamar a sigTurno()?
   }
 
   sigTurno() {
@@ -116,6 +118,11 @@ class GameController {
     });
 
     //console.log("sigTurno");
+  }
+
+  //bool: has game started?
+  isGameStarted() {
+    return this.start;
   }
 
   tirarDados(user) {
