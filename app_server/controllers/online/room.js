@@ -65,8 +65,8 @@ class Room {
   }
 
   //Devuelve el número de jugadores que hay en la sala
-  getNumPlayers() {
-    return this.numPlayers;
+  getAllPlayers() {
+    return this.players;
   }
 
   //Devuelve un player dado un socket
@@ -175,7 +175,12 @@ class Room {
 
   //get players in the room
   getPlayers() {
-    return this.players;
+    //Devolver un array con los nicknames de los jugadores
+    let players = [];
+    for (let player in this.players) {
+      players.push(this.players[player].nickname);
+    }
+    return players;
   }
 
   setController(controller) {

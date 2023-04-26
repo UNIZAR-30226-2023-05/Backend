@@ -112,7 +112,7 @@ const testSalas = () => {
 
     describe("Test correctos de solo un usuario", () => {
       beforeAll((done) => {
-        usuarios = simFrontend(5, done);
+        usuarios = simFrontend(8, done);
       });
 
       test("Crear sala", (done) => {
@@ -130,7 +130,7 @@ const testSalas = () => {
       });
 
       test("Unirse a una sala", (done) => {
-        unirUsuariosSala(usuarios, 0, 3, done);
+        unirUsuariosSala(usuarios, 0, 5, done);
       });
 
 
@@ -168,6 +168,7 @@ const testSalas = () => {
           expect(data.message).toBe(
             "Partida iniciada"
           );
+          expect(data.status).toBe("ok");
           done();
         });
       });
@@ -183,7 +184,6 @@ const testSalas = () => {
           done();
         });
       });
-
     });
   });
 };

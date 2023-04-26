@@ -2,9 +2,10 @@
     está implementada). */
 
 // const tablero = require("../../game_logic/tablero");
+const { Console } = require("winston/lib/winston/transports");
 const { config } = require("../../../config");
 
-const { shufflePlayers } = require("../../utils/eleccionTurno");
+// const { shufflePlayers } = require("../../utils/eleccionTurno");
 
 class GameController {
   //--Atributos de clase--//
@@ -22,14 +23,14 @@ class GameController {
 
     // this.tablero = new tablero.Tablero(); //tablero de juego
 
-    this.ackTurno = false; //ack para saber si es el turno del usuario
+    this.ackTurno = false;          //ack para saber si es el turno del usuario
 
-    this.start = false; //ack para saber si la partida ha empezado
+    this.start = false;             //ack para saber si la partida ha empezado
 
-    this.finalPartida = false; //ack para saber si la partida ha terminado
+    this.finalPartida = false;      //ack para saber si la partida ha terminado
 
-    this.currentTurn = 0; //turno actual
-    this.ordenTurnos = []; //orden de turnos
+    this.currentTurn = 0;           //turno actual
+    this.ordenTurnos = [];          //orden de turnos
   }
 
   //Información general de partida (inicio)
@@ -62,14 +63,20 @@ class GameController {
     }, this.tiempoDeTurno * 1000);
 
 
+    //Array con los nicknames de los jugadores
+    let users = this.room.getAllPlayers();
 
-    let numUsers = this.room.getNumPlayers();
-    //Se envía a todos los jugadores el estado del juego
-    //...
+    console.log(users);
 
-    let users = this.room.getPlayers();
+    const numUsuarios = Object.keys(users).length;
+
+    const shufflePlayers = Object.values(users).sort(() => Math.random() - 0.5);
+
+    console.log(shufflePlayers);
+    // console.log(this.ordenTurnos)
+
     //Se barajan los jugadores
-    this.ordenTurnos = shufflePlayers(users, numUsers);
+    // this.ordenTurnos = shufflePlayers(users, numUsers);
 
     //Se envía un mensaje a todos los jugadores de la sala con el nuevo orden the turnos
     this.socketServer.to(this.room.roomId).emit("ordenTurnos", {
@@ -208,12 +215,9 @@ class GameController {
       user.setCurrCell(nuevaCelda);
 
       //Comprobar estado de la nueva celda --> tablero.execute(nuevaCelda)
-      let estadoCelda = this.tablero.execute(nuevaCelda);
+      let {proximaCelda, tiraOtraVez, penalizacion } = this.tablero.execute(nuevaCelda);
 
       //estadoCelda => [proximaCleda (si es especial), tiraOtraVez, penalizacion]
-      let proximaCelda = estadoCelda[0];
-      let tiraOtraVez = estadoCelda[1];
-      let penalizacion = estadoCelda[2];
 
       //Si hay penalización se le añade al jugador
       if (penalizacion > 0) {
