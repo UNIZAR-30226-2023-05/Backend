@@ -143,6 +143,26 @@ const testSalas = () => {
         });
 
       });
+
+      test ("Unirse a una sala que no existe", (done) => {
+        const user = { nickname: "Usuario_1" };
+
+        usuarios[1].emit("joinRoom", "SalaNoExiste", user, (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+
+          expect(data.status).toBe("error");
+          expect(data.message).toBe("La sala no existe");
+
+          done();
+
+        });
+
+      });
+
+
+
+
             
 
 
