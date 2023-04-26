@@ -107,6 +107,15 @@ const roomHandler = (socket, roomController, io) => {
     //4. Unirse a sala cuando ya esta en otra sala
     //5. partida en juego?
 
+    //La sala existe?
+    if (!roomController.isRoomActive(roomID)) {
+      callback({
+        message: "La sala no existe",
+        status: 'error'
+      });
+      return;
+    }
+
     //El jugador ya está en la sala?
     if (roomController.isPlayerInRoom(roomID, newPlayer)) {
       callback({
@@ -116,14 +125,7 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
-    //La sala existe?
-    if (!roomController.isRoomActive(roomID)) {
-      callback({
-        message: "La sala no existe",
-        status: 'error'
-      });
-      return;
-    }
+    
 
     // //La sala está llena? --> Se comprueba directamente en el joinRoom
     // if (roomController.isRoomFull(roomID)) {
