@@ -12,13 +12,16 @@ const Player = require("./player");
 const roomHandler = (socket, roomController, io) => {
   //---Crear sala---
   /**
-   *
+   * @param {*} user
    * @param {*} roomName
    * @param {*} numPlayers
    * @param {*} gamemode
    * @param {*} callback
    */
+
+
   function createRoomHandler(user,roomName, numPlayers, gamemode, callback) {
+    
     
 
     //líder de la sala
