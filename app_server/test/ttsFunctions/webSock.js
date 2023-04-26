@@ -129,6 +129,25 @@ const testSalas = () => {
         });
       });
 
+      test("Crear sala (habiendo creado una)" , (done) => {
+        const user = { nickname: "Usuario_0" };
+
+        usuarios[0].emit("createRoom", user, "Sala2", 6, "normal", (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("Ya estás en una sala");
+          expect(data.status).toBe("error");
+
+          done();
+        });
+
+      });
+            
+
+
+
+
       test("Unirse a una sala", (done) => {
         unirUsuariosSala(usuarios, 0, 3, done);
       });

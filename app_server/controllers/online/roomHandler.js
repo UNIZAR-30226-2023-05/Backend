@@ -20,6 +20,11 @@ const roomHandler = (socket, roomController, io) => {
    */
   function createRoomHandler(user,roomName, numPlayers, gamemode, callback) {
     
+
+    //líder de la sala
+    leader = new Player(user.nickname, socket);
+
+
     //Comprobaciones:
     //1. Si la sala ya existe
     //2. Si el número de jugadores es mayor que el máximo permitido
@@ -56,7 +61,7 @@ const roomHandler = (socket, roomController, io) => {
     }
 
     //El jugador ya está en una sala?
-    if (roomController.isPlayerInAnyRoom(user.nickname)) {
+    if (roomController.isPlayerInAnyRoom(leader)) {
       callback({
         message: "Ya estás en una sala",
         status: 'error'
@@ -64,13 +69,13 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
-
+    
     //Se crea la sala
-    roomId = roomController.createRoom(user,roomName, numPlayers, gamemode);
+    roomId = roomController.createRoom(leader,roomName, numPlayers, gamemode);
 
     // console.log("Sala creada con ID: " + roomId);
 
-    leader = new Player(user.nickname, socket);
+    
     //Se añade el jugador a la sala
     roomController.joinRoom(roomId, leader);
 

@@ -30,6 +30,8 @@ class Room {
 
     this.gamemode = gamemode;
 
+    console.log("Lider de la sala: " + user.nickname);
+
     this.roomLeader = user.nickname;
     
   }
@@ -149,7 +151,7 @@ class Room {
   //print players in the room
   printPlayers()
   {
-    console.log("Jugadores en la sala " + this.roomId + ":");
+    // console.log("Jugadores en la sala " + this.roomId + ":");
     for (let player in this.players) {
       console.log(player);
     }
