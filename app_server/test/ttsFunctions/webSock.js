@@ -147,7 +147,7 @@ const testSalas = () => {
       test ("Unirse a una sala que no existe", (done) => {
         const user = { nickname: "Usuario_1" };
 
-        usuarios[1].emit("joinRoom", "SalaNoExiste", user, (data) => {
+        usuarios[1].emit("joinRoom", 5, user, (data) => {
           expect(data).toHaveProperty("status");
           expect(data).toHaveProperty("message");
 
@@ -159,6 +159,24 @@ const testSalas = () => {
         });
 
       });
+
+      test("Unirse a una sala estando ya en ella", (done) => {
+        const user = { nickname: "Usuario_0" };
+
+        usuarios[0].emit("joinRoom", 0, user, (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+
+          expect(data.status).toBe("error");
+          expect(data.message).toBe("Ya estás en la sala");
+
+          done();
+
+        });
+
+      });
+
+
 
 
 

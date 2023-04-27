@@ -119,7 +119,7 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
-    //El jugador ya está en la sala?
+    //El jugador  está en alguna sala?
     if (roomController.isPlayerInRoom(roomID, newPlayer)) {
       callback({
         message: "Ya estás en la sala",
