@@ -1,5 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 //...
 
@@ -30,4 +32,27 @@ async function webSocketAuth(socket, next) {
   }
 }
 
-module.exports = { usrToken, webSocketAuth };
+// Función para comprobar que un token es de un usuario dado su id
+// Usarla en las funciones de API que los usuarios ofrecen un id
+// Devuelve false si no está autorizado y true en caso contrario
+async function tokenAuth(token, id_usuario) {
+  try {
+    const user = await prisma.usuario.findUnique({ where: { id_usuario } });
+    if (!user) {
+      return false; // No se encontró un usuario con el id proporcionado
+    }
+
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+
+    if (decoded.email !== user.email) {
+      return false; // El email del token no coincide con el email del usuario
+    }
+
+    return true; // El token pertenece al usuario
+  } catch (error) {
+    console.error(error);
+    return false; // Error al verificar el token o encontrar el usuario
+  }
+}
+
+module.exports = { usrToken, webSocketAuth, tokenAuth };
