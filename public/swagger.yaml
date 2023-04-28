@@ -15,7 +15,7 @@ tags:
 
 paths:
 
-  /users/:{id_usuario}:
+  /users/{id_usuario}:
     get:
       tags:
         - Usuario
@@ -106,7 +106,7 @@ paths:
                   - $ref: '#/components/schemas/monedas'
                   - $ref: '#/components/schemas/profilephoto'
 
-  /users/register/:{id_usuario}:
+  /users/register/{id_usuario}:
     delete:
       tags:
         - Usuario
@@ -203,7 +203,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
-  /social/friends/:{id_usuario}:
+  /social/friends/{id_usuario}:
     put:
       tags:
         - Social
