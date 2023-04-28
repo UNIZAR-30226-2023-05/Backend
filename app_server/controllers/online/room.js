@@ -138,6 +138,10 @@ class Room {
     return this.roomLeader == player.nickname;
   }
 
+  isRoomFull() {
+    return this.numPlayers == Object.keys(this.players).length;
+  }
+
   delRoom(user) {
     // this.printPlayers();
     if (this.isLeader(user)) {

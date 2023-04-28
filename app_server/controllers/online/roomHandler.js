@@ -126,16 +126,6 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
     
-
-    // //La sala está llena? --> Se comprueba directamente en el joinRoom
-    // if (roomController.isRoomFull(roomID)) {
-    //   callback({
-    //     message: "La sala está llena",
-    //     status: 'error'
-    //   });
-    //   return;
-    // }
-
     //El jugador está en otra sala?
     if (roomController.isPlayerInAnyRoom(newPlayer)) {
       callback({
@@ -144,6 +134,19 @@ const roomHandler = (socket, roomController, io) => {
       });
       return;
     }
+
+    //La sala está llena
+    if (roomController.isRoomFull(roomID)) {
+      callback({
+        message: "La sala está llena",
+        status: 'error'
+      });
+
+      return;
+    }
+
+
+
 
     //La partida ya ha empezado?
     //...

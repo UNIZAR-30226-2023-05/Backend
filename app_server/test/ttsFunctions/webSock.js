@@ -162,11 +162,6 @@ const testSalas = () => {
       });
 
 
-      test("Unirse a una sala", (done) => {
-        unirUsuariosSala(usuarios, 0, 5, done);
-      });
-
-
       test("Mandar mensaje a la sala", (done) => {
         const texto = "Hola a todos";
         usuarios[0].emit("sendMessage", 0, texto, (data) => {

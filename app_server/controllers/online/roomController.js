@@ -79,6 +79,11 @@ class RoomController {
         return false;
     }
 
+    //Comprobar si la sala está llena
+    isRoomFull(roomID) {
+        return this.activeRooms[roomID].isRoomFull();
+    }
+
 
     //eliminar jugador de sala
     //---->Pendiente de autorización
