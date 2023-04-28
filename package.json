@@ -8,6 +8,7 @@
     "test:user": "jest --testMatch='**/app_server/test/**/user.test.js' --runInBand",
     "test:social": "jest --testMatch='**/app_server/test/**/social.test.js' --runInBand",
     "test:ws": "jest --testMatch='**/app_server/test/**/ws.test.js' --runInBand",
+    "test:tablero": "jest --testMatch='**/app_server/test/**/tablero.test.js' --runInBand",
     "test": "npm run test:user && npm run test:social && npm run test:ws"
   },
   "dependencies": {
