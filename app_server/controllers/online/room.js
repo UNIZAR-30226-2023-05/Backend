@@ -36,6 +36,7 @@ class Room {
     
   }
 
+
   //--Métodos--
 
   //Unir jugador X a esta sala (player es un objeto de la clase Player)
@@ -51,6 +52,15 @@ class Room {
       //Se añade el jugador al diccionario
       this.players[player.nickname] = player;
     }
+
+    //Devolver los nicknames únicamente
+    let nicknames = [];
+    //Ply es el identificador del jugador en el diccionario y se accede a su nickname con players[ply].nickname
+    for (let ply in this.players) {
+      nicknames.push(this.players[ply].nickname);
+    }
+    return nicknames;
+
   }
 
   //Eliminar jugador X de esta sala (player es un objeto de la clase Player)
@@ -60,7 +70,14 @@ class Room {
       throw new Error("El jugador no está en la sala");
     } else {
       delete this.players[player.nickname];
+      let nicknames = [];
+      for (let ply in this.players) {
+        nicknames.push(this.players[ply].nickname);
+      }
+
+      return nicknames;
     }
+
   }
 
   //Devuelve el número de jugadores que hay en la sala
@@ -107,7 +124,8 @@ class Room {
         //Tercero: se comprueba que el jugador que se quiere eliminar está en la sala
         if (this.isPlayerInRoom(player)){
           //Cuarto: se elimina al jugador de la sala
-          this.leaveRoom(player);
+          let nicknames = this.leaveRoom(player);
+          return nicknames;
         }
         else{
           throw new Error("El jugador no está en la sala");
@@ -155,6 +173,10 @@ class Room {
     for (let player in this.players) {
       console.log(player);
     }
+  }
+
+  isRoomFull(){
+    return this.numPlayers == Object.keys(this.players).length;
   }
 
 }

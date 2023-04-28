@@ -11,6 +11,7 @@
 const io = require("socket.io-client");
 const { usrToken } = require("../../middleware/auth");
 
+
 //Puerto
 const port = process.env.PORT || 5000;
 
@@ -35,8 +36,7 @@ function simFrontend(n, done) {
 
     socket.on("connect", () => {
       numUsers++;
-      // console.log('Usuario conectado');
-      //Si se han conectado todos los usuarios se termina la función
+
       if (numUsers == n) {
         done();
       }
@@ -50,16 +50,31 @@ function simFrontend(n, done) {
     //nickname
     socket.nickname = "Usuario_" + i;
 
+    // socket.emit("openSession", socket.nickname, (data) => {
+    //   if (data.ok == true) {
+    //     console.log(data.message);
+    //   } 
+    // });
+
+
     //Añadimos el socket al array de usuarios
     usuarios[i] = socket;
   }
 
+  // usuarios[0].emit("eliminarSalas");
   return usuarios;
 }
 
 //Desconectamos a todos los usuarios
 function desconectarGente(usuarios) {
   for (let user in usuarios) {
+    // console.log("Desconectando a " + usuarios[user].nickname);
+    // usuarios[user].emit("closeSession", usuarios[user].nickname, (data) => {
+    //   if (data.ok == true) {
+    //     console.log(data.message);
+    //   }
+    // });
+
     usuarios[user].disconnect();
   }
 }
@@ -71,10 +86,10 @@ function unirUsuariosSala(usuarios, sala, n, done) {
     const user = { nickname: "Usuario_" + i };
     usuarios[i].emit("joinRoom", sala, user, (data) => {
       if (data.status == "error") {
-        console.log(data.message);
+        // console.log(data.message);
         throw data.message;
       } else {
-        console.log(data.message);
+        // console.log(data.message);
         numConnected++;
       }
       if (numConnected == n) {
@@ -110,26 +125,35 @@ const testSalas = () => {
       done();
     });
 
-    describe("Test correctos de solo un usuario", () => {
+    describe("Test creación de salas", () => {
       beforeAll((done) => {
         usuarios = simFrontend(5, done);
+
       });
+
+      afterAll((done) => {
+        desconectarGente(usuarios);
+        done();
+      });
+
 
       test("Crear sala", (done) => {
         const user = { nickname: "Usuario_0" };
 
-        usuarios[0].emit("createRoom", user, "Sala1", 6, "normal", (data) => {
+        usuarios[0].emit("createRoom", user, "Sala1", 3, "normal", (data) => {
           expect(data).toHaveProperty("id");
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe(
             "Sala creada correctamente, comparte el ID con tus amigos"
           );
+
+          console.log("ID de la sala: " + data.id);
           done();
         });
       });
 
-      test("Crear sala (habiendo creado una)" , (done) => {
+      test("Crear sala (habiendo creado una)", (done) => {
         const user = { nickname: "Usuario_0" };
 
         usuarios[0].emit("createRoom", user, "Sala2", 6, "normal", (data) => {
@@ -144,54 +168,328 @@ const testSalas = () => {
 
       });
 
-      test ("Unirse a una sala que no existe", (done) => {
+      // Test de crear una sala con menos de dos jugadores
+      test("Crear sala (con menos de 2 jugadores)", (done) => {
+        const user = { nickname: "Usuario_0" };
+
+        usuarios[0].emit("createRoom", user, "Sala2", 1, "normal", (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("El número de jugadores es menor que el mínimo permitido");
+          expect(data.status).toBe("error");
+
+          done();
+        });
+      });
+
+      // Test de crear una sala con mas de 6 jugadores
+      test("Crear sala (con mas de 6 jugadores)", (done) => {
+        const user = { nickname: "Usuario_0" };
+
+        usuarios[0].emit("createRoom", user, "Sala2", 7, "normal", (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("El número de jugadores es mayor que el máximo permitido");
+          expect(data.status).toBe("error");
+
+          done();
+        });
+      });
+
+      // Test de crear una sala cuyo nombre ya existe
+      test("Crear sala (con nombre ya existente)", (done) => {
+        const user = { nickname: "Usuario_0" };
+
+        usuarios[0].emit("createRoom", user, "Sala1", 3, "normal", (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("Ya existe una sala con ese nombre");
+          expect(data.status).toBe("error");
+
+          done();
+        });
+      });
+
+
+    });
+
+    describe("Test unirse a sala", () => {
+
+      beforeAll((done) => {
+        usuarios = simFrontend(10, done);
+        //Debug, user0 deletes all the rooms in order to restart new tests
+        usuarios[0].emit("eliminarSalas");
+      });
+
+      afterAll((done) => {
+        desconectarGente(usuarios);
+        done();
+      });
+
+      //Primero hay que crear almenos 2 salas para hacer las pruebas { usuario 0 crea sala 1 y usuario 1 crea sala 2}
+      test("Crear salas", (done) => {
+        const user = { nickname: "Usuario_0" };
+
+        usuarios[0].emit("createRoom", user, "Sala1", 2, "normal", (data) => {
+          expect(data).toHaveProperty("id");
+          expect(data).toHaveProperty("message");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe(
+            "Sala creada correctamente, comparte el ID con tus amigos"
+          );
+
+          console.log("ID de la sala: " + data.id);
+
+          const user = { nickname: "Usuario_1" };
+
+          usuarios[1].emit("createRoom", user, "Sala2", 6, "normal", (data) => {
+            expect(data).toHaveProperty("id");
+            expect(data).toHaveProperty("message");
+            //Verificamos que el mensaje sea el correcto
+            expect(data.message).toBe(
+              "Sala creada correctamente, comparte el ID con tus amigos"
+            );
+
+            console.log("ID de la sala: " + data.id);
+            done();
+          }
+          );
+
+        });
+
+      });
+
+      //Test de unirse a una sala correctamente
+      test("Unirse a sala correctamente", (done) => {
+        const user = { nickname: "Usuario_2" };
+
+        usuarios[2].emit("joinRoom", 1, user, (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+          expect(data).toHaveProperty("players");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("Te has unido a la sala " + 1);
+          console.log(data.players)
+          done();
+        });
+      });
+
+      //Test de unirse a una sala que no existe
+      test("Unirse a sala que no existe", (done) => {
+        const user = { nickname: "Usuario_2" };
+
+        usuarios[2].emit("joinRoom", 5, user, (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("La sala no existe");
+          done();
+        });
+      });
+
+      //Test de unirse a una sala que ya está llena
+      test("Unirse a sala llena", (done) => {
+        const user = { nickname: "Usuario_3" };
+
+        usuarios[3].emit("joinRoom", 1, user, (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("La sala está llena");
+          done();
+        });
+      });
+
+      //Estando en la propia sala
+      test("Unirse a sala estando en la propia sala", (done) => {
+        const user = { nickname: "Usuario_0" };
+
+        usuarios[0].emit("joinRoom", 2, user, (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("Ya estás en otra sala");
+          done();
+        });
+      });
+
+      //Estando en otra sala
+      test("Unirse a sala estando en otra sala", (done) => {
+        const user = { nickname: "Usuario_2" };
+
+        usuarios[2].emit("joinRoom", 2, user, (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("Ya estás en otra sala");
+          done();
+        });
+      });
+
+
+    });
+
+
+    describe("Test abandonar sala", () => {
+
+      beforeAll((done) => {
+        usuarios = simFrontend(5, done);
+        //Debug, user0 deletes all the rooms in order to restart new tests
+        usuarios[0].emit("eliminarSalas");
+      });
+
+      afterAll((done) => {
+        desconectarGente(usuarios);
+        done();
+      });
+
+      //1. Crear sala
+      //2. Unirse a sala
+      //3. Abandonar sala
+      //4. Abandonar sala inexistente
+      //5. Abandonar sala estando en otra sala
+      //6. Abandonar sala no estando en ninguna sala
+
+      //Primero hay que crear almenos 2 salas para hacer las pruebas { usuario 0 crea sala 1 y usuario 1 crea sala 2}
+      test("Crear salas", (done) => {
+        const user = { nickname: "Usuario_0" };
+
+        usuarios[0].emit("createRoom", user, "Sala1", 2, "normal", (data) => {
+          expect(data).toHaveProperty("id");
+          expect(data).toHaveProperty("message");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe(
+            "Sala creada correctamente, comparte el ID con tus amigos"
+          );
+
+          console.log("ID de la sala: " + data.id);
+
+          const user = { nickname: "Usuario_1" };
+
+          usuarios[1].emit("createRoom", user, "Sala2", 6, "normal", (data) => {
+            expect(data).toHaveProperty("id");
+            expect(data).toHaveProperty("message");
+            //Verificamos que el mensaje sea el correcto
+            expect(data.message).toBe(
+              "Sala creada correctamente, comparte el ID con tus amigos"
+            );
+
+            console.log("ID de la sala: " + data.id);
+            done();
+          }
+          );
+
+        });
+
+      });
+
+      //Test de unirse a una sala correctamente
+      test("Abandonar sala correctamente", (done) => {
+        const user = { nickname: "Usuario_2" };
+
+        //Primero se une a la sala
+        usuarios[2].emit("joinRoom", 4, user, (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("Te has unido a la sala " + 4);
+          console.log(data.players)
+
+          //Ahora abandona la sala
+          usuarios[2].emit("leaveTheRoom", 4, (data) => {
+            expect(data).toHaveProperty("status");
+            expect(data).toHaveProperty("message");
+            //Verificamos que el mensaje sea el correcto
+            expect(data.message).toBe("Has abandonado la sala " + 4);
+            expect(data.status).toBe('ok');
+            console.log(data.players)
+            done();
+          });
+        });
+      }, 10000);
+
+    });
+
+    describe("Test de expulsión de jugador", () => {
+      beforeAll((done) => {
+        usuarios = simFrontend(10, done);
+        //Debug, user0 deletes all the rooms in order to restart new tests
+        usuarios[0].emit("eliminarSalas");
+
+
+      });
+
+      afterAll((done) => {
+        desconectarGente(usuarios);
+        done();
+      });
+
+      //1. Crear sala
+      //2. Unirse a sala
+      //3. Expulsar a jugador
+
+      test("Crear salas", (done) => {
+        const user = { nickname: "Usuario_0" };
+
+        usuarios[0].emit("createRoom", user, "Sala1", 2, "normal", (data) => {
+          expect(data).toHaveProperty("id");
+          expect(data).toHaveProperty("message");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe(
+            "Sala creada correctamente, comparte el ID con tus amigos"
+          );
+
+          console.log("ID de la sala: " + data.id);
+
+          done();
+        });
+
+      });
+
+      //Test de expulsar a un jugador correctamente
+      test("Unión correcta a sala", (done) => {
         const user = { nickname: "Usuario_1" };
 
+        //Primero se une a la sala
         usuarios[1].emit("joinRoom", 5, user, (data) => {
           expect(data).toHaveProperty("status");
           expect(data).toHaveProperty("message");
-
-          expect(data.status).toBe("error");
-          expect(data.message).toBe("La sala no existe");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("Te has unido a la sala " + 5);
+          console.log(data.players)
 
           done();
-
         });
 
       });
 
-      test("Unirse a una sala estando ya en ella", (done) => {
-        const user = { nickname: "Usuario_0" };
+      test("Expulsar a jugador correctamente (líder expulsa a jugador 1)", (done) => {
 
-        usuarios[0].emit("joinRoom", 0, user, (data) => {
+        const user = { nickname: "Usuario_1" };
+
+        usuarios[0].emit("removePlayerFromRoom", 5, user, (data) => {
           expect(data).toHaveProperty("status");
           expect(data).toHaveProperty("message");
 
-          expect(data.status).toBe("error");
-          expect(data.message).toBe("Ya estás en la sala");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.status).toBe("ok");
+          expect(data.message).toBe("El jugador ha sido eliminado de la sala");
+          console.log(data.players)
 
           done();
-
         });
 
       });
 
 
-
-
-
-
-            
-
-
-
-
-      test("Unirse a una sala", (done) => {
-        unirUsuariosSala(usuarios, 0, 3, done);
-      });
+      //Fin por ahora de los test de salas
     });
-
-    //Fin por ahora de los test de salas
   });
 };
 
