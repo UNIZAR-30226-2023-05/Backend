@@ -79,6 +79,11 @@ class RoomController {
         return false;
     }
 
+    //Comprobar si la sala está llena
+    isRoomFull(roomID) {
+        return this.activeRooms[roomID].isRoomFull();
+    }
+
 
     //eliminar jugador de sala
     //---->Pendiente de autorización
@@ -86,8 +91,19 @@ class RoomController {
         this.activeRooms[roomID].removePlayer(userLeader,player);
     }
 
+    //Devolver un room dado un id
+    getRoom(roomID) {
+        return this.activeRooms[roomID];
+    }
+
     getPlayer(socket,roomID) {
         return this.activeRooms[roomID].getPlayerBySocket(socket);
+    }
+
+    //Misma función que la de arriba, pero con el nickname
+    getPlayerByNickname(nickname,roomID) {
+        // console.log("Buscando jugador por nickname: " + nickname);
+        return this.activeRooms[roomID].getPlayerByNickname(nickname);
     }
 
     isRoomNameInUse(roomName) {
@@ -100,6 +116,15 @@ class RoomController {
         }
         return false;
     }
+
+    getRoom(roomID) {
+        return this.activeRooms[roomID];
+    }
+
+    addGameController(roomID, gameController) {
+        this.activeRooms[roomID].setController(gameController);
+    }
+
 
 
 }

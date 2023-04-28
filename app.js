@@ -116,15 +116,18 @@ io.use((socket, next) => {
 //Controllers
 roomHandler = require("./app_server/controllers/online/roomHandler");
 chatHandler = require("./app_server/controllers/chat/roomChatHandler");
+gameHandler = require("./app_server/controllers/online/gameHandler");
 gameSessionHandler = require("./app_server/controllers/online/gameSessionHandler");
 RoomController = require("./app_server/controllers/online/roomController");
 GameSessionController = require("./app_server/controllers/online/gameSessionController");
+GameControllerClass = require("./app_server/controllers/online/gameController");
 privateChatHandler = require("./app_server/controllers/chat/privChatHandler");
 privateChatController = require("./app_server/controllers/chat/privChatController");
 
 roomController = new RoomController(); //Instancia del controlador de las salas
 gameSessionStorage = new GameSessionController(); //Instancia del controlador de las sesiones
 privChat = new privateChatController(io, gameSessionStorage); //Instancia del controlador de los chats privados
+// gameController = new GameControllerClass(io, gameSessionStorage); //Instancia del controlador de los juegos
 
 //Socket.io
 
@@ -143,6 +146,9 @@ io.on("connection", async (socket) => {
 
   //Controlador de los chats privados
   privateChatHandler(socket, privChat, io);
+
+  //Controlador de los juegos
+  gameHandler(socket, roomController, io);
 
   //Aquí se pueden añadir más controladores de eventos (WebSockets)
 

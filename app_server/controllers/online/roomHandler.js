@@ -20,6 +20,11 @@ const roomHandler = (socket, roomController, io) => {
    */
   function createRoomHandler(user,roomName, numPlayers, gamemode, callback) {
     
+
+    //Objeto player
+    leader = new Player(user.nickname, socket);
+
+
     //Comprobaciones:
     //1. Si la sala ya existe
     //2. Si el número de jugadores es mayor que el máximo permitido
@@ -56,7 +61,7 @@ const roomHandler = (socket, roomController, io) => {
     }
 
     //El jugador ya está en una sala?
-    if (roomController.isPlayerInAnyRoom(user.nickname)) {
+    if (roomController.isPlayerInAnyRoom(leader)) {
       callback({
         message: "Ya estás en una sala",
         status: 'error'
@@ -66,11 +71,11 @@ const roomHandler = (socket, roomController, io) => {
 
 
     //Se crea la sala
-    roomId = roomController.createRoom(user,roomName, numPlayers, gamemode);
+    roomId = roomController.createRoom(leader,roomName, numPlayers, gamemode);
 
     // console.log("Sala creada con ID: " + roomId);
 
-    leader = new Player(user.nickname, socket);
+    
     //Se añade el jugador a la sala
     roomController.joinRoom(roomId, leader);
 
@@ -102,14 +107,6 @@ const roomHandler = (socket, roomController, io) => {
     //4. Unirse a sala cuando ya esta en otra sala
     //5. partida en juego?
 
-    //El jugador ya está en la sala?
-    if (roomController.isPlayerInRoom(roomID, newPlayer)) {
-      callback({
-        message: "Ya estás en la sala",
-        status: 'error'
-      });
-      return;
-    }
 
     //La sala existe?
     if (!roomController.isRoomActive(roomID)) {
@@ -120,15 +117,15 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
-    // //La sala está llena? --> Se comprueba directamente en el joinRoom
-    // if (roomController.isRoomFull(roomID)) {
-    //   callback({
-    //     message: "La sala está llena",
-    //     status: 'error'
-    //   });
-    //   return;
-    // }
-
+    //El jugador ya está en la sala?
+    if (roomController.isPlayerInRoom(roomID, newPlayer)) {
+      callback({
+        message: "Ya estás en la sala",
+        status: 'error'
+      });
+      return;
+    }
+    
     //El jugador está en otra sala?
     if (roomController.isPlayerInAnyRoom(newPlayer)) {
       callback({
@@ -137,6 +134,19 @@ const roomHandler = (socket, roomController, io) => {
       });
       return;
     }
+
+    //La sala está llena
+    if (roomController.isRoomFull(roomID)) {
+      callback({
+        message: "La sala está llena",
+        status: 'error'
+      });
+
+      return;
+    }
+
+
+
 
     //La partida ya ha empezado?
     //...
@@ -217,9 +227,16 @@ const roomHandler = (socket, roomController, io) => {
 
   //eliminar jugador de la sala (pendiente de aceptar)
   //--> PENDIENTE
-  function removePlayerFromRoomHandler(roomID, user,callback) {
+  function removePlayerFromRoomHandler(roomID, userNickname,callback) {
 
-    userLeader = roomController.getPlayer(socket,roomID);
+    //Mostrar todos los jugadores de la sala
+    // roomController.allPlayers(roomID);
+
+    let userLeader = roomController.getPlayer(socket,roomID);
+    // console.log("nickname: " + userNickname);
+    let userToRemove = roomController.getPlayerByNickname(userNickname, roomID);
+    // console.log(userLeader);
+    // console.log(userToRemove);
 
     //checkear si el usuario esta en la sala (nunca debería pasar)
     if (!roomController.isPlayerInRoom(roomID, userLeader)) {
@@ -230,9 +247,10 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
-    roomController.removePlayer(userLeader,roomID, user);
+
+    roomController.removePlayer(userLeader,roomID, userToRemove);
     //mensaje a todos los jugadores de la sala
-    roomController.sendMessageToRoom(roomID, `El jugador ${user.nickname} ha sido eliminado de la sala`, io);
+    roomController.sendMessageToRoom(roomID, `El jugador ${userToRemove.nickname} ha sido eliminado de la sala`, io);
 
     callback({
       message: "El jugador ha sido eliminado de la sala",

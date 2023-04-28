@@ -112,7 +112,7 @@ const testSalas = () => {
 
     describe("Test correctos de solo un usuario", () => {
       beforeAll((done) => {
-        usuarios = simFrontend(5, done);
+        usuarios = simFrontend(8, done);
       });
 
       test("Crear sala", (done) => {
@@ -129,12 +129,90 @@ const testSalas = () => {
         });
       });
 
-      test("Unirse a una sala", (done) => {
-        unirUsuariosSala(usuarios, 0, 3, done);
+      test ("Unirse a una sala que no existe", (done) => {
+        const user = { nickname: "Usuario_1" };
+
+        usuarios[1].emit("joinRoom", 5, user, (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+
+          expect(data.status).toBe("error");
+          expect(data.message).toBe("La sala no existe");
+
+          done();
+
+        });
+
+      });
+
+      test("Unirse a una sala estando ya en ella", (done) => {
+        const user = { nickname: "Usuario_0" };
+
+        usuarios[0].emit("joinRoom", 0, user, (data) => {
+          expect(data).toHaveProperty("status");
+          expect(data).toHaveProperty("message");
+
+          expect(data.status).toBe("error");
+          expect(data.message).toBe("Ya estás en la sala");
+
+          done();
+
+        });
+
+      });
+
+
+      test("Mandar mensaje a la sala", (done) => {
+        const texto = "Hola a todos";
+        usuarios[0].emit("sendMessage", 0, texto, (data) => {
+          expect(data).toHaveProperty("msg");
+          expect(data).toHaveProperty("status");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.msg).toBe("message sent");
+          expect(data.status).toBe("ok");
+
+          done();
+        });
+      });
+
+      test("Eliminar a un usuario de la sala -> siendo líder", (done) => {
+        const user = "Usuario_1"
+        usuarios[0].emit("removePlayerFromRoom", 0, user, (data) => {
+          expect(data).toHaveProperty("message");
+          expect(data).toHaveProperty("status");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("El jugador ha sido eliminado de la sala");
+          expect(data.status).toBe("ok");
+
+          done();
+        });
+      });
+
+      test("Comenzar partida", (done) => {
+        usuarios[0].emit("startGame", 0, 12000, (data) => {
+          expect(data).toHaveProperty("message");
+          expect(data).toHaveProperty("status");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe(
+            "Partida iniciada"
+          );
+          expect(data.status).toBe("ok");
+          done();
+        });
+      });
+
+      test("Borrar sala", (done) => {
+        usuarios[0].emit("destroyRoom", 0, (data) => {
+          expect(data).toHaveProperty("message");
+          expect(data).toHaveProperty("status");
+          //Verificamos que el mensaje sea el correcto
+          expect(data.message).toBe("Sala destruida correctamente");
+          expect(data.status).toBe("ok");
+
+          done();
+        });
       });
     });
-
-    //Fin por ahora de los test de salas
   });
 };
 
