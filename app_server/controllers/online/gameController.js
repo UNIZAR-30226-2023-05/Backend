@@ -1,7 +1,7 @@
 /* Controlador de partida para cada sala (suponiendo que la lógica de juego ya 
     está implementada). */
 
-const tablero = require("../../game_logic/tablero");
+const tablero = require("../../../game_logic/tablero");
 const { Console } = require("winston/lib/winston/transports");
 const { config } = require("../../../config");
 
