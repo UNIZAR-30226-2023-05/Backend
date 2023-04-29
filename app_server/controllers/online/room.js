@@ -39,6 +39,10 @@ class Room {
 
   //--Métodos--
 
+  getRoomId() {
+    return this.roomId;
+  }
+
   //Unir jugador X a esta sala (player es un objeto de la clase Player)
   /**
    *
