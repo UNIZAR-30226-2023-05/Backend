@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { testSolicitud, testGetSolicitudes, testGetAmigos, testRechazarSolicitudes } = require("./ttsFunctions/socialTest");
 
 describe('Tests parte 2', () => {

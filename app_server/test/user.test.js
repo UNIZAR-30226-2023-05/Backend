@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 //Importar los ficheros de test y ejecutarlos
 //
 const { testRegistro, testLogin, delTestUser, testUpdateUser, testGetUserInfo, testGetUserId } = require("./ttsFunctions/userTest");
