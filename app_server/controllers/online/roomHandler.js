@@ -12,16 +12,19 @@ const Player = require("./player");
 const roomHandler = (socket, roomController, io) => {
   //---Crear sala---
   /**
-   *
+   * @param {*} user
    * @param {*} roomName
    * @param {*} numPlayers
    * @param {*} gamemode
    * @param {*} callback
    */
+
+
   function createRoomHandler(user,roomName, numPlayers, gamemode, callback) {
     
+    
 
-    //Objeto player
+    //líder de la sala
     leader = new Player(user.nickname, socket);
 
 
@@ -69,7 +72,7 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
-
+    
     //Se crea la sala
     roomId = roomController.createRoom(leader,roomName, numPlayers, gamemode);
 
@@ -107,7 +110,6 @@ const roomHandler = (socket, roomController, io) => {
     //4. Unirse a sala cuando ya esta en otra sala
     //5. partida en juego?
 
-
     //La sala existe?
     if (!roomController.isRoomActive(roomID)) {
       callback({
@@ -117,7 +119,7 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
-    //El jugador ya está en la sala?
+    //El jugador está en alguna sala?
     if (roomController.isPlayerInRoom(roomID, newPlayer)) {
       callback({
         message: "Ya estás en la sala",
@@ -125,7 +127,7 @@ const roomHandler = (socket, roomController, io) => {
       });
       return;
     }
-    
+
     //El jugador está en otra sala?
     if (roomController.isPlayerInAnyRoom(newPlayer)) {
       callback({
@@ -134,8 +136,9 @@ const roomHandler = (socket, roomController, io) => {
       });
       return;
     }
+    
 
-    //La sala está llena
+    //La sala está llena?
     if (roomController.isRoomFull(roomID)) {
       callback({
         message: "La sala está llena",
@@ -145,8 +148,7 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
-
-
+    
 
     //La partida ya ha empezado?
     //...
@@ -163,11 +165,12 @@ const roomHandler = (socket, roomController, io) => {
     // roomController.sendMessageToRoom(roomID, `Has entrado en la sala ${roomID}`, socket);
 
     //Se añade el jugador a la  sala
-    roomController.joinRoom(roomID, newPlayer);
+    let nicknames = roomController.joinRoom(roomID, newPlayer);
 
     //Se envía un mensaje al cliente que ha creado la sala <socket>
     callback({
       message: "Te has unido a la sala " + roomID,
+      players: nicknames,
       status: 'ok'
     });
 
@@ -178,7 +181,15 @@ const roomHandler = (socket, roomController, io) => {
 
     delPlayer = roomController.getPlayer(socket,roomID);
 
-    // roomController.allPlayers(roomID);
+    //Existe la sala?
+    if (!roomController.isRoomActive(roomID)) {
+      callback({
+        message: "La sala no existe",
+        status: 'error'
+      });
+      return;
+
+    }
 
     //El jugador está en la sala?
     if (roomController.isPlayerInRoom(roomID, delPlayer)) {
@@ -187,17 +198,26 @@ const roomHandler = (socket, roomController, io) => {
       socket.leave(roomID);
 
       //Se elimina el jugador de la sala
-      roomController.leaveRoom(roomID, delPlayer);
-
+      let nicknames = roomController.leaveRoom(roomID, delPlayer);
       //Se envía un mensaje a todos los usuarios de la sala <roomID> (excepto al que ha creado la sala
       roomController.sendMessageToRoom(roomID, `El jugador ${delPlayer.nickname} ha abandonado la sala`, io);
 
       //Se envía un mensaje al cliente que ha creado la sala <socket>
-      callback("Has abandonado la sala " + roomID);
+      callback({
+        message: "Has abandonado la sala " + roomID,
+        players: nicknames,
+        status: 'ok'
+      });
+
+
     }
     else {
       //El jugador no está en la sala
-      callback("No estás en la sala");
+      callback({
+        message: "No estás en la sala",
+        status: 'error'
+      });
+
     }
 
   }
@@ -227,16 +247,9 @@ const roomHandler = (socket, roomController, io) => {
 
   //eliminar jugador de la sala (pendiente de aceptar)
   //--> PENDIENTE
-  function removePlayerFromRoomHandler(roomID, userNickname,callback) {
+  function removePlayerFromRoomHandler(roomID, user,callback) {
 
-    //Mostrar todos los jugadores de la sala
-    // roomController.allPlayers(roomID);
-
-    let userLeader = roomController.getPlayer(socket,roomID);
-    // console.log("nickname: " + userNickname);
-    let userToRemove = roomController.getPlayerByNickname(userNickname, roomID);
-    // console.log(userLeader);
-    // console.log(userToRemove);
+    userLeader = roomController.getPlayer(socket,roomID);
 
     //checkear si el usuario esta en la sala (nunca debería pasar)
     if (!roomController.isPlayerInRoom(roomID, userLeader)) {
@@ -247,16 +260,44 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
+    //No eliminarse a sí mismo
+    if (userLeader.nickname == user.nickname) {
+      callback({
+        message: "No puedes eliminarte a ti mismo",
+        status: 'error'
+      });
 
-    roomController.removePlayer(userLeader,roomID, userToRemove);
+      return;
+
+    }
+
+    //El jugador no esta en la sala
+    if (!roomController.isPlayerInRoom(roomID, user)) {
+      callback({
+        message: "El jugador no está en la sala",
+        status: 'error'
+      });
+
+      return;
+    
+    }
+
+
+    let nicknames = roomController.removePlayer(userLeader,roomID, user);
     //mensaje a todos los jugadores de la sala
-    roomController.sendMessageToRoom(roomID, `El jugador ${userToRemove.nickname} ha sido eliminado de la sala`, io);
+    roomController.sendMessageToRoom(roomID, `El jugador ${user.nickname} ha sido eliminado de la sala`, io);
 
     callback({
       message: "El jugador ha sido eliminado de la sala",
+      players: nicknames,
       status: 'ok'
 
     });
+  }
+
+  //Debug handler
+  function eliminateAllRoomsHandler() {
+    roomController.destroyAllRooms();
   }
 
   //================================================================================================
@@ -267,6 +308,8 @@ const roomHandler = (socket, roomController, io) => {
   socket.on("leaveTheRoom", leaveRoomHandler);
   socket.on("destroyRoom", destroyRoomHandler);
   socket.on("removePlayerFromRoom", removePlayerFromRoomHandler);
+  //Debug handler
+  socket.on("eliminarSalas", eliminateAllRoomsHandler);
 };
 
 module.exports = roomHandler;

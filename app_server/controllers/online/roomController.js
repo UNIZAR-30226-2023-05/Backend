@@ -41,12 +41,14 @@ class RoomController {
     joinRoom(roomId, player) {
         //Se añade el jugador a la sala
         // console.log("Se añade el jugador a la sala");
-        this.activeRooms[roomId].joinRoom(player);
+        let nicknames = this.activeRooms[roomId].joinRoom(player);
+        return nicknames;
     }
 
     leaveRoom(roomId, player) {
         //Se elimina el jugador de la sala
-        this.activeRooms[roomId].leaveRoom(player);
+        let nicknames = this.activeRooms[roomId].leaveRoom(player);
+        return nicknames;
     }
 
     sendMessageToRoom(roomId, message,io) {
@@ -79,53 +81,40 @@ class RoomController {
         return false;
     }
 
-    //Comprobar si la sala está llena
-    isRoomFull(roomID) {
-        return this.activeRooms[roomID].isRoomFull();
-    }
-
-
     //eliminar jugador de sala
     //---->Pendiente de autorización
     removePlayer(userLeader, roomID, player) {
-        this.activeRooms[roomID].removePlayer(userLeader,player);
-    }
-
-    //Devolver un room dado un id
-    getRoom(roomID) {
-        return this.activeRooms[roomID];
+        let nicknames = this.activeRooms[roomID].removePlayer(userLeader,player);
+        return nicknames;
     }
 
     getPlayer(socket,roomID) {
         return this.activeRooms[roomID].getPlayerBySocket(socket);
     }
 
-    //Misma función que la de arriba, pero con el nickname
-    getPlayerByNickname(nickname,roomID) {
-        // console.log("Buscando jugador por nickname: " + nickname);
-        return this.activeRooms[roomID].getPlayerByNickname(nickname);
-    }
-
     isRoomNameInUse(roomName) {
-        console.log("Comprobando si el nombre de sala está en uso: " + roomName);
+        // console.log("Comprobando si el nombre de sala está en uso: " + roomName);
         for (let room in this.activeRooms) {
             if (this.activeRooms[room].roomName == roomName) {
-                console.log("Nombre de sala en uso: " + roomName);
+                // console.log("Nombre de sala en uso: " + roomName);
                 return true;
             }
         }
         return false;
     }
 
-    getRoom(roomID) {
-        return this.activeRooms[roomID];
+    isRoomFull(roomID) {
+        return this.activeRooms[roomID].isRoomFull();
     }
 
-    addGameController(roomID, gameController) {
-        this.activeRooms[roomID].setController(gameController);
+    //Debug method
+    destroyAllRooms() {
+        //delete all the rooms in the dictionary
+        console.log("Eliminando todas las salas");
+        for (let room in this.activeRooms) {
+            delete this.activeRooms[room];
+        }
     }
-
-
 
 }
 
