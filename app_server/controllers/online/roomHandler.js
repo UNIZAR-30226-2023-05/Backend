@@ -179,9 +179,7 @@ const roomHandler = (socket, roomController, io) => {
   //Nuevo (pendiente)
   function leaveRoomHandler(roomID, callback) {
 
-    delPlayer = roomController.getPlayer(socket,roomID);
-
-    //Existe la sala?
+    //Comprobar en primera instancia si la sala existe
     if (!roomController.isRoomActive(roomID)) {
       callback({
         message: "La sala no existe",
@@ -191,11 +189,34 @@ const roomHandler = (socket, roomController, io) => {
 
     }
 
-    //El jugador está en la sala?
-    if (roomController.isPlayerInRoom(roomID, delPlayer)) {
+    //No esta en ninguna sala? --> Se han tenido que hacer mas funciones pero es mas cuestión de casos posibles
+    if (!roomController.isPlayerInAnyRoomBySocket(socket)) {
+      callback({
+        message: "No estás en la sala",
+        status: 'error'
+      });
+      return;
 
-      
-      socket.leave(roomID);
+    }
+
+    //Como se desconoce si se encuentra o no en la sala, se busca en todas las salas
+    delPlayer = roomController.getPlayer_deepSearch(socket);
+
+    console.log("Jugador que va a salir de la sala: " + delPlayer.nickname);
+
+    //Comprobar si el jugador está en la sala -> antes de comprobar socket ( sino undefined )
+    if (!roomController.isPlayerInRoom(roomID, delPlayer)) {
+      callback({
+        message: "No estás en la sala",
+        status: 'error'
+      });
+      return;
+
+    }
+    //Comprobar si no es el líder de la sala --> en caso de no serlo, abandonar normal
+    if (!roomController.isPlayerLeader(roomID, delPlayer)) {
+        
+      // socket.leave(roomID); --> ya se hace en leaveRoom 
 
       //Se elimina el jugador de la sala
       let nicknames = roomController.leaveRoom(roomID, delPlayer);
@@ -208,16 +229,18 @@ const roomHandler = (socket, roomController, io) => {
         players: nicknames,
         status: 'ok'
       });
-
-
     }
-    else {
-      //El jugador no está en la sala
-      callback({
-        message: "No estás en la sala",
-        status: 'error'
-      });
 
+    else {
+
+      roomController.showAllRooms();
+      //Es el líder de la sala --> destruir la sala
+      destroyRoomHandler(roomID,callback);
+
+      callback({
+        message: "Has abandonado la sala y se ha destruido",
+        status: 'ok'
+      });
     }
 
   }
@@ -237,7 +260,11 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
+    //No es necesario comprobar si es el líder (frontend lo sabe -> solametne hay un boton para ellos)
+
     roomController.deleteRoom(user,roomID);
+
+    roomController.showAllRooms();
 
     callback({
       message: "Sala destruida correctamente",
