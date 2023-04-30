@@ -80,7 +80,7 @@ const roomHandler = (socket, roomController, io) => {
 
     
     //Se añade el jugador a la sala
-    roomController.joinRoom(roomId, leader);
+    roomController.joinRoom(roomId, leader, io);
 
     // console.log("Jugador " + user.nickname + " añadido a la sala " + roomId);
 
@@ -164,13 +164,12 @@ const roomHandler = (socket, roomController, io) => {
     //La sala envia mensaje al cliente que se ha unido --> ?? 
     // roomController.sendMessageToRoom(roomID, `Has entrado en la sala ${roomID}`, socket);
 
-    //Se añade el jugador a la  sala
-    let nicknames = roomController.joinRoom(roomID, newPlayer);
+    //Se añade el jugador a la  sala -> necesitamos el socket del servidor
+    roomController.joinRoom(roomID, newPlayer, io);
 
     //Se envía un mensaje al cliente que ha creado la sala <socket>
     callback({
       message: "Te has unido a la sala " + roomID,
-      players: nicknames,
       status: 'ok'
     });
 
@@ -179,9 +178,7 @@ const roomHandler = (socket, roomController, io) => {
   //Nuevo (pendiente)
   function leaveRoomHandler(roomID, callback) {
 
-    delPlayer = roomController.getPlayer(socket,roomID);
-
-    //Existe la sala?
+    //Comprobar en primera instancia si la sala existe
     if (!roomController.isRoomActive(roomID)) {
       callback({
         message: "La sala no existe",
@@ -191,33 +188,57 @@ const roomHandler = (socket, roomController, io) => {
 
     }
 
-    //El jugador está en la sala?
-    if (roomController.isPlayerInRoom(roomID, delPlayer)) {
+    //No esta en ninguna sala? --> Se han tenido que hacer mas funciones pero es mas cuestión de casos posibles
+    if (!roomController.isPlayerInAnyRoomBySocket(socket)) {
+      callback({
+        message: "No estás en la sala",
+        status: 'error'
+      });
+      return;
 
-      
-      socket.leave(roomID);
+    }
+
+    //Como se desconoce si se encuentra o no en la sala, se busca en todas las salas
+    delPlayer = roomController.getPlayer_deepSearch(socket);
+
+    console.log("Jugador que va a salir de la sala: " + delPlayer.nickname);
+
+    //Comprobar si el jugador está en la sala -> antes de comprobar socket ( sino undefined )
+    if (!roomController.isPlayerInRoom(roomID, delPlayer)) {
+      callback({
+        message: "No estás en la sala",
+        status: 'error'
+      });
+      return;
+
+    }
+    //Comprobar si no es el líder de la sala --> en caso de no serlo, abandonar normal
+    if (!roomController.isPlayerLeader(roomID, delPlayer)) {
+        
+      // socket.leave(roomID); --> ya se hace en leaveRoom 
 
       //Se elimina el jugador de la sala
-      let nicknames = roomController.leaveRoom(roomID, delPlayer);
+      roomController.leaveRoom(roomID, delPlayer, io);
       //Se envía un mensaje a todos los usuarios de la sala <roomID> (excepto al que ha creado la sala
       roomController.sendMessageToRoom(roomID, `El jugador ${delPlayer.nickname} ha abandonado la sala`, io);
 
       //Se envía un mensaje al cliente que ha creado la sala <socket>
       callback({
         message: "Has abandonado la sala " + roomID,
-        players: nicknames,
         status: 'ok'
       });
-
-
     }
-    else {
-      //El jugador no está en la sala
-      callback({
-        message: "No estás en la sala",
-        status: 'error'
-      });
 
+    else {
+
+      roomController.showAllRooms();
+      //Es el líder de la sala --> destruir la sala
+      destroyRoomHandler(roomID,callback);
+
+      callback({
+        message: "Has abandonado la sala y se ha destruido",
+        status: 'ok'
+      });
     }
 
   }
@@ -237,7 +258,11 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
+    //No es necesario comprobar si es el líder (frontend lo sabe -> solametne hay un boton para ellos)
+
     roomController.deleteRoom(user,roomID);
+
+    roomController.showAllRooms();
 
     callback({
       message: "Sala destruida correctamente",
@@ -283,13 +308,12 @@ const roomHandler = (socket, roomController, io) => {
     }
 
 
-    let nicknames = roomController.removePlayer(userLeader,roomID, user);
+    roomController.removePlayer(userLeader,roomID, user,io);
     //mensaje a todos los jugadores de la sala
     roomController.sendMessageToRoom(roomID, `El jugador ${user.nickname} ha sido eliminado de la sala`, io);
 
     callback({
       message: "El jugador ha sido eliminado de la sala",
-      players: nicknames,
       status: 'ok'
 
     });

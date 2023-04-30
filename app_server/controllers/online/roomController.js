@@ -30,6 +30,10 @@ class RoomController {
     
     }
 
+    isPlayerLeader(roomID,user) {
+        return this.activeRooms[roomID].isLeader(user);
+    }
+
     deleteRoom(user,roomId) {
         //Se elimina la sala del diccionario
         //NO SE DECREMENTA EL ID
@@ -38,17 +42,15 @@ class RoomController {
         delete this.activeRooms[roomId];
     }
 
-    joinRoom(roomId, player) {
+    joinRoom(roomId, player,io) {
         //Se añade el jugador a la sala
         // console.log("Se añade el jugador a la sala");
-        let nicknames = this.activeRooms[roomId].joinRoom(player);
-        return nicknames;
+        this.activeRooms[roomId].joinRoom(player,io);
     }
 
-    leaveRoom(roomId, player) {
+    leaveRoom(roomId, player,io) {
         //Se elimina el jugador de la sala
-        let nicknames = this.activeRooms[roomId].leaveRoom(player);
-        return nicknames;
+        this.activeRooms[roomId].leaveRoom(player,io);
     }
 
     sendMessageToRoom(roomId, message,io) {
@@ -71,6 +73,16 @@ class RoomController {
         this.activeRooms[roomID].printPlayers();
     }
 
+    //Para eliminar sala --> darse el caso de que directamente no esté en ninguna
+    isPlayerInAnyRoomBySocket(socket) {
+        for (let room in this.activeRooms) {
+            if (this.activeRooms[room].isPlayerInRoomBySocket(socket)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //Buscar jugador en alguna sala
     isPlayerInAnyRoom(player) {
         for (let room in this.activeRooms) {
@@ -81,12 +93,38 @@ class RoomController {
         return false;
     }
 
+    //show all the rooms
+    showAllRooms() {
+        console.log("Mostrando todas las salas");
+        for (let room in this.activeRooms) {
+            console.log("Sala: " + this.activeRooms[room].roomName);
+        }
+
+        if (Object.keys(this.activeRooms).length == 0) {
+            console.log("No hay salas activas");
+        }
+
+    }
+
     //eliminar jugador de sala
     //---->Pendiente de autorización
-    removePlayer(userLeader, roomID, player) {
-        let nicknames = this.activeRooms[roomID].removePlayer(userLeader,player);
-        return nicknames;
+    removePlayer(userLeader, roomID, player,io) {
+        console.log("Socket del servidor: " + io);
+        this.activeRooms[roomID].removeThePlayer(userLeader,player,io);
     }
+
+    //Si no se conoce la sala en la que se encuentra el jugador
+    //Se busca en todas las salas
+    getPlayer_deepSearch(socket) {
+        for (let room in this.activeRooms) {
+            let player = this.activeRooms[room].getPlayerBySocket(socket);
+            if (player != undefined) {
+                return player;
+            }
+        }
+        return undefined;
+    }
+
 
     getPlayer(socket,roomID) {
         return this.activeRooms[roomID].getPlayerBySocket(socket);
