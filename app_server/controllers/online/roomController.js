@@ -42,17 +42,15 @@ class RoomController {
         delete this.activeRooms[roomId];
     }
 
-    joinRoom(roomId, player) {
+    joinRoom(roomId, player,io) {
         //Se añade el jugador a la sala
         // console.log("Se añade el jugador a la sala");
-        let nicknames = this.activeRooms[roomId].joinRoom(player);
-        return nicknames;
+        this.activeRooms[roomId].joinRoom(player,io);
     }
 
-    leaveRoom(roomId, player) {
+    leaveRoom(roomId, player,io) {
         //Se elimina el jugador de la sala
-        let nicknames = this.activeRooms[roomId].leaveRoom(player);
-        return nicknames;
+        this.activeRooms[roomId].leaveRoom(player,io);
     }
 
     sendMessageToRoom(roomId, message,io) {
@@ -110,9 +108,9 @@ class RoomController {
 
     //eliminar jugador de sala
     //---->Pendiente de autorización
-    removePlayer(userLeader, roomID, player) {
-        let nicknames = this.activeRooms[roomID].removePlayer(userLeader,player);
-        return nicknames;
+    removePlayer(userLeader, roomID, player,io) {
+        console.log("Socket del servidor: " + io);
+        this.activeRooms[roomID].removeThePlayer(userLeader,player,io);
     }
 
     //Si no se conoce la sala en la que se encuentra el jugador

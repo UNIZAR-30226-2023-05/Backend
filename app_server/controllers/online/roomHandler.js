@@ -80,7 +80,7 @@ const roomHandler = (socket, roomController, io) => {
 
     
     //Se añade el jugador a la sala
-    roomController.joinRoom(roomId, leader);
+    roomController.joinRoom(roomId, leader, io);
 
     // console.log("Jugador " + user.nickname + " añadido a la sala " + roomId);
 
@@ -164,13 +164,12 @@ const roomHandler = (socket, roomController, io) => {
     //La sala envia mensaje al cliente que se ha unido --> ?? 
     // roomController.sendMessageToRoom(roomID, `Has entrado en la sala ${roomID}`, socket);
 
-    //Se añade el jugador a la  sala
-    let nicknames = roomController.joinRoom(roomID, newPlayer);
+    //Se añade el jugador a la  sala -> necesitamos el socket del servidor
+    roomController.joinRoom(roomID, newPlayer, io);
 
     //Se envía un mensaje al cliente que ha creado la sala <socket>
     callback({
       message: "Te has unido a la sala " + roomID,
-      players: nicknames,
       status: 'ok'
     });
 
@@ -219,14 +218,13 @@ const roomHandler = (socket, roomController, io) => {
       // socket.leave(roomID); --> ya se hace en leaveRoom 
 
       //Se elimina el jugador de la sala
-      let nicknames = roomController.leaveRoom(roomID, delPlayer);
+      roomController.leaveRoom(roomID, delPlayer, io);
       //Se envía un mensaje a todos los usuarios de la sala <roomID> (excepto al que ha creado la sala
       roomController.sendMessageToRoom(roomID, `El jugador ${delPlayer.nickname} ha abandonado la sala`, io);
 
       //Se envía un mensaje al cliente que ha creado la sala <socket>
       callback({
         message: "Has abandonado la sala " + roomID,
-        players: nicknames,
         status: 'ok'
       });
     }
@@ -310,13 +308,12 @@ const roomHandler = (socket, roomController, io) => {
     }
 
 
-    let nicknames = roomController.removePlayer(userLeader,roomID, user);
+    roomController.removePlayer(userLeader,roomID, user,io);
     //mensaje a todos los jugadores de la sala
     roomController.sendMessageToRoom(roomID, `El jugador ${user.nickname} ha sido eliminado de la sala`, io);
 
     callback({
       message: "El jugador ha sido eliminado de la sala",
-      players: nicknames,
       status: 'ok'
 
     });

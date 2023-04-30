@@ -44,7 +44,7 @@ const gameHandler = (socket, roomController, io) => {
         }
 
         //Finalmente se crea el controlador de la partida
-        let gameController = new GameController(room,turnTimeout,socket);
+        let gameController = new GameController(room,turnTimeout,io);
 
         //Añadimos (por tener referencia) el controlador de la partida al controlador de las salas
         roomController.addGameController(roomId, gameController);

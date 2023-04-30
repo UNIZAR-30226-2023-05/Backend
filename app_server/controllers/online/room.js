@@ -44,7 +44,7 @@ class Room {
    *
    * @param {*} player Instancia de la clase Player
    */
-  joinRoom(player) {
+  joinRoom(player,io) {
     //Si el tamaño de la sala es igual al número de jugadores, no se puede unir
     if (this.numPlayers == Object.keys(this.players).length) {
       throw new Error("Sala llena");
@@ -59,12 +59,13 @@ class Room {
     for (let ply in this.players) {
       nicknames.push(this.players[ply].nickname);
     }
-    return nicknames;
+    
+    io.to(this.roomId).emit("updatePlayers", nicknames);
 
   }
 
   //Eliminar jugador X de esta sala (player es un objeto de la clase Player)
-  leaveRoom(player) {
+  leaveRoom(player,io) {
     //Si el jugador no está en la sala, no se puede eliminar
     if (this.players[player.nickname] == undefined) {
       throw new Error("El jugador no está en la sala");
@@ -77,9 +78,9 @@ class Room {
         nicknames.push(this.players[ply].nickname);
       }
 
-      return nicknames;
+        //Mensaje a todos los jugadores de la sala
+        io.to(this.roomId).emit("updatePlayers", nicknames);
     }
-
   }
 
   //Devuelve el número de jugadores que hay en la sala
@@ -112,7 +113,7 @@ class Room {
     //Si no se encuentra el jugador, se devuelve undefined
     return false;
   }
-  
+
 
   //is player in room
   isPlayerInRoom(player)
@@ -128,7 +129,7 @@ class Room {
   }
 
   //eliminar jugador de la sala (PENDING)
-  removePlayer(remover,player)
+  removeThePlayer(remover,player,io)
   {
     //Primero: se comprueba que no te puedas eliminar a ti mismo
     if (remover.nickname == player.nickname){
@@ -140,8 +141,8 @@ class Room {
         //Tercero: se comprueba que el jugador que se quiere eliminar está en la sala
         if (this.isPlayerInRoom(player)){
           //Cuarto: se elimina al jugador de la sala
-          let nicknames = this.leaveRoom(player);
-          return nicknames;
+          console.log("Socket server: "+ io);
+          this.leaveRoom(player,io);
         }
         else{
           throw new Error("El jugador no está en la sala");

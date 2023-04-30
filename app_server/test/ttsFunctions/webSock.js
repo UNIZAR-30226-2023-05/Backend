@@ -13,7 +13,7 @@ const { usrToken } = require("../../middleware/auth");
 
 
 //Puerto
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 //URL
 const url = "http://localhost:" + port;
@@ -272,10 +272,8 @@ const testSalas = () => {
         usuarios[2].emit("joinRoom", 1, user, (data) => {
           expect(data).toHaveProperty("status");
           expect(data).toHaveProperty("message");
-          expect(data).toHaveProperty("players");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Te has unido a la sala " + 1);
-          console.log(data.players)
           done();
         });
       });
@@ -392,7 +390,6 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Te has unido a la sala " + 4);
-          console.log(data.players)
 
           //Ahora abandona la sala
           usuarios[2].emit("leaveTheRoom", 4, (data) => {
@@ -401,7 +398,6 @@ const testSalas = () => {
             //Verificamos que el mensaje sea el correcto
             expect(data.message).toBe("Has abandonado la sala " + 4);
             expect(data.status).toBe('ok');
-            console.log(data.players)
             done();
           });
         });
@@ -417,7 +413,7 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Te has unido a la sala " + 4);
-          console.log(data.players)
+          
           done();
         });
       });
@@ -435,7 +431,7 @@ const testSalas = () => {
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Has abandonado la sala " + 4);
           expect(data.status).toBe('ok');
-          console.log(data.players)
+          
 
           //Ahora se une a la sala 5
           usuarios[2].emit("joinRoom", 3, user, (data) => {
@@ -443,7 +439,7 @@ const testSalas = () => {
             expect(data).toHaveProperty("message");
             //Verificamos que el mensaje sea el correcto
             expect(data.message).toBe("Te has unido a la sala " + 3);
-            console.log(data.players)
+            
             done();
           });
         });
@@ -564,7 +560,7 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Te has unido a la sala " + 5);
-          console.log(data.players)
+          
 
           done();
         });
@@ -582,7 +578,7 @@ const testSalas = () => {
           //Verificamos que el mensaje sea el correcto
           expect(data.status).toBe("ok");
           expect(data.message).toBe("El jugador ha sido eliminado de la sala");
-          console.log(data.players)
+          
 
           done();
         });
