@@ -77,7 +77,7 @@ const roomHandler = (socket, roomController, io) => {
     roomId = roomController.createRoom(leader,roomName, numPlayers, gamemode);
 
     // console.log("Sala creada con ID: " + roomId);
-    socket.join(roomID);
+    socket.join(roomId);
     
     //Se añade el jugador a la sala
     roomController.joinRoom(roomId, leader, io);
@@ -105,7 +105,7 @@ const roomHandler = (socket, roomController, io) => {
 
     //Condiciones:
     //1. Unirse a sala que ya esta unido
-    //2. Unirse a sala que no existe
+    //2. Unirse a saa que no existe
     //3. Unirse a sala que esta llena
     //4. Unirse a sala cuando ya esta en otra sala
     //5. partida en juego?
