@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -16,34 +17,11 @@ model amigos {
   @@id([id_usuario1, id_usuario2])
 }
 
-model chat {
-  id_chat                    Int          @id @default(autoincrement())
-  chatpartida                chatpartida?
-  chatprivado                chatprivado?
-  mensaje_mensaje_chatTochat mensaje[]    @relation("mensaje_chatTochat")
-}
-
-model chatpartida {
-  id_chatpartida Int      @id
-  id_partida     Int?
-  chat           chat     @relation(fields: [id_chatpartida], references: [id_chat], onDelete: Cascade)
-  partida        partida? @relation(fields: [id_partida], references: [id_partida], onDelete: Cascade)
-}
-
-model chatprivado {
-  id_chatprivado                        Int      @id
-  usuario1                              Int?
-  usuario2                              Int?
-  chat                                  chat     @relation(fields: [id_chatprivado], references: [id_chat], onDelete: Cascade)
-  usuario_chatprivado_usuario1Tousuario usuario? @relation("chatprivado_usuario1Tousuario", fields: [usuario1], references: [id_usuario], onDelete: Cascade)
-  usuario_chatprivado_usuario2Tousuario usuario? @relation("chatprivado_usuario2Tousuario", fields: [usuario2], references: [id_usuario], onDelete: Cascade)
-}
-
 model estadisticasacumuladas {
   usuario                                         Int     @id
-  vecescaido                                      Int
-  tiros                                           Int
-  veces6                                          Int
+  vecesoca                                        Int
+  vecesseis                                       Int
+  partidasjugadas                                 Int
   partidasganadas                                 Int
   vecescalavera                                   Int
   usuario_estadisticasacumuladas_usuarioTousuario usuario @relation("estadisticasacumuladas_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: Cascade)
@@ -55,32 +33,26 @@ model ficha {
   skin     skin? @relation(fields: [id_skin], references: [id_skin], onDelete: Cascade)
 }
 
-model formaparte {
-  usuario                             Int
-  sala                                Int
-  sala_formaparte_salaTosala          sala    @relation("formaparte_salaTosala", fields: [sala], references: [id_sala], onDelete: Cascade)
-  usuario_formaparte_usuarioTousuario usuario @relation("formaparte_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: Cascade)
-
-  @@id([usuario, sala])
+model logros {
+  usuario                         Int     @id
+  juegaunapartida                 Boolean
+  ganaunapartida                  Boolean
+  ganadiezpartidas                Boolean
+  ganacincuentapartidas           Boolean
+  caeendiezocas                   Boolean
+  caeenseisseises                 Boolean
+  usuario_logros_usuarioTousuario usuario @relation("logros_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: Cascade)
 }
 
 model mensaje {
-  id_mensaje              Int     @id @default(autoincrement())
-  fecha                   String  @db.VarChar(10)
-  hora                    String  @db.VarChar(8)
-  contenido               String
-  chat                    Int
-  remitente               Int
-  chat_mensaje_chatTochat chat    @relation("mensaje_chatTochat", fields: [chat], references: [id_chat], onDelete: Cascade)
-  usuario                 usuario @relation(fields: [remitente], references: [id_usuario], onDelete: Cascade)
-}
-
-model partida {
-  id_partida  Int           @id @default(autoincrement())
-  id_sala     Int?
-  chatpartida chatpartida[]
-  sala        sala?         @relation(fields: [id_sala], references: [id_sala], onDelete: Cascade)
-  situacion   situacion[]
+  id_mensaje                            Int     @id @default(autoincrement())
+  fecha                                 String  @db.VarChar(10)
+  hora                                  String  @db.VarChar(8)
+  contenido                             String
+  emisor                                Int
+  destinatario                          Int
+  usuario_mensaje_destinatarioTousuario usuario @relation("mensaje_destinatarioTousuario", fields: [destinatario], references: [id_usuario], onDelete: Cascade)
+  usuario_mensaje_emisorTousuario       usuario @relation("mensaje_emisorTousuario", fields: [emisor], references: [id_usuario], onDelete: Cascade)
 }
 
 model posee {
@@ -92,25 +64,6 @@ model posee {
   @@id([usuario, id_skin])
 }
 
-model sala {
-  id_sala                          Int          @id @default(autoincrement())
-  modo                             Int
-  nombre                           String       @db.VarChar(50)
-  formaparte_formaparte_salaTosala formaparte[] @relation("formaparte_salaTosala")
-  partida                          partida[]
-}
-
-model situacion {
-  usuario                            Int
-  id_partida                         Int
-  casilla                            Int
-  turno                              Int
-  partida                            partida @relation(fields: [id_partida], references: [id_partida], onDelete: Cascade)
-  usuario_situacion_usuarioTousuario usuario @relation("situacion_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: Cascade)
-
-  @@id([usuario, id_partida])
-}
-
 model skin {
   id_skin Int       @id @default(autoincrement())
   imagen  String
@@ -118,6 +71,15 @@ model skin {
   ficha   ficha[]
   posee   posee[]
   tablero tablero[]
+}
+
+model solicitud {
+  id_usuario_envia                             Int
+  id_usuario_recibe                            Int
+  usuario_solicitud_id_usuario_enviaTousuario  usuario @relation("solicitud_id_usuario_enviaTousuario", fields: [id_usuario_envia], references: [id_usuario], onDelete: Cascade)
+  usuario_solicitud_id_usuario_recibeTousuario usuario @relation("solicitud_id_usuario_recibeTousuario", fields: [id_usuario_recibe], references: [id_usuario], onDelete: Cascade)
+
+  @@id([id_usuario_envia, id_usuario_recibe])
 }
 
 model tablero {
@@ -135,22 +97,11 @@ model usuario {
   profilephoto                                                   String?
   amigos_amigos_id_usuario1Tousuario                             amigos[]                @relation("amigos_id_usuario1Tousuario")
   amigos_amigos_id_usuario2Tousuario                             amigos[]                @relation("amigos_id_usuario2Tousuario")
-  chatprivado_chatprivado_usuario1Tousuario                      chatprivado[]           @relation("chatprivado_usuario1Tousuario")
-  chatprivado_chatprivado_usuario2Tousuario                      chatprivado[]           @relation("chatprivado_usuario2Tousuario")
   estadisticasacumuladas_estadisticasacumuladas_usuarioTousuario estadisticasacumuladas? @relation("estadisticasacumuladas_usuarioTousuario")
-  formaparte_formaparte_usuarioTousuario                         formaparte[]            @relation("formaparte_usuarioTousuario")
-  mensaje                                                        mensaje[]
+  logros_logros_usuarioTousuario                                 logros?                 @relation("logros_usuarioTousuario")
+  mensaje_mensaje_destinatarioTousuario                          mensaje[]               @relation("mensaje_destinatarioTousuario")
+  mensaje_mensaje_emisorTousuario                                mensaje[]               @relation("mensaje_emisorTousuario")
   posee_posee_usuarioTousuario                                   posee[]                 @relation("posee_usuarioTousuario")
-  situacion_situacion_usuarioTousuario                           situacion[]             @relation("situacion_usuarioTousuario")
   solicitud_solicitud_id_usuario_enviaTousuario                  solicitud[]             @relation("solicitud_id_usuario_enviaTousuario")
   solicitud_solicitud_id_usuario_recibeTousuario                 solicitud[]             @relation("solicitud_id_usuario_recibeTousuario")
-}
-
-model solicitud {
-  id_usuario_envia                             Int
-  id_usuario_recibe                            Int
-  usuario_solicitud_id_usuario_enviaTousuario  usuario @relation("solicitud_id_usuario_enviaTousuario", fields: [id_usuario_envia], references: [id_usuario], onDelete: Cascade)
-  usuario_solicitud_id_usuario_recibeTousuario usuario @relation("solicitud_id_usuario_recibeTousuario", fields: [id_usuario_recibe], references: [id_usuario], onDelete: Cascade)
-
-  @@id([id_usuario_envia, id_usuario_recibe])
 }
