@@ -86,12 +86,27 @@ CREATE TABLE Mensaje(
 -- Tabla de estadisticasAcumuladas 
 CREATE TABLE EstadisticasAcumuladas(
     usuario INTEGER, -- usuario al que pertenecen las estadísticas
-    vecesCaido INTEGER NOT NULL, -- veces que ha caído en la oca
-    tiros INTEGER NOT NULL,
-    veces6 INTEGER NOT NULL, -- veces que ha tocado 6
-    partidasGanadas INTEGER NOT NULL, 
+    vecesOca INTEGER NOT NULL, -- veces que ha caído en la oca
+    vecesSeis INTEGER NOT NULL, -- veces que ha tocado 6
+    partidasJugadas INTEGER NOT NULL, -- número de partidas jugadas
+    partidasGanadas INTEGER NOT NULL, -- número de partidas ganadas
     vecesCalavera INTEGER NOT NULL, -- veces que ha caído en la calavera
 
     FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (usuario)
 );
+
+-- Tabla de logros. Cada logro es un booleano que indica si el usuario lo ha conseguido o no.
+-- True lo ha conseguido, false no lo ha conseguido.
+CREATE TABLE Logros(
+    usuario INTEGER,
+    juegaUnaPartida BOOLEAN NOT NULL,
+    ganaUnaPartida BOOLEAN NOT NULL,
+    ganaDiezPartidas BOOLEAN NOT NULL,
+    ganaCincuentaPartidas BOOLEAN NOT NULL,
+    caeEnDiezOcas BOOLEAN NOT NULL,
+    caeEnSeisSeises BOOLEAN NOT NULL,
+
+    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    PRIMARY KEY (usuario)
+)
