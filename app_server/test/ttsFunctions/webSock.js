@@ -11,7 +11,6 @@
 const io = require("socket.io-client");
 const { usrToken } = require("../../middleware/auth");
 
-
 //Puerto
 const port = process.env.PORT || 5001;
 
@@ -31,7 +30,7 @@ function simFrontend(n, done) {
     let socket = io.connect(url, {
       auth: {
         token: usrToken("us" + i + "@gmail.com", "Usuario_" + i),
-      }
+      },
     });
 
     socket.on("connect", () => {
@@ -53,9 +52,8 @@ function simFrontend(n, done) {
     // socket.emit("openSession", socket.nickname, (data) => {
     //   if (data.ok == true) {
     //     console.log(data.message);
-    //   } 
+    //   }
     // });
-
 
     //Añadimos el socket al array de usuarios
     usuarios[i] = socket;
@@ -128,14 +126,12 @@ const testSalas = () => {
     describe("Test creación de salas", () => {
       beforeAll((done) => {
         usuarios = simFrontend(5, done);
-
       });
 
       afterAll((done) => {
         desconectarGente(usuarios);
         done();
       });
-
 
       test("Crear sala", (done) => {
         const user = { nickname: "Usuario_0" };
@@ -165,7 +161,6 @@ const testSalas = () => {
 
           done();
         });
-
       });
 
       // Test de crear una sala con menos de dos jugadores
@@ -177,7 +172,9 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
 
           //Verificamos que el mensaje sea el correcto
-          expect(data.message).toBe("El número de jugadores es menor que el mínimo permitido");
+          expect(data.message).toBe(
+            "El número de jugadores es menor que el mínimo permitido"
+          );
           expect(data.status).toBe("error");
 
           done();
@@ -193,7 +190,9 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
 
           //Verificamos que el mensaje sea el correcto
-          expect(data.message).toBe("El número de jugadores es mayor que el máximo permitido");
+          expect(data.message).toBe(
+            "El número de jugadores es mayor que el máximo permitido"
+          );
           expect(data.status).toBe("error");
 
           done();
@@ -215,12 +214,9 @@ const testSalas = () => {
           done();
         });
       });
-
-
     });
 
     describe("Test unirse a sala", () => {
-
       beforeAll((done) => {
         usuarios = simFrontend(10, done);
         //Debug, user0 deletes all the rooms in order to restart new tests
@@ -258,11 +254,8 @@ const testSalas = () => {
 
             console.log("ID de la sala: " + data.id);
             done();
-          }
-          );
-
+          });
         });
-
       });
 
       //Test de unirse a una sala correctamente
@@ -329,13 +322,9 @@ const testSalas = () => {
           done();
         });
       });
-
-
     });
 
-
     describe("Test abandonar sala", () => {
-
       beforeAll((done) => {
         usuarios = simFrontend(5, done);
         //Debug, user0 deletes all the rooms in order to restart new tests
@@ -373,11 +362,8 @@ const testSalas = () => {
 
             console.log("ID de la sala: " + data.id);
             done();
-          }
-          );
-
+          });
         });
-
       });
 
       //Test de unirse a una sala correctamente
@@ -397,7 +383,7 @@ const testSalas = () => {
             expect(data).toHaveProperty("message");
             //Verificamos que el mensaje sea el correcto
             expect(data.message).toBe("Has abandonado la sala " + 4);
-            expect(data.status).toBe('ok');
+            expect(data.status).toBe("ok");
             done();
           });
         });
@@ -413,7 +399,7 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Te has unido a la sala " + 4);
-          
+
           done();
         });
       });
@@ -430,8 +416,7 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Has abandonado la sala " + 4);
-          expect(data.status).toBe('ok');
-          
+          expect(data.status).toBe("ok");
 
           //Ahora se une a la sala 5
           usuarios[2].emit("joinRoom", 3, user, (data) => {
@@ -439,7 +424,7 @@ const testSalas = () => {
             expect(data).toHaveProperty("message");
             //Verificamos que el mensaje sea el correcto
             expect(data.message).toBe("Te has unido a la sala " + 3);
-            
+
             done();
           });
         });
@@ -451,25 +436,23 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Sala destruida correctamente");
-          expect(data.status).toBe('ok');
+          expect(data.status).toBe("ok");
           done();
         });
-
       });
 
       test("Unirme a sala que el líder ha abandonado", (done) => {
         const user = { nickname: "Usuario_0" };
 
-        //Como el usuario 0 no está en ninguna sala se ha tenido que implementar una función que busque por socket 
+        //Como el usuario 0 no está en ninguna sala se ha tenido que implementar una función que busque por socket
         usuarios[0].emit("joinRoom", 3, user, (data) => {
           expect(data).toHaveProperty("status");
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("La sala no existe");
-          expect(data.status).toBe('error');
+          expect(data.status).toBe("error");
           done();
         });
-
       });
 
       test("Abandonar sala que no existe", (done) => {
@@ -478,12 +461,10 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("La sala no existe");
-          expect(data.status).toBe('error');
+          expect(data.status).toBe("error");
           done();
         });
-
       });
-
 
       test("Abandonar sala no estando en ella", (done) => {
         usuarios[0].emit("leaveTheRoom", 4, (data) => {
@@ -491,10 +472,9 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("No estás en la sala");
-          expect(data.status).toBe('error');
+          expect(data.status).toBe("error");
           done();
         });
-
       });
 
       //Test para ver si ya no quedan mas salas
@@ -504,23 +484,17 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Sala destruida correctamente");
-          expect(data.status).toBe('ok');
+          expect(data.status).toBe("ok");
           done();
         });
       });
-
-        
-
     });
-    
 
     describe("Test de expulsión de jugador", () => {
       beforeAll((done) => {
         usuarios = simFrontend(10, done);
         //Debug, user0 deletes all the rooms in order to restart new tests
         usuarios[0].emit("eliminarSalas");
-
-
       });
 
       afterAll((done) => {
@@ -547,7 +521,6 @@ const testSalas = () => {
 
           done();
         });
-
       });
 
       //Test de expulsar a un jugador correctamente
@@ -560,15 +533,12 @@ const testSalas = () => {
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Te has unido a la sala " + 5);
-          
 
           done();
         });
-
       });
 
       test("Expulsar a jugador correctamente (líder expulsa a jugador 1)", (done) => {
-
         const user = { nickname: "Usuario_1" };
 
         usuarios[0].emit("removePlayerFromRoom", 5, user, (data) => {
@@ -578,13 +548,10 @@ const testSalas = () => {
           //Verificamos que el mensaje sea el correcto
           expect(data.status).toBe("ok");
           expect(data.message).toBe("El jugador ha sido eliminado de la sala");
-          
 
           done();
         });
-
       });
-
 
       //Fin por ahora de los test de salas
     });
