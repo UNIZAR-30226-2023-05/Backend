@@ -282,4 +282,56 @@ async function getUserHandler(req, res, next) {
     });
 }
 
-module.exports = { registerHandler, loginHandler, updateUserHandler, deleteUserHandler, getUserIdHandler, getUserHandler};
+async function getLogrosHandler(req, res, next) {
+    console.log("VALIDACION CORRECTA getLogrosHandler")
+
+    //Tomamos los parametros que haya en la URL
+    const id_usuario = parseInt(req.params.id_usuario);
+
+    const datos = await prisma.logros.findUnique({
+        select: {
+            juegaunapartida: true,
+            ganaunapartida: true,
+            ganadiezpartidas: true,
+            ganacincuentapartidas: true,
+            caeendiezocas: true,
+            caeenseisseises: true
+        },
+        where: { usuario: id_usuario },
+    }).then(async function (datos) {
+        console.log("Datos: "+datos);
+        if (datos === null) {
+            datos = {
+                "juegaunapartida": false,
+                "ganaunapartida": false,
+                "ganadiezpartidas": false,
+                "ganacincuentapartidas": false,
+                "caeendiezocas": false,
+                "caeenseisseises": false
+            };
+
+            console.log("No hay logros para este usuario"+datos);
+        }
+
+        res.statusCode = StatusCodes.OK;
+        res.send({
+            ok: true,
+            message: "Logros recuperados.",
+            logros: datos
+        })
+        return;
+    }).catch( e => {
+        console.log("getUserHandler ERROR DEL SERVIDOR")
+        //Error de servidor
+        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+        res.send({
+            ok: false,
+            msg: "Internal error"
+        });
+
+        console.log(e);
+    });
+}
+
+module.exports = { registerHandler, loginHandler, updateUserHandler, 
+    deleteUserHandler, getUserIdHandler, getUserHandler, getLogrosHandler};
