@@ -1,7 +1,7 @@
 /* Controlador de partida para cada sala (suponiendo que la lógica de juego ya 
     está implementada). */
 
-const tablero = require("../../../game_logic/tablero");
+const predefinidos = require("../../../game_logic/predefinidos");
 const { Console } = require("winston/lib/winston/transports");
 const { config } = require("../../../config");
 
@@ -21,7 +21,8 @@ class GameController {
 
     this.socketServer = socketServer;
 
-    // this.tablero = new tablero.Tablero(); //tablero de juego
+    // Aquí hay que poner el tablero predefinido para juego clásico
+    this.tablero = new predefinidos.tableroClasico(); //tablero de juego
 
     this.ackTurno = false;          //ack para saber si es el turno del usuario
 
@@ -187,6 +188,11 @@ class GameController {
     //El usuario tira el dado
     let { valor, nuevaCelda, haLlegado } = this.tirarDados(user);
 
+    //Si le ha tocado un 6, se suma la estadística
+    if (valor == 6) {
+      user.sumaSeis();
+    }
+
     //Comprobar si ha llegado al final
     if (haLlegado) {
       //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
@@ -216,7 +222,15 @@ class GameController {
       user.setCurrCell(nuevaCelda);
 
       //Comprobar estado de la nueva celda --> tablero.execute(nuevaCelda)
-      let {proximaCelda, tiraOtraVez, penalizacion } = this.tablero.execute(nuevaCelda);
+      let {proximaCelda, tiraOtraVez, penalizacion, caidoOca, caidoCalavera } = this.tablero.execute(nuevaCelda);
+
+      //Comprobar estadísticas
+      if (caidoOca) {
+        user.sumaOca();
+      }
+      else if (caidoCalavera) {
+        user.sumaCalavera();
+      }
 
       //estadoCelda => [proximaCleda (si es especial), tiraOtraVez, penalizacion]
 
