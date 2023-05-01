@@ -77,7 +77,7 @@ const roomHandler = (socket, roomController, io) => {
     roomId = roomController.createRoom(leader,roomName, numPlayers, gamemode);
 
     // console.log("Sala creada con ID: " + roomId);
-
+    socket.join(roomID);
     
     //Se añade el jugador a la sala
     roomController.joinRoom(roomId, leader, io);
