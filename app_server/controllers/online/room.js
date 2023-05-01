@@ -101,6 +101,11 @@ class Room {
     return undefined;
   }
 
+  //Devuelve los jugadores de la sala
+  getPlayers() {
+    return this.players;
+  }
+
   isPlayerInRoomBySocket(socket)
   {
     //Se recorre el diccionario de jugadores
