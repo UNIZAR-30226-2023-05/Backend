@@ -209,6 +209,16 @@ class GameController {
       });
 
       this.finalPartida = true;
+      
+      // Actualizar estadísticas de los jugadores
+      for(let i=0; i<users.length; i++){
+        if (users[i].nickname != user.nickname){
+          users[i].actualizarEstadisticas(false);
+        }
+        else{
+          users[i].actualizarEstadisticas(true);
+        }
+      }
 
       return { dice: valor, afterDice:nuevaCelda, rollAgain:false, finalCell:nuevaCelda };
     }
