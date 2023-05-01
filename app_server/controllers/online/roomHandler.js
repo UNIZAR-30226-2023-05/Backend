@@ -80,6 +80,8 @@ const roomHandler = (socket, roomController, io) => {
 
     
     //Se añade el jugador a la sala
+    socket.join(roomId);
+    
     roomController.joinRoom(roomId, leader, io);
 
     // console.log("Jugador " + user.nickname + " añadido a la sala " + roomId);
@@ -100,6 +102,16 @@ const roomHandler = (socket, roomController, io) => {
    * @param {*} callback
    */
   function joinRoomHandler(roomID, user, callback) {
+
+    if (roomController.isPlayerInAnyRoomBySocket(socket)) {
+      callback({
+        message: "Ya estás en una sala",
+        status: 'error'
+      });
+      return;
+    }
+
+
     //user
     newPlayer = new Player(user.nickname, socket);
 
@@ -157,6 +169,8 @@ const roomHandler = (socket, roomController, io) => {
 
     //Si no existe la sala, se crea internamente
     socket.join(roomID);
+
+    console.log("Jugador " + user.nickname + " añadido a la sala " + roomID);
 
     //Se envía un mensaje a todos los usuarios de la sala <roomID> (excepto al que ha creado la sala
     roomController.sendMessageToRoom(roomID, `El jugador ${user.nickname} se ha unido a la sala`, io);
