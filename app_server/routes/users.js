@@ -4,7 +4,9 @@ var userRouter = express.Router();
 
 //const { isLoggedIn } = require('../middleware/authorization')
 const validation  = require('../middleware/validation.js')
-const { registerHandler, loginHandler, updateUserHandler,  deleteUserHandler, getUserIdHandler, getUserHandler, getLogrosHandler} = require('../controllers/users/userController.js');
+const { registerHandler, loginHandler, updateUserHandler,  deleteUserHandler, 
+    getUserIdHandler, getUserHandler, getLogrosHandler, getRankingPartidasHandler,
+    getRankingOcasHandler } = require('../controllers/users/userController.js');
 
 
 //Registro de usuarios (middleware de validacion)
@@ -19,7 +21,11 @@ userRouter.delete('/register/:id_usuario', validation.urlUserValidation, deleteU
 
 userRouter.post('/login', validation.loginValidation, loginHandler);
 
+
+//Estadísticas
 userRouter.get('/logros/:id_usuario', validation.urlUserValidation, getLogrosHandler);
+userRouter.get('/ranking/partidas', getRankingPartidasHandler);
+userRouter.get('/ranking/ocas', getRankingOcasHandler);
 
 //Obtener datos de un usuario excepto la contraseña cifrada
 userRouter.get('/:id_usuario', validation.urlUserValidation, getUserHandler);
