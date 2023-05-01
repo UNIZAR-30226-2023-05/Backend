@@ -15,7 +15,7 @@ tags:
 
 paths:
 
-  /users/:{id_usuario}:
+  /users/{id_usuario}:
     get:
       tags:
         - Usuario
@@ -106,7 +106,7 @@ paths:
                   - $ref: '#/components/schemas/monedas'
                   - $ref: '#/components/schemas/profilephoto'
 
-  /users/register/:{id_usuario}:
+  /users/register/{id_usuario}:
     delete:
       tags:
         - Usuario
@@ -147,6 +147,64 @@ paths:
       responses:
         '200':
           description: Usuario logueado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /users/logros/{id_usuario}:
+    get:
+      tags:
+        - Usuario
+      summary: Obtener logros para un usuario
+      parameters:
+        - in: path
+          name: id_usuario
+          schema:
+            type: integer
+          required: true
+          description: Id del usuario del que se desean consultar los logros.
+      responses:
+        '200':
+          description: Logros recuperados.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /users/ranking/partidas:
+    get:
+      tags:
+        - Usuario
+      summary: Obtener ranking según partidas ganadas
+      responses:
+        '200':
+          description: Ranking de los 10 jugadores que han ganado más partidas.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  
+  /users/ranking/ocas:
+    get:
+      tags:
+        - Usuario
+      summary: Obtener ranking según veces que se ha caído en la oca
+      responses:
+        '200':
+          description: Ranking de los 10 jugadores que han caído más veces en la oca.
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -203,7 +261,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
-  /social/friends/:{id_usuario}:
+  /social/friends/{id_usuario}:
     put:
       tags:
         - Social
