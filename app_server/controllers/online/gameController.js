@@ -214,9 +214,11 @@ class GameController {
       // TODO: Comprobar acceso a campos, probablemente esté mal
       for(let i=0; i<users.length; i++){
         if (users[i].nickname != user.nickname){
+          // Perdedores
           users[i].actualizarEstadisticas(false);
         }
         else{
+          // Ganador
           users[i].actualizarEstadisticas(true);
         }
       }
