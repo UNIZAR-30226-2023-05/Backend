@@ -14,7 +14,7 @@ class Room {
   startTime = config.startTime;
 
   //--Constructor--
-  constructor(user, roomName, players, gamemode,roomId) {
+  constructor(user, roomName, players, gamemode, roomId) {
     this.roomName = roomName;
     this.roomId = roomId;
     //Que no supere los límites
@@ -33,9 +33,7 @@ class Room {
     console.log("Lider de la sala: " + user.nickname);
 
     this.roomLeader = user.nickname;
-    
   }
-
 
   //--Métodos--
 
@@ -44,7 +42,7 @@ class Room {
    *
    * @param {*} player Instancia de la clase Player
    */
-  joinRoom(player,io) {
+  joinRoom(player, io) {
     //Si el tamaño de la sala es igual al número de jugadores, no se puede unir
     if (this.numPlayers == Object.keys(this.players).length) {
       throw new Error("Sala llena");
@@ -59,13 +57,14 @@ class Room {
     for (let ply in this.players) {
       nicknames.push(this.players[ply].nickname);
     }
-    
+
     io.to(this.roomId).emit("updatePlayers", nicknames);
 
+    return nicknames;
   }
 
   //Eliminar jugador X de esta sala (player es un objeto de la clase Player)
-  leaveRoom(player,io) {
+  leaveRoom(player, io) {
     //Si el jugador no está en la sala, no se puede eliminar
     if (this.players[player.nickname] == undefined) {
       throw new Error("El jugador no está en la sala");
@@ -78,8 +77,10 @@ class Room {
         nicknames.push(this.players[ply].nickname);
       }
 
-        //Mensaje a todos los jugadores de la sala
-        io.to(this.roomId).emit("updatePlayers", nicknames);
+      //Mensaje a todos los jugadores de la sala
+      io.to(this.roomId).emit("updatePlayers", nicknames);
+
+      return nicknames;
     }
   }
 
@@ -100,7 +101,7 @@ class Room {
     //Si no se encuentra el jugador, se devuelve undefined
     return undefined;
   }
-
+  
   //Devuelve los jugadores de la sala
   getPlayers() {
     return this.players;
@@ -119,62 +120,63 @@ class Room {
     return false;
   }
 
-
   //is player in room
-  isPlayerInRoom(player)
-  {
+  isPlayerInRoom(player) {
     return this.players[player.nickname] != undefined;
   }
 
   //Send message to all players in the room
-  sendMessage(message,io)
-  {
+  sendMessage(message, io) {
     //Broadcast message to all players in the room
-    io.to(this.roomId).emit("serverRoomMessage", `[${this.roomName}]`+message);
+    io.to(this.roomId).emit(
+      "serverRoomMessage",
+      `[${this.roomName}]` + message
+    );
   }
 
   //eliminar jugador de la sala (PENDING)
-  removeThePlayer(remover,player,io)
-  {
+  removeThePlayer(remover, player, io) {
     //Primero: se comprueba que no te puedas eliminar a ti mismo
-    if (remover.nickname == player.nickname){
+    if (remover.nickname == player.nickname) {
       throw new Error("No puedes eliminarte a ti mismo");
-    }
-    else{
+    } else {
       //Segundo: se comprueba que el jugador que elimina a otro es el líder de la sala
-      if (this.isLeader(remover)){
+      if (this.isLeader(remover)) {
         //Tercero: se comprueba que el jugador que se quiere eliminar está en la sala
-        if (this.isPlayerInRoom(player)){
+        if (this.isPlayerInRoom(player)) {
           //Cuarto: se elimina al jugador de la sala
-          console.log("Socket server: "+ io);
-          this.leaveRoom(player,io);
-        }
-        else{
+          console.log("Socket server: " + io);
+          let nicknames = this.leaveRoom(player, io);
+          //Quinto: se envía un mensaje a todos los jugadores de la sala
+          this.sendMessage("Se ha eliminado a " + player.nickname, io);
+
+          return nicknames;
+        } else {
           throw new Error("El jugador no está en la sala");
         }
-      }
-      else{
+      } else {
         throw new Error("No eres el líder de la sala");
       }
     }
   }
 
   //is leader
-  isLeader(player)
-  {
+  isLeader(player) {
     return this.roomLeader == player.nickname;
   }
 
-  delRoom(user)
-  {
+  delRoom(user) {
     // this.printPlayers();
-    if (this.isLeader(user)){
+    if (this.isLeader(user)) {
       //1. Eliminamos a todos los jugadores de la sala
       for (let player in this.players) {
         // console.log("Eliminando jugador " + player);
         //evitamos borrarse a si mismo y que se borre a los jugadores de la sala únicamente
-        if (player != user.nickname && this.isPlayerInRoom(this.players[player])){
-          console.log("Eliminando jugador " + player); 
+        if (
+          player != user.nickname &&
+          this.isPlayerInRoom(this.players[player])
+        ) {
+          console.log("Eliminando jugador " + player);
           this.players[player].socket.leave(this.roomId);
           delete this.players[player];
         }
@@ -186,25 +188,22 @@ class Room {
       }
       //2. Eliminamos la sala
       delete this.roomId;
-    }
-    else{
+    } else {
       //Aquí se supone que no llega nunca
       throw new Error("No eres el líder de la sala");
     }
   }
   //print players in the room
-  printPlayers()
-  {
+  printPlayers() {
     // console.log("Jugadores en la sala " + this.roomId + ":");
     for (let player in this.players) {
       console.log(this.players[player].nickname);
     }
   }
 
-  isRoomFull(){
+  isRoomFull() {
     return this.numPlayers == Object.keys(this.players).length;
   }
-
 }
 
 module.exports = Room;
