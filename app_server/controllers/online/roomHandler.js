@@ -94,24 +94,6 @@ const roomHandler = (socket, roomController, io) => {
    * @param {*} callback
    */
   function joinRoomHandler(roomID, user, callback) {
-    if (roomController.isPlayerInAnyRoomBySocket(socket)) {
-      callback({
-        message: "Ya estás en una sala",
-        status: "error",
-      });
-      return;
-    }
-
-    //user
-    newPlayer = new Player(user.nickname, socket);
-
-    //Condiciones:
-    //1. Unirse a sala que ya esta unido
-    //2. Unirse a sala que no existe
-    //3. Unirse a sala que esta llena
-    //4. Unirse a sala cuando ya esta en otra sala
-    //5. partida en juego?
-
     //La sala existe?
     if (!roomController.isRoomActive(roomID)) {
       callback({
@@ -120,24 +102,16 @@ const roomHandler = (socket, roomController, io) => {
       });
       return;
     }
-
-    //El jugador está en alguna sala?
-    if (roomController.isPlayerInRoom(roomID, newPlayer)) {
-      callback({
-        message: "Ya estás en la sala",
-        status: "error",
-      });
-      return;
-    }
-
-    //El jugador está en otra sala?
-    if (roomController.isPlayerInAnyRoom(newPlayer)) {
+    if (roomController.isPlayerInAnyRoomBySocket(socket)) {
       callback({
         message: "Ya estás en otra sala",
         status: "error",
       });
       return;
     }
+
+    //user
+    newPlayer = new Player(user.nickname, socket);
 
     //La sala está llena?
     if (roomController.isRoomFull(roomID)) {
