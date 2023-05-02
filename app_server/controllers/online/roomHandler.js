@@ -229,6 +229,7 @@ const roomHandler = (socket, roomController, io) => {
       //Se envía un mensaje al cliente que ha creado la sala <socket>
       callback({
         message: "Has abandonado la sala " + roomID,
+        players: nicknames,
         status: "ok",
       });
     } else {
@@ -238,7 +239,6 @@ const roomHandler = (socket, roomController, io) => {
 
       callback({
         message: "Has abandonado la sala y se ha destruido",
-        players: nicknames,
         status: "ok",
       });
     }

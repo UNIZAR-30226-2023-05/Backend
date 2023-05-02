@@ -414,6 +414,7 @@ const testSalas = () => {
         usuarios[2].emit("leaveTheRoom", 4, (data) => {
           expect(data).toHaveProperty("status");
           expect(data).toHaveProperty("message");
+          expect(data).toHaveProperty("players");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Has abandonado la sala " + 4);
           expect(data.status).toBe("ok");
@@ -422,6 +423,7 @@ const testSalas = () => {
           usuarios[2].emit("joinRoom", 3, user, (data) => {
             expect(data).toHaveProperty("status");
             expect(data).toHaveProperty("message");
+            expect(data).toHaveProperty("players");
             //Verificamos que el mensaje sea el correcto
             expect(data.message).toBe("Te has unido a la sala " + 3);
 
@@ -482,6 +484,7 @@ const testSalas = () => {
         usuarios[1].emit("leaveTheRoom", 4, (data) => {
           expect(data).toHaveProperty("status");
           expect(data).toHaveProperty("message");
+          // expect(data).toHaveProperty("players");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Sala destruida correctamente");
           expect(data.status).toBe("ok");
@@ -531,6 +534,7 @@ const testSalas = () => {
         usuarios[1].emit("joinRoom", 5, user, (data) => {
           expect(data).toHaveProperty("status");
           expect(data).toHaveProperty("message");
+          expect(data).toHaveProperty("players");
           //Verificamos que el mensaje sea el correcto
           expect(data.message).toBe("Te has unido a la sala " + 5);
 
