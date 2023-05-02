@@ -196,15 +196,39 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalError'
-  
+
   /users/ranking/ocas:
     get:
       tags:
         - Usuario
-      summary: Obtener ranking según veces que se ha caído en la oca
+      summary: Ranking de los 10 jugadores que han caído más veces en la oca.
       responses:
         '200':
           description: Ranking de los 10 jugadores que han caído más veces en la oca.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /users/estadisticas/{id_usuario}:
+    get:
+      tags:
+        - Usuario
+      summary: Obtener esatdísticas de un usuario.
+      parameters:
+        - in: path
+          name: id_usuario
+          schema:
+            type: integer
+          required: true
+          description: Id del usuario del que se desean consultar las estadísticas.
+      responses:
+        '200':
+          description: Estadísticas recuperadas
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':

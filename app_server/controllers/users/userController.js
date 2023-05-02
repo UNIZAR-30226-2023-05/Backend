@@ -441,7 +441,43 @@ async function getRankingOcasHandler(req, res, next) {
     }
 }
 
+async function getEstadisticasHandler(req, res, next) {
+  console.log("VALIDACION CORRECTA getEstadisticasHandler")
+
+  //Tomamos los parametros que haya en la URL
+  const id_usuario = parseInt(req.params.id_usuario);
+
+  const datos = await prisma.estadisticasacumuladas.findUnique({
+      select: {
+          vecesoca: true,
+          vecesseis: true,
+          partidasjugadas: true,
+          partidasganadas: true,
+          vecescalavera: true,
+      },
+      where: { usuario: id_usuario },
+  }).then(async function (datos) {
+
+      res.statusCode = StatusCodes.OK;
+      res.send({
+          ok: true,
+          message: "Estadísticas recuperadas.",
+          estadisticas: datos
+      })
+      return;
+  }).catch( e => {
+      console.log("getUserHandler ERROR DEL SERVIDOR")
+      //Error de servidor
+      res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+      res.send({
+          ok: false,
+          msg: "Internal error"
+      });
+
+      console.log(e);
+  });
+}
 
 module.exports = { registerHandler, loginHandler, updateUserHandler, 
     deleteUserHandler, getUserIdHandler, getUserHandler, getLogrosHandler, 
-    getRankingPartidasHandler, getRankingOcasHandler };
+    getRankingPartidasHandler, getRankingOcasHandler, getEstadisticasHandler };
