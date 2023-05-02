@@ -101,8 +101,14 @@ class Room {
     //Si no se encuentra el jugador, se devuelve undefined
     return undefined;
   }
+  
+  //Devuelve los jugadores de la sala
+  getPlayers() {
+    return this.players;
+  }
 
-  isPlayerInRoomBySocket(socket) {
+  isPlayerInRoomBySocket(socket)
+  {
     //Se recorre el diccionario de jugadores
     for (let player in this.players) {
       //Si el socket del jugador es igual al socket pasado por parámetro, se devuelve el jugador

@@ -9,47 +9,47 @@ const testTablero = () => {
         const ocas = [5, 9, 14, 18, 23, 27, 32, 36, 41, 45, 50, 54, 59, 63];
         for (let i = 0; i < 13; i++) {
             const res = tablero.execute(ocas[i]);
-            expect(res).toStrictEqual({ nueva: ocas[i+1], turno: true, penalizacion: 0 });
+            expect(res).toStrictEqual({ nueva: ocas[i+1], turno: true, penalizacion: 0, caidoOca: true, caidoCalavera: false });
           }
       });
 
       test("Test de puentes", async () => {
           let res = tablero.execute(6);
-          expect(res).toStrictEqual({ nueva: 12, turno: true, penalizacion: 0 });
+          expect(res).toStrictEqual({ nueva: 12, turno: true, penalizacion: 0, caidoOca: false, caidoCalavera: false });
           res = tablero.execute(12);
-          expect(res).toStrictEqual({ nueva: 6, turno: true, penalizacion: 0 });
+          expect(res).toStrictEqual({ nueva: 6, turno: true, penalizacion: 0, caidoOca: false, caidoCalavera: false });
       });
 
       test("Test de posada", async () => {
           const res = tablero.execute(19);
-          expect(res).toStrictEqual({ nueva: 19, turno: false, penalizacion: 1 });
+          expect(res).toStrictEqual({ nueva: 19, turno: false, penalizacion: 1, caidoOca: false, caidoCalavera: false });
       });
 
       test("Test de pozo", async () => {
           const res = tablero.execute(31);
-          expect(res).toStrictEqual({ nueva: 31, turno: false, penalizacion: 2 });
+          expect(res).toStrictEqual({ nueva: 31, turno: false, penalizacion: 2, caidoOca: false, caidoCalavera: false });
       });
 
       test("Test de laberinto", async () => {
           const res = tablero.execute(42);
-          expect(res).toStrictEqual({ nueva: 42, turno: false, penalizacion: 3 });
+          expect(res).toStrictEqual({ nueva: 42, turno: false, penalizacion: 3, caidoOca: false, caidoCalavera: false });
       });
 
       test("Test de carcel", async () => {
           const res = tablero.execute(56);
-          expect(res).toStrictEqual({ nueva: 56, turno: false, penalizacion: 4 });
+          expect(res).toStrictEqual({ nueva: 56, turno: false, penalizacion: 4, caidoOca: false, caidoCalavera: false });
       });
 
       test("Test de dados", async () => {
           let res = tablero.execute(26);
-          expect(res).toStrictEqual({ nueva: 53, turno: true, penalizacion: 0 });
+          expect(res).toStrictEqual({ nueva: 53, turno: true, penalizacion: 0, caidoOca: false, caidoCalavera: false });
           res = tablero.execute(53);
-          expect(res).toStrictEqual({ nueva: 26, turno: true, penalizacion: 0 });
+          expect(res).toStrictEqual({ nueva: 26, turno: true, penalizacion: 0, caidoOca: false, caidoCalavera: false });
       });
 
       test("Test de calavera", async () => {
           const res = tablero.execute(58);
-          expect(res).toStrictEqual({ nueva: 1, turno: false, penalizacion: 0 });
+          expect(res).toStrictEqual({ nueva: 1, turno: false, penalizacion: 0, caidoOca: false, caidoCalavera: true });
       });
 
       test("Test de casilla normal", async () => {
@@ -59,7 +59,7 @@ const testTablero = () => {
 
           for (let i = 0; i < casillasNormales.length; i++) {
               const res = tablero.execute(casillasNormales[i]);
-              expect(res).toStrictEqual({ nueva: casillasNormales[i], turno: false, penalizacion: 0 });
+              expect(res).toStrictEqual({ nueva: casillasNormales[i], turno: false, penalizacion: 0, caidoOca: false, caidoCalavera: false });
           }
       });
     });
