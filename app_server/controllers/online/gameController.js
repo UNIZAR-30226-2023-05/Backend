@@ -212,14 +212,15 @@ class GameController {
       
       // Actualizar estadísticas de los jugadores
       // TODO: Comprobar acceso a campos, probablemente esté mal
-      for(let i=0; i<users.length; i++){
-        if (users[i].nickname != user.nickname){
+      for(let pl in users){
+        if (pl != user.nickname){
+          this.players
           // Perdedores
-          users[i].actualizarEstadisticas(false);
+          users[pl].actualizarEstadisticas(false);
         }
         else{
           // Ganador
-          users[i].actualizarEstadisticas(true);
+          users[pl].actualizarEstadisticas(true);
         }
       }
 
