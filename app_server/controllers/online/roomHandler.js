@@ -152,6 +152,7 @@ const roomHandler = (socket, roomController, io) => {
     callback({
       message: "Te has unido a la sala " + roomID,
       roomName: rName,
+      players: nicknames,
       status: "ok",
     });
   }
