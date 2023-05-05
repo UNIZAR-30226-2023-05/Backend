@@ -236,8 +236,7 @@ const roomHandler = (socket, roomController, io) => {
 
     //No es necesario comprobar si es el líder (frontend lo sabe -> solametne hay un boton para ellos)
 
-    roomController.deleteRoom(user, roomID);
-
+    roomController.deleteRoom(user, roomID, io);
     roomController.showAllRooms();
 
     callback({
