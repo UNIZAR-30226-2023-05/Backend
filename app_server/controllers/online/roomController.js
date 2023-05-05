@@ -28,10 +28,15 @@ class RoomController {
     return this.activeRooms[roomID].isLeader(user);
   }
 
-  deleteRoom(user, roomId) {
+  getRoomName(roomId) {
+    return this.activeRooms[roomId].roomName;
+  }
+
+  deleteRoom(user, roomId, io) {
     //Se elimina la sala del diccionario
     //NO SE DECREMENTA EL ID
     //Antes de nada, se eliminan a todos los jugadores de la sala
+    io.to(roomId).emit("destroyingRoom", roomId);
     this.activeRooms[roomId].delRoom(user);
     delete this.activeRooms[roomId];
   }
@@ -105,7 +110,11 @@ class RoomController {
   //---->Pendiente de autorización
   removePlayer(userLeader, roomID, player, io) {
     console.log("Socket del servidor: " + io);
-    let nicknames = this.activeRooms[roomID].removeThePlayer(userLeader, player, io);
+    let nicknames = this.activeRooms[roomID].removeThePlayer(
+      userLeader,
+      player,
+      io
+    );
     return nicknames;
   }
 

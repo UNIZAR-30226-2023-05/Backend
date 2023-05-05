@@ -146,10 +146,12 @@ const roomHandler = (socket, roomController, io) => {
     //Se añade el jugador a la  sala -> necesitamos el socket del servidor
     let nicknames = roomController.joinRoom(roomID, newPlayer, io);
 
+    rName = roomController.getRoomName(roomID);
+
     //Se envía un mensaje al cliente que ha creado la sala <socket>
     callback({
       message: "Te has unido a la sala " + roomID,
-      players: nicknames,
+      roomName: rName,
       status: "ok",
     });
   }
