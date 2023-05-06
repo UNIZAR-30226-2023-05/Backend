@@ -19,6 +19,7 @@ const gameHandler = (socket, roomController, io) => {
     function startGameHandler(roomId, turnTimeout, callback) {
         
         //Obtener el objeto Room
+        roomId = parseInt(roomId);
         
         //1.Comprobar que la sala existe
         if(!roomController.isRoomActive(roomId)){

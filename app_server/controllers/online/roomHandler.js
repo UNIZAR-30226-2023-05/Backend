@@ -129,6 +129,8 @@ const roomHandler = (socket, roomController, io) => {
     //-->Si ha pasado todas las condiciones, se une al jugador a la sala<--
 
     //Si no existe la sala, se crea internamente
+    //pasar de text a int
+    roomID = parseInt(roomID);
     socket.join(roomID);
 
     console.log("Jugador " + user.nickname + " añadido a la sala " + roomID);
@@ -159,6 +161,7 @@ const roomHandler = (socket, roomController, io) => {
 
   //Nuevo (pendiente)
   function leaveRoomHandler(roomID, callback) {
+    roomID = parseInt(roomID);
     //Comprobar en primera instancia si la sala existe
     if (!roomController.isRoomActive(roomID)) {
       callback({
