@@ -65,7 +65,7 @@ class GameController {
 
 
     //Array con los nicknames de los jugadores
-    let users = this.room.getAllPlayers();
+    let users = this.room.getPlayers();
 
     // console.log(users);
     let roomID = this.room.getRoomId();
@@ -73,10 +73,15 @@ class GameController {
     const numUsuarios = Object.keys(users).length;
 
     const shufflePlayers = Object.values(users).sort(() => Math.random() - 0.5);
-    // console.log(this.ordenTurnos)
+    
+    //Nos quedamos con los nicknames de los jugadores
+    for (let i = 0; i < numUsuarios; i++) {
+      this.ordenTurnos.push(shufflePlayers[i].getNickname());
+    }
 
-    //Se barajan los jugadores
-    // this.ordenTurnos = shufflePlayers(users, numUsers);
+    console.log("Orden de turnos: " + this.ordenTurnos);
+
+
 
     //Se envía un mensaje a todos los jugadores de la sala con el nuevo orden the turnos
     console.log("Envio orden de turnos a la sala " + roomID);

@@ -28,6 +28,11 @@ class RoomController {
     return this.activeRooms[roomID].isLeader(user);
   }
 
+  //get room object
+  getRoom(roomId) {
+    return this.activeRooms[roomId];
+  }
+
   getRoomName(roomId) {
     return this.activeRooms[roomId].roomName;
   }
@@ -48,6 +53,10 @@ class RoomController {
     return nicknames;
   }
 
+  addGameController(roomId, gameController) {
+    this.activeRooms[roomId].addGameController(gameController);
+  }
+
   leaveRoom(roomId, player, io) {
     //Se elimina el jugador de la sala
     let nicknames = this.activeRooms[roomId].leaveRoom(player, io);
@@ -57,6 +66,10 @@ class RoomController {
   sendMessageToRoom(roomId, message, io) {
     //Se envía el mensaje a la sala
     this.activeRooms[roomId].sendMessage(message, io);
+  }
+
+  getGameController(roomId) {
+    return this.activeRooms[roomId].gameController;
   }
 
   //Booleano, esta el jugador en la sala?

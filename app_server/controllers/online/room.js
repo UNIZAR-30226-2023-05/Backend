@@ -13,6 +13,8 @@ class Room {
   players; //objeto con los jugadores de la sala (id, player(objeto de la clase Player))
   startTime = config.startTime;
 
+  gameController; //objeto de la clase GameController
+
   //--Constructor--
   constructor(user, roomName, players, gamemode, roomId) {
     this.roomName = roomName;
@@ -33,6 +35,8 @@ class Room {
     console.log("Lider de la sala: " + user.nickname);
 
     this.roomLeader = user.nickname;
+
+    this.gameController = undefined;
   }
 
   //--Métodos--
@@ -58,9 +62,19 @@ class Room {
       nicknames.push(this.players[ply].nickname);
     }
 
+    console.log("Jugadores en la sala: " + nicknames);
     io.to(this.roomId).emit("updatePlayers", nicknames);
 
     return nicknames;
+  }
+
+  addGameController(gameController) {
+    this.gameController = gameController;
+  }
+  
+
+  getRoomId() {
+    return this.roomId;
   }
 
   //Eliminar jugador X de esta sala (player es un objeto de la clase Player)
