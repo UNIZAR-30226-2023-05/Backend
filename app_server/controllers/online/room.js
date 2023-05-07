@@ -158,11 +158,14 @@ class Room {
       if (this.isLeader(remover)) {
         //Tercero: se comprueba que el jugador que se quiere eliminar está en la sala
         if (this.isPlayerInRoom(player)) {
+          //enviar mensaje al que ha sido eliminado
+          let delSocket = this.players[player.nickname].socket;
+          delSocket.emit("serverRoomMessage", "Has sido eliminado de la sala");
+
           //Cuarto: se elimina al jugador de la sala
           console.log("Socket server: " + io);
           let nicknames = this.leaveRoom(player, io);
-          //Quinto: se envía un mensaje a todos los jugadores de la sala
-          this.sendMessage("Se ha eliminado a " + player.nickname, io);
+          
 
           return nicknames;
         } else {
