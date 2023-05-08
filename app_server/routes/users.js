@@ -14,6 +14,7 @@ const { registerHandler, loginHandler, updateUserHandler,  deleteUserHandler,
 userRouter.post('/register', validation.registerValidation, registerHandler);
 
 userRouter.get('/register', validation.getUserIdValidation, getUserIdHandler);
+userRouter.put('/userid', validation.getUserIdValidation, getUserIdHandler);
 
 userRouter.put('/register', validation.updateUserValidation, updateUserHandler);
 
