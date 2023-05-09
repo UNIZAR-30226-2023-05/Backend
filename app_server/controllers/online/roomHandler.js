@@ -240,6 +240,13 @@ const roomHandler = (socket, roomController, io) => {
 
     //No es necesario comprobar si es el líder (frontend lo sabe -> solametne hay un boton para ellos)
 
+    // Mensaje a todos los usuarios de la sala
+    roomController.sendMessageToRoom(
+      roomID,
+      `El jugador ${user.nickname} ha destruido la sala`,
+      io
+    );
+    
     roomController.deleteRoom(user, roomID, io);
     roomController.showAllRooms();
 
