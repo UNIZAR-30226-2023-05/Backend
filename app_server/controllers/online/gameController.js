@@ -349,6 +349,8 @@ class GameController {
 
     let { dice, afterDice, rollAgain, finalCell } = this.moverFicha(user);
     console.log("================================================== ")
+
+    this.ackTurno = false; //ack para saber si es el turno del usuario
     
     return { dice: dice, afterDice:afterDice, rollAgain:rollAgain, finalCell:finalCell };
 
