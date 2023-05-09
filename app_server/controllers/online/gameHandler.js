@@ -20,6 +20,7 @@ const gameHandler = (socket, roomController, io) => {
         
         //Obtener el objeto Room
         roomId = parseInt(roomId);
+        turnTimeout = parseInt(turnTimeout);
         
         //1.Comprobar que la sala existe
         if(!roomController.isRoomActive(roomId)){
@@ -55,9 +56,9 @@ const gameHandler = (socket, roomController, io) => {
 
         //Se envía el evento de inicio de partida a todos los jugadores de la sala
         callback({
-            message: "Partida iniciada",
-            status: 'ok'
-        });
+                message: "Partida iniciada",
+                status: 'ok'
+            });
         // io.to(roomId).emit('startGame',gameController.getGameInfo());
   
     }

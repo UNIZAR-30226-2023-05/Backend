@@ -107,6 +107,11 @@ class RoomController {
     return false;
   }
 
+  isRoomIdInUse(roomId) {
+    return this.activeRooms[roomId] != undefined;
+  }
+  
+
   //show all the rooms
   showAllRooms() {
     console.log("Mostrando todas las salas");

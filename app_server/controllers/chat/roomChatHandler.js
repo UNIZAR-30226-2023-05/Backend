@@ -5,6 +5,8 @@
 const roomChatHandler = (socket) => {
   //Enviar mensaje a la sala
   function sendMessageRoom(roomId, messageContent, callback) {
+
+    roomId = parseInt(roomId);
     //Check if the room exists
     if (!roomController.isRoomActive(roomId)) {
       callback({
