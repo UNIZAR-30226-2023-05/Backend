@@ -209,8 +209,11 @@ class GameController {
       //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
       //Buscamos cada jugador de la partida y los ordenamos por su posición
       let users = this.room.getPlayers();
-      let usersOrdenados = users.sort((a, b) => {
-        return a.getCurrentCell() - b.getCurrentCell();
+      // console.log(users);
+      let players = Object.values(users);
+
+      let usersOrdenados = players.sort((a, b) => {
+        return b.getCurrentCell() - a.getCurrentCell();
       });
 
       //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
@@ -294,7 +297,7 @@ class GameController {
       let players = Object.values(users);
 
       let usersOrdenados = players.sort((a, b) => {
-        return a.getCurrentCell() - b.getCurrentCell();
+        return b.getCurrentCell() - a.getCurrentCell();
       });
 
       //printPlayer para cada miembro del diccionario
