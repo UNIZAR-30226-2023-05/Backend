@@ -65,6 +65,8 @@ const gameHandler = (socket, roomController, io) => {
 
     //Evento de turno
     function turnHandler(roomId, callback) {
+
+        roomId = parseInt(roomId);
         //Comprobar que la sala existe
         if(!roomController.isRoomIdInUse(roomId)){
             callback({
@@ -79,6 +81,8 @@ const gameHandler = (socket, roomController, io) => {
 
         //Obtener el player dado el socket
         let player = roomController.getPlayer(socket,roomId);
+
+        console.log("Voy a jugar el turno: " + player.nickname);
 
         //Comprobar que el jugador está en la sala
         if(!room.isPlayerInRoom(player)){
@@ -102,13 +106,16 @@ const gameHandler = (socket, roomController, io) => {
         }
 
         //Comenzar turno
-        resultado = gameController.comenzarTurno(player);
+        let { dice, afterDice, rollAgain, finalCell } = gameController.comenzarTurno(player);
+        console.log("================================================== ")
+        console.log({ dice: dice, afterDice: afterDice, rollAgain: rollAgain, finalCell: finalCell })
+
         
         //Resultado del turno: dice, casilla, etc JSON
         callback({
             message: "Turno realizado correctamente",
             status: 'ok',
-            res : resultado
+            res : { dice: dice, afterDice: afterDice, rollAgain: rollAgain, finalCell: finalCell }
         });       
 
 

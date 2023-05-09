@@ -3,10 +3,6 @@ class Player {
   //Por ahora no necesitamos nada mas
 
   //--Atributos
-  nickname;
-  socket;
-  currentCell;
-  turnosPendientes;
   estadisticas = {
     vecesOca: 0,
     vecesSeis: 0,
@@ -217,6 +213,12 @@ class Player {
         },
       },
     });
+  }
+
+  printPlayerInfo() {
+    console.log("Nickname: " + this.nickname);
+    console.log("Celda Actual: " + this.currentCell);
+    console.log("turnosPendientes: " + this.turnosPendientes);
   }
 
 }

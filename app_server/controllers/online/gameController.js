@@ -156,18 +156,24 @@ class GameController {
     let valor = Math.floor(Math.random() * 6) + 1;
 
     //Aquí dentro se harán comprobaciones necesarias --> calcula la nueva celda ??? (necesario??)
-    let nuevaCelda = user.getCurrCell() + valor
+    let nuevaCelda = user.getCurrentCell() + valor
+
+    
 
     let haLlegado
 
     //Comprobar si ha llegado al final
     if (nuevaCelda == 63) {
       haLlegado = true;
-    } else {
+    } else if (nuevaCelda > 63) {
       nuevaCelda = 63 - (nuevaCelda % 63);  //Te has pasado de la meta
+      haLlegado = false;
+    }
+    else {
+      haLlegado = false;
     }
 
-
+    console.log({ valor, nuevaCelda, haLlegado })
     return { valor, nuevaCelda, haLlegado };
   }
 
@@ -204,7 +210,7 @@ class GameController {
       //Buscamos cada jugador de la partida y los ordenamos por su posición
       let users = this.room.getPlayers();
       let usersOrdenados = users.sort((a, b) => {
-        return a.getCurrCell() - b.getCurrCell();
+        return a.getCurrentCell() - b.getCurrentCell();
       });
 
       //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
@@ -236,13 +242,24 @@ class GameController {
       //nuevaCelda, celda calculado con el numero del dado
       //proximaCelda, tras comprobar el estado de nuevaCelda, puede ser la misma u otra celda segun el tipo
       //tiraOtraVez, si es true, el jugador tira otra vez
+      console.log("celdaActual: " + user.getCurrentCell());
+      console.log("valor: " + valor);
+      console.log("haLlegado: " + haLlegado);
+
+
+
 
       //Movemos al usuario a la nueva celda
       user.setCurrCell(nuevaCelda);
 
-      //Comprobar estado de la nueva celda --> tablero.execute(nuevaCelda)
-      let {proximaCelda, tiraOtraVez, penalizacion, caidoOca, caidoCalavera } = this.tablero.execute(nuevaCelda);
+      console.log("celdaActualPostDado: " + user.getCurrentCell());
 
+      console.log("================================================== ")
+
+      //Comprobar estado de la nueva celda --> tablero.execute(nuevaCelda)
+      let {nueva, turno, penalizacion, caidoOca, caidoCalavera } = this.tablero.execute(nuevaCelda);
+      console.log({nueva, turno, penalizacion, caidoOca, caidoCalavera })
+      console.log("================================================== ")
       //Comprobar estadísticas
       if (caidoOca) {
         user.sumaOca();
@@ -259,30 +276,52 @@ class GameController {
       }
 
       //Si se tiene que mover (punete, oca..)
-      if (proximaCelda != user.getCurrCell()) {
-        user.setCurrCell(proximaCelda);
+      if (nueva != user.getCurrentCell()) {
+        user.setCurrCell(nueva);
       }
+
+
+      // console.log("Fin de turno del jugador: " + user.nickname);
+      // console.log("Celda actual: " + user.getCurrentCell());
+      // console.log("Dados: " + valor);
+
 
       //Enviamos mensaje con el estado actual de la partida
       //Buscamos cada jugador de la partida y los ordenamos por su posición
       //                -->Estado de partida<--
       let users = this.room.getPlayers();
-      let usersOrdenados = users.sort((a, b) => {
-        return a.getCurrCell() - b.getCurrCell();
+      // console.log(users);
+      let players = Object.values(users);
+
+      let usersOrdenados = players.sort((a, b) => {
+        return a.getCurrentCell() - b.getCurrentCell();
       });
+
+      //printPlayer para cada miembro del diccionario
+      for (let i = 0; i < usersOrdenados.length; i++) {
+        usersOrdenados[i].printPlayerInfo();
+      }
+
+      //nos quedamos con los nicknames
+      let nuevasPos = usersOrdenados.map((user) => {
+        return user.nickname;
+      });
+
+      
 
       //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
       this.socketServer.to(this.room.roomId).emit("estadoPartida", {
-        posiciones: usersOrdenados,
+        posiciones: nuevasPos,
       });
       //             -->Estado de partida<--
 
       //Si se tira otra vez no se pasa de turno
-      if (!tiraOtraVez) {
+      if (!turno) {
         this.sigTurno();
       }
 
-      return { dice: valor, afterDice:nuevaCelda, rollAgain:tiraOtraVez, finalCell:proximaCelda };
+      
+      return { dice: valor, afterDice:nuevaCelda, rollAgain:turno, finalCell:nueva };
 
     }
 
@@ -292,9 +331,9 @@ class GameController {
     return this.currentTurn;
   }
 
-  async comenzarTurno(user) {
+  comenzarTurno(user) {
     //Comprobar si es el turno
-    if (this.ordenTurnos[this.currentTurn] == user.nickname) {
+    if (this.ordenTurnos[this.currentTurn] != user.nickname) {
       throw new Error("No es tu turno");
       // return;
     }
@@ -308,7 +347,10 @@ class GameController {
 
     this.ackTurno = true; //ack para saber si es el turno del usuario
 
-    return this.moverFicha(user);
+    let { dice, afterDice, rollAgain, finalCell } = this.moverFicha(user);
+    console.log("================================================== ")
+    
+    return { dice: dice, afterDice:afterDice, rollAgain:rollAgain, finalCell:finalCell };
 
     
   }
