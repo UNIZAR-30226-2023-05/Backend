@@ -12,146 +12,147 @@ const { GameController } = require("./gameController");
  */
 
 const gameHandler = (socket, roomController, io) => {
+  //-->Eventos de la partida
 
-    //-->Eventos de la partida
+  //Evento de inicio de partida
+  function startGameHandler(roomId, turnTimeout, callback) {
+    //Obtener el objeto Room
+    roomId = parseInt(roomId);
+    turnTimeout = parseInt(turnTimeout);
 
-    //Evento de inicio de partida
-    function startGameHandler(roomId, turnTimeout, callback) {
-        
-        //Obtener el objeto Room
-        roomId = parseInt(roomId);
-        turnTimeout = parseInt(turnTimeout);
-        
-        //1.Comprobar que la sala existe
-        if(!roomController.isRoomActive(roomId)){
-            callback({
-                message: "La sala no existe",
-                status: 'error'
-            });
-            return;
-        }
-
-        //2. Obtener el objeto Room
-        let room = roomController.getRoom(roomId);
-
-        //3. Comprobar que el jugador es el creador de la sala
-        //Devuelve objeto de la clase Player
-        user = roomController.getPlayer(socket,roomId);
-        if(!room.isLeader(user)){
-            callback({
-                message: "No eres el creador de la sala",
-                status: 'error'
-            });
-            return;
-        }
-
-        //Finalmente se crea el controlador de la partida
-        let gameController = new GameController(room,turnTimeout,io);
-
-        //Añadimos (por tener referencia) el controlador de la partida al controlador de las salas
-        roomController.addGameController(roomId, gameController);
-
-        //Se inicia la partida
-        gameController.empezarPartida();
-
-        //Se envía el evento de inicio de partida a todos los jugadores de la sala
-        callback({
-                message: "Partida iniciada",
-                status: 'ok'
-            });
-        // io.to(roomId).emit('startGame',gameController.getGameInfo());
-  
+    //1.Comprobar que la sala existe
+    if (!roomController.isRoomActive(roomId)) {
+      callback({
+        message: "La sala no existe",
+        status: "error",
+      });
+      return;
     }
 
-    //Evento de turno
-    function turnHandler(roomId, callback) {
+    //2. Obtener el objeto Room
+    let room = roomController.getRoom(roomId);
 
-        roomId = parseInt(roomId);
-        //Comprobar que la sala existe
-        if(!roomController.isRoomIdInUse(roomId)){
-            callback({
-                message: "La sala no existe",
-                status: 'error'
-            });
-            return;
-        }
+    //3. Comprobar que el jugador es el creador de la sala
+    //Devuelve objeto de la clase Player
+    user = roomController.getPlayer(socket, roomId);
+    if (!room.isLeader(user)) {
+      callback({
+        message: "No eres el creador de la sala",
+        status: "error",
+      });
+      return;
+    }
 
-        //Obtener el objeto Room
-        let room = roomController.getRoom(roomId);
+    //Finalmente se crea el controlador de la partida
+    let gameController = new GameController(room, turnTimeout, io);
 
-        //Obtener el player dado el socket
-        let player = roomController.getPlayer(socket,roomId);
+    //Añadimos (por tener referencia) el controlador de la partida al controlador de las salas
+    roomController.addGameController(roomId, gameController);
 
-        console.log("Voy a jugar el turno: " + player.nickname);
+    //Se inicia la partida
+    gameController.empezarPartida();
 
-        //Comprobar que el jugador está en la sala
-        if(!room.isPlayerInRoom(player)){
-            callback({
-                message: "No estás en la sala",
-                status: 'error'
-            });
-            return;
-        }
+    //Se envía el evento de inicio de partida a todos los jugadores de la sala
+    callback({
+      message: "Partida iniciada",
+      status: "ok",
+    });
+    // io.to(roomId).emit('startGame',gameController.getGameInfo());
+  }
 
-        //Tomar el controlador de la partida
-        let gameController = roomController.getGameController(roomId);
+  //Evento de turno
+  function turnHandler(roomId, callback) {
+    roomId = parseInt(roomId);
+    //Comprobar que la sala existe
+    if (!roomController.isRoomIdInUse(roomId)) {
+      callback({
+        message: "La sala no existe",
+        status: "error",
+      });
+      return;
+    }
 
-        //Verificar que la partida ha empezado
-        if(!gameController.isGameStarted()){
-            callback({
-                message: "La partida no ha empezado",
-                status: 'error'
-            });
-            return;
-        }
+    //Obtener el objeto Room
+    let room = roomController.getRoom(roomId);
 
-        //Comenzar turno
-        let { dice, afterDice, rollAgain, finalCell } = gameController.comenzarTurno(player);
+    //Obtener el player dado el socket
+    let player = roomController.getPlayer(socket, roomId);
 
-        //si es un objeto vacío, es que el jugador no puede tirar
-        if(dice === undefined){
-            callback({
-                message: "No puedes tirar",
-                status: 'error'
-            });
-            return;
-        }
-        //comprobar si esta penalizado
-        if(dice === 0){
-            callback({
-                message: "Estás penalizado",
-                status: 'error'
-            });
-            return;
-        }
+    console.log("Voy a jugar el turno: " + player.nickname);
 
-        if(finalCell === 63){
-            callback({
-                message: "Has ganado",
-                status: 'ok'
-            });
-            return;
-        }
+    //Comprobar que el jugador está en la sala
+    if (!room.isPlayerInRoom(player)) {
+      callback({
+        message: "No estás en la sala",
+        status: "error",
+      });
+      return;
+    }
 
+    //Tomar el controlador de la partida
+    let gameController = roomController.getGameController(roomId);
 
+    //Verificar que la partida ha empezado
+    if (!gameController.isGameStarted()) {
+      callback({
+        message: "La partida no ha empezado",
+        status: "error",
+      });
+      return;
+    }
 
+    //Comenzar turno
+    let { dice, afterDice, rollAgain, finalCell } =
+      gameController.comenzarTurno(player);
 
-        console.log("================================================== ")
-        console.log({ dice: dice, afterDice: afterDice, rollAgain: rollAgain, finalCell: finalCell })
+    //si es un objeto vacío, es que el jugador no puede tirar
+    if (dice === undefined) {
+      callback({
+        message: "No puedes tirar",
+        status: "error",
+      });
+      return;
+    }
+    //comprobar si esta penalizado
+    if (dice === 0) {
+      callback({
+        message: "Estás penalizado",
+        status: "error",
+      });
+      return;
+    }
 
-        
-        //Resultado del turno: dice, casilla, etc JSON
-        callback({
-            message: "Turno realizado correctamente",
-            status: 'ok',
-            res : { dice: dice, afterDice: afterDice, rollAgain: rollAgain, finalCell: finalCell }
-        });       
+    if (finalCell === 63) {
+      callback({
+        message: "Has ganado",
+        status: "ok",
+      });
+      return;
+    }
 
+    console.log("================================================== ");
+    console.log({
+      dice: dice,
+      afterDice: afterDice,
+      rollAgain: rollAgain,
+      finalCell: finalCell,
+    });
 
-    } 
+    //Resultado del turno: dice, casilla, etc JSON
+    callback({
+      message: "Turno realizado correctamente",
+      status: "ok",
+      res: {
+        dice: dice,
+        afterDice: afterDice,
+        rollAgain: rollAgain,
+        finalCell: finalCell,
+      },
+    });
+  }
 
-    //Listeners
-    socket.on('startGame', startGameHandler);
-    socket.on('turn', turnHandler);
-}
+  //Listeners
+  socket.on("startGame", startGameHandler);
+  socket.on("turn", turnHandler);
+};
 module.exports = gameHandler;

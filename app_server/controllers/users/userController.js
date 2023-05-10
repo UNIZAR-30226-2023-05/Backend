@@ -294,201 +294,217 @@ async function getUserHandler(req, res, next) {
 }
 
 async function getLogrosHandler(req, res, next) {
-    console.log("VALIDACION CORRECTA getLogrosHandler")
-
-    //Tomamos los parametros que haya en la URL
-    const id_usuario = parseInt(req.params.id_usuario);
-
-    const datos = await prisma.logros.findUnique({
-        select: {
-            juegaunapartida: true,
-            ganaunapartida: true,
-            ganadiezpartidas: true,
-            ganacincuentapartidas: true,
-            caeendiezocas: true,
-            caeenseisseises: true
-        },
-        where: { usuario: id_usuario },
-    }).then(async function (datos) {
-        console.log("Datos: "+datos);
-        if (datos === null) {
-            datos = {
-                "juegaunapartida": false,
-                "ganaunapartida": false,
-                "ganadiezpartidas": false,
-                "ganacincuentapartidas": false,
-                "caeendiezocas": false,
-                "caeenseisseises": false
-            };
-
-            console.log("No hay logros para este usuario"+datos);
-        }
-
-        res.statusCode = StatusCodes.OK;
-        res.send({
-            ok: true,
-            message: "Logros recuperados.",
-            logros: datos
-        })
-        return;
-    }).catch( e => {
-        console.log("getUserHandler ERROR DEL SERVIDOR")
-        //Error de servidor
-        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-        res.send({
-            ok: false,
-            msg: "Internal error"
-        });
-
-        console.log(e);
-    });
-}
-
-async function getRankingPartidasHandler(req, res, next) {
-    try {
-        const ranking = await prisma.estadisticasacumuladas.findMany({
-            select: {
-                usuario: true,
-                partidasganadas: true,
-            },
-            orderBy: {
-                partidasganadas: 'desc',
-            },
-            take: 10,
-        });
-
-        const usuarios = await prisma.usuario.findMany({
-            select: {
-                id_usuario: true,
-                nickname: true,
-            },
-        });
-
-        // Crear un diccionario de usuarios con id_usuario como clave y nickname como valor
-        const usuariosDiccionario = {};
-        for (const usuario of usuarios) {
-            usuariosDiccionario[usuario.id_usuario] = usuario.nickname;
-        }
-
-        // Sustituir id_usuario por nickname en ranking utilizando el diccionario
-        for (const registro of ranking) {
-            const nickname = usuariosDiccionario[registro.usuario];
-            if (nickname) { // El valor existe en el diccionario
-                registro.usuario = nickname;
-            }
-        }
-
-        res.statusCode = StatusCodes.OK;
-        res.send({
-            ok: true,
-            message: "Ranking de los 10 jugadores que han ganado más partidas.",
-            ranking: ranking
-        });
-        return;
-    } catch (e) {
-        console.log("getUserHandler ERROR DEL SERVIDOR");
-        //Error de servidor
-        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-        res.send({
-            ok: false,
-            msg: "Internal error"
-        });
-
-        console.log(e);
-    }
-}
-
-async function getRankingOcasHandler(req, res, next) {
-    try {
-        const ranking = await prisma.estadisticasacumuladas.findMany({
-            select: {
-                usuario: true,
-                vecesoca: true,
-            },
-            orderBy: {
-                vecesoca: 'desc',
-            },
-            take: 10,
-        });
-
-        const usuarios = await prisma.usuario.findMany({
-            select: {
-                id_usuario: true,
-                nickname: true,
-            },
-        });
-
-        // Crear un diccionario de usuarios con id_usuario como clave y nickname como valor
-        const usuariosDiccionario = {};
-        for (const usuario of usuarios) {
-            usuariosDiccionario[usuario.id_usuario] = usuario.nickname;
-        }
-
-        // Sustituir id_usuario por nickname en ranking utilizando el diccionario
-        for (const registro of ranking) {
-            const nickname = usuariosDiccionario[registro.usuario];
-            if (nickname) { // El valor existe en el diccionario
-                registro.usuario = nickname;
-            }
-        }
-
-        res.statusCode = StatusCodes.OK;
-        res.send({
-            ok: true,
-            message: "Ranking de los 10 jugadores que han caído más veces en la oca.",
-            ranking: ranking
-        });
-        return;
-    } catch (e) {
-        console.log("getUserHandler ERROR DEL SERVIDOR");
-        //Error de servidor
-        res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-        res.send({
-            ok: false,
-            msg: "Internal error"
-        });
-
-        console.log(e);
-    }
-}
-
-async function getEstadisticasHandler(req, res, next) {
-  console.log("VALIDACION CORRECTA getEstadisticasHandler")
+  console.log("VALIDACION CORRECTA getLogrosHandler");
 
   //Tomamos los parametros que haya en la URL
   const id_usuario = parseInt(req.params.id_usuario);
 
-  const datos = await prisma.estadisticasacumuladas.findUnique({
+  const datos = await prisma.logros
+    .findUnique({
       select: {
-          vecesoca: true,
-          vecesseis: true,
-          partidasjugadas: true,
-          partidasganadas: true,
-          vecescalavera: true,
+        juegaunapartida: true,
+        ganaunapartida: true,
+        ganadiezpartidas: true,
+        ganacincuentapartidas: true,
+        caeendiezocas: true,
+        caeenseisseises: true,
       },
       where: { usuario: id_usuario },
-  }).then(async function (datos) {
+    })
+    .then(async function (datos) {
+      console.log("Datos: " + datos);
+      if (datos === null) {
+        datos = {
+          juegaunapartida: false,
+          ganaunapartida: false,
+          ganadiezpartidas: false,
+          ganacincuentapartidas: false,
+          caeendiezocas: false,
+          caeenseisseises: false,
+        };
+
+        console.log("No hay logros para este usuario" + datos);
+      }
 
       res.statusCode = StatusCodes.OK;
       res.send({
-          ok: true,
-          message: "Estadísticas recuperadas.",
-          estadisticas: datos
-      })
+        ok: true,
+        message: "Logros recuperados.",
+        logros: datos,
+      });
       return;
-  }).catch( e => {
-      console.log("getUserHandler ERROR DEL SERVIDOR")
+    })
+    .catch((e) => {
+      console.log("getUserHandler ERROR DEL SERVIDOR");
       //Error de servidor
       res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
       res.send({
-          ok: false,
-          msg: "Internal error"
+        ok: false,
+        msg: "Internal error",
       });
 
       console.log(e);
-  });
+    });
 }
 
-module.exports = { registerHandler, loginHandler, updateUserHandler, 
-    deleteUserHandler, getUserIdHandler, getUserHandler, getLogrosHandler, 
-    getRankingPartidasHandler, getRankingOcasHandler, getEstadisticasHandler };
+async function getRankingPartidasHandler(req, res, next) {
+  try {
+    const ranking = await prisma.estadisticasacumuladas.findMany({
+      select: {
+        usuario: true,
+        partidasganadas: true,
+      },
+      orderBy: {
+        partidasganadas: "desc",
+      },
+      take: 10,
+    });
+
+    const usuarios = await prisma.usuario.findMany({
+      select: {
+        id_usuario: true,
+        nickname: true,
+      },
+    });
+
+    // Crear un diccionario de usuarios con id_usuario como clave y nickname como valor
+    const usuariosDiccionario = {};
+    for (const usuario of usuarios) {
+      usuariosDiccionario[usuario.id_usuario] = usuario.nickname;
+    }
+
+    // Sustituir id_usuario por nickname en ranking utilizando el diccionario
+    for (const registro of ranking) {
+      const nickname = usuariosDiccionario[registro.usuario];
+      if (nickname) {
+        // El valor existe en el diccionario
+        registro.usuario = nickname;
+      }
+    }
+
+    res.statusCode = StatusCodes.OK;
+    res.send({
+      ok: true,
+      message: "Ranking de los 10 jugadores que han ganado más partidas.",
+      ranking: ranking,
+    });
+    return;
+  } catch (e) {
+    console.log("getUserHandler ERROR DEL SERVIDOR");
+    //Error de servidor
+    res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    res.send({
+      ok: false,
+      msg: "Internal error",
+    });
+
+    console.log(e);
+  }
+}
+
+async function getRankingOcasHandler(req, res, next) {
+  try {
+    const ranking = await prisma.estadisticasacumuladas.findMany({
+      select: {
+        usuario: true,
+        vecesoca: true,
+      },
+      orderBy: {
+        vecesoca: "desc",
+      },
+      take: 10,
+    });
+
+    const usuarios = await prisma.usuario.findMany({
+      select: {
+        id_usuario: true,
+        nickname: true,
+      },
+    });
+
+    // Crear un diccionario de usuarios con id_usuario como clave y nickname como valor
+    const usuariosDiccionario = {};
+    for (const usuario of usuarios) {
+      usuariosDiccionario[usuario.id_usuario] = usuario.nickname;
+    }
+
+    // Sustituir id_usuario por nickname en ranking utilizando el diccionario
+    for (const registro of ranking) {
+      const nickname = usuariosDiccionario[registro.usuario];
+      if (nickname) {
+        // El valor existe en el diccionario
+        registro.usuario = nickname;
+      }
+    }
+
+    res.statusCode = StatusCodes.OK;
+    res.send({
+      ok: true,
+      message: "Ranking de los 10 jugadores que han caído más veces en la oca.",
+      ranking: ranking,
+    });
+    return;
+  } catch (e) {
+    console.log("getUserHandler ERROR DEL SERVIDOR");
+    //Error de servidor
+    res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+    res.send({
+      ok: false,
+      msg: "Internal error",
+    });
+
+    console.log(e);
+  }
+}
+
+async function getEstadisticasHandler(req, res, next) {
+  console.log("VALIDACION CORRECTA getEstadisticasHandler");
+
+  //Tomamos los parametros que haya en la URL
+  const id_usuario = parseInt(req.params.id_usuario);
+
+  const datos = await prisma.estadisticasacumuladas
+    .findUnique({
+      select: {
+        vecesoca: true,
+        vecesseis: true,
+        partidasjugadas: true,
+        partidasganadas: true,
+        vecescalavera: true,
+      },
+      where: { usuario: id_usuario },
+    })
+    .then(async function (datos) {
+      res.statusCode = StatusCodes.OK;
+      res.send({
+        ok: true,
+        message: "Estadísticas recuperadas.",
+        estadisticas: datos,
+      });
+      return;
+    })
+    .catch((e) => {
+      console.log("getUserHandler ERROR DEL SERVIDOR");
+      //Error de servidor
+      res.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+      res.send({
+        ok: false,
+        msg: "Internal error",
+      });
+
+      console.log(e);
+    });
+}
+
+module.exports = {
+  registerHandler,
+  loginHandler,
+  updateUserHandler,
+  deleteUserHandler,
+  getUserIdHandler,
+  getUserHandler,
+  getLogrosHandler,
+  getRankingPartidasHandler,
+  getRankingOcasHandler,
+  getEstadisticasHandler,
+};

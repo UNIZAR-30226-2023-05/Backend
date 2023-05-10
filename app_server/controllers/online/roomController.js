@@ -110,7 +110,6 @@ class RoomController {
   isRoomIdInUse(roomId) {
     return this.activeRooms[roomId] != undefined;
   }
-  
 
   //show all the rooms
   showAllRooms() {

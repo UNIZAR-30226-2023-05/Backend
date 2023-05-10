@@ -6,8 +6,8 @@ class Player {
   estadisticas = {
     vecesOca: 0,
     vecesSeis: 0,
-    vecesCalavera: 0
-  }
+    vecesCalavera: 0,
+  };
 
   //--Constructor
   constructor(nickname, socket) {
@@ -30,7 +30,7 @@ class Player {
     return this.currentCell;
   }
 
-  getTurnosPendientes(){
+  getTurnosPendientes() {
     return this.turnosPendientes;
   }
 
@@ -39,36 +39,36 @@ class Player {
   }
 
   //--Métodos para estadísticas
-  sumaOca(){
+  sumaOca() {
     this.estadisticas.vecesOca++;
   }
 
-  sumaSeis(){
+  sumaSeis() {
     this.estadisticas.vecesSeis++;
   }
 
-  sumaCalavera(){
+  sumaCalavera() {
     this.estadisticas.vecesCalavera++;
   }
 
-  async actualizarEstadisticas(haGanado){
+  async actualizarEstadisticas(haGanado) {
     // Se asume que el jugador existe
     try {
       // Obtener id de usuario
       const user = await prisma.usuario.findUnique({
-        where: {nickname: this.nickname},
+        where: { nickname: this.nickname },
       });
 
       const id_usuario = user.id_usuario;
 
       // Comprobar si tiene registro en estadísticas
       let estadisticas = await prisma.estadisticasacumuladas.findUnique({
-        where: {usuario: id_usuario},
+        where: { usuario: id_usuario },
       });
 
-      if(haGanado){
+      if (haGanado) {
         partidasGanadas = 1;
-      }else{
+      } else {
         partidasGanadas = 0;
       }
 
@@ -85,11 +85,10 @@ class Player {
             veces_calavera: this.estadisticas.vecesCalavera,
           },
         });
-      }
-      else {
+      } else {
         // Si tiene registro, se actualiza
         await prisma.estadisticasacumuladas.update({
-          where: {usuario: id_usuario},
+          where: { usuario: id_usuario },
           data: {
             vecesOca: {
               increment: this.estadisticas.vecesOca,
@@ -113,7 +112,7 @@ class Player {
       // Comprobar logros
       // Obtener datos de estadísticas
       estadisticas = await prisma.estadisticasacumuladas.findUnique({
-        where: {usuario: id_usuario},
+        where: { usuario: id_usuario },
       });
 
       // Crear valores de logros según estadísticas
@@ -124,12 +123,12 @@ class Player {
         ganadiezpartidas: estadisticas.partidasGanadas >= 10,
         ganacincuentapartidas: estadisticas.partidasGanadas >= 50,
         caeendiezocas: estadisticas.vecesOca >= 10,
-        caeenseisseises: estadisticas.vecesSeis >= 6
+        caeenseisseises: estadisticas.vecesSeis >= 6,
       };
 
       // Ver si tiene registro en logros
       const logros = await prisma.logros.findUnique({
-        where: {usuario: id_usuario},
+        where: { usuario: id_usuario },
       });
 
       // Si no tiene registro, se crea
@@ -140,11 +139,10 @@ class Player {
 
         // Cobrar logros conseguidos
         cobrarLogrosNuevos(id_usuario, datalogros);
-      }
-      else {
+      } else {
         // Si tiene registro, se actualiza
         await prisma.logros.update({
-          where: {usuario: id_usuario},
+          where: { usuario: id_usuario },
           data: datalogros,
         });
 
@@ -152,12 +150,12 @@ class Player {
         cobrarLogrosActualizado(id_usuario, logros, datalogros);
       }
     } catch (error) {
-        console.log(error);
-        return;
+      console.log(error);
+      return;
     }
   }
 
-  async cobrarLogrosNuevos(id_usuario, datalogros){
+  async cobrarLogrosNuevos(id_usuario, datalogros) {
     let monedasSumar = 10; // 10 por jugar una partida
     if (datalogros.ganaunapartida) {
       monedasSumar += 50; // 50 por ganar una partida
@@ -177,7 +175,7 @@ class Player {
 
     // Sumar monedas al usuario
     await prisma.usuario.update({
-      where: {id_usuario: id_usuario},
+      where: { id_usuario: id_usuario },
       data: {
         monedas: {
           increment: monedasSumar,
@@ -186,7 +184,7 @@ class Player {
     });
   }
 
-  async cobrarLogrosActualizado(id_usuario, logros, datalogros){
+  async cobrarLogrosActualizado(id_usuario, logros, datalogros) {
     let monedasSumar = 0;
     if (datalogros.ganaunapartida && !logros.ganaunapartida) {
       monedasSumar += 50; // 50 por ganar una partida
@@ -206,7 +204,7 @@ class Player {
 
     // Sumar monedas al usuario
     await prisma.usuario.update({
-      where: {id_usuario: id_usuario},
+      where: { id_usuario: id_usuario },
       data: {
         monedas: {
           increment: monedasSumar,
@@ -220,8 +218,6 @@ class Player {
     console.log("Celda Actual: " + this.currentCell);
     console.log("turnosPendientes: " + this.turnosPendientes);
   }
-
 }
-
 
 module.exports = Player;

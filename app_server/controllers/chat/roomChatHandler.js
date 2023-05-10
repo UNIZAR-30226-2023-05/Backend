@@ -5,7 +5,6 @@
 const roomChatHandler = (socket) => {
   //Enviar mensaje a la sala
   function sendMessageRoom(roomId, messageContent, callback) {
-
     roomId = parseInt(roomId);
     //Check if the room exists
     if (!roomController.isRoomActive(roomId)) {
@@ -56,21 +55,17 @@ const roomChatHandler = (socket) => {
       date: new Date().toLocaleDateString(),
     };
 
-
     socket.to(roomId).emit("roomMessage", msg);
 
-    console.log(msg)
+    console.log(msg);
 
     callback({
       msg: "message sent",
       status: "ok",
     });
-  };
+  }
 
-  
-  
-  
-  //Listeners 
+  //Listeners
   socket.on("sendMessage", sendMessageRoom);
 };
 

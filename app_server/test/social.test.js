@@ -1,9 +1,14 @@
-const { testSolicitud, testGetSolicitudes, testGetAmigos, testRechazarSolicitudes } = require("./ttsFunctions/socialTest");
+const {
+  testSolicitud,
+  testGetSolicitudes,
+  testGetAmigos,
+  testRechazarSolicitudes,
+} = require("./ttsFunctions/socialTest");
 
-describe('Tests parte 2', () => {
-    //Tests de /social
-    testSolicitud();
-    testGetSolicitudes();
-    testGetAmigos();
-    testRechazarSolicitudes();
+describe("Tests parte 2", () => {
+  //Tests de /social
+  testSolicitud();
+  testGetSolicitudes();
+  testGetAmigos();
+  testRechazarSolicitudes();
 });
