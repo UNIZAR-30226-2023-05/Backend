@@ -216,10 +216,15 @@ class GameController {
         return b.getCurrentCell() - a.getCurrentCell();
       });
 
+      let posiciones = {};
+      let nuevasPos = usersOrdenados.map((user) => {
+        return posiciones = {nickname: user.nickname, celda: user.getCurrentCell()};
+      });
+
       //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
       this.socketServer.to(this.room.roomId).emit("finPartida", {
         ganador: user.nickname,
-        posiciones: usersOrdenados,
+        posiciones: nuevasPos,
       });
 
       this.finalPartida = true;
@@ -305,10 +310,20 @@ class GameController {
         usersOrdenados[i].printPlayerInfo();
       }
 
-      //nos quedamos con los nicknames
+      //objeto con nicknames y posiciones
+  
+      //para cada usuario ordenado nos guardamos su celda actual y su nickname
+      // for (let i = 0; i < usersOrdenados.length; i++) {
+      //   posiciones.nickname = usersOrdenados[i].nickname;
+      //   posiciones.pos = usersOrdenados[i].getCurrentCell();
+      // }
+
+      let posiciones = {};
       let nuevasPos = usersOrdenados.map((user) => {
-        return user.nickname;
+        return posiciones = {nickname: user.nickname, celda: user.getCurrentCell()};
       });
+
+
 
       
 
