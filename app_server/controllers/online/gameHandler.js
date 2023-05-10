@@ -107,6 +107,35 @@ const gameHandler = (socket, roomController, io) => {
 
         //Comenzar turno
         let { dice, afterDice, rollAgain, finalCell } = gameController.comenzarTurno(player);
+
+        //si es un objeto vacío, es que el jugador no puede tirar
+        if(dice === undefined){
+            callback({
+                message: "No puedes tirar",
+                status: 'error'
+            });
+            return;
+        }
+        //comprobar si esta penalizado
+        if(dice === 0){
+            callback({
+                message: "Estás penalizado",
+                status: 'error'
+            });
+            return;
+        }
+
+        if(finalCell === 63){
+            callback({
+                message: "Has ganado",
+                status: 'ok'
+            });
+            return;
+        }
+
+
+
+
         console.log("================================================== ")
         console.log({ dice: dice, afterDice: afterDice, rollAgain: rollAgain, finalCell: finalCell })
 

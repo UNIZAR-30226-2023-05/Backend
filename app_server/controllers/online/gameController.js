@@ -164,6 +164,7 @@ class GameController {
 
     //Comprobar si ha llegado al final
     if (nuevaCelda == 63) {
+      console.log("El usuario " + user.getNickname() + " ha llegado a la meta");
       haLlegado = true;
     } else if (nuevaCelda > 63) {
       nuevaCelda = 63 - (nuevaCelda % 63);  //Te has pasado de la meta
@@ -181,7 +182,8 @@ class GameController {
 
     //Si estas penalizado no puedes mover ficha
     if (user.getTurnosPendientes() > 0) {
-      // Se resta uno al número de turnos que le quedan pendientes al jugador
+      // Se resta uno al número de turnos que le quedan pendientes al jugado
+      console.log("El usuario " + user.getNickname() + " está penalizado");
       user.turnosPendientes--;
 
       // Sumar 1 al turno 
@@ -193,7 +195,11 @@ class GameController {
         tiempo: this.tiempoDeTurno,
       });
 
-      return;
+      this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
+        message: "⊙﹏⊙∥ El usuario " + user.getNickname() + " está penalizado",
+      });
+
+      return { dice: 0, afterDice:user.getCurrentCell(), rollAgain:false, finalCell:user.getCurrentCell() };
     }
 
     //El usuario tira el dado
@@ -206,6 +212,8 @@ class GameController {
 
     //Comprobar si ha llegado al final
     if (haLlegado) {
+
+      user.setCurrCell(nuevaCelda);
       //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
       //Buscamos cada jugador de la partida y los ordenamos por su posición
       let users = this.room.getPlayers();
@@ -243,107 +251,152 @@ class GameController {
         }
       }
 
+      this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
+        message: "(～￣▽￣)～El usuario " + user.getNickname() + " ha ganado la partida",
+      });
+
       return { dice: valor, afterDice:nuevaCelda, rollAgain:false, finalCell:nuevaCelda };
     }
-    else {
-
-      //nuevaCelda, celda calculado con el numero del dado
-      //proximaCelda, tras comprobar el estado de nuevaCelda, puede ser la misma u otra celda segun el tipo
-      //tiraOtraVez, si es true, el jugador tira otra vez
-      console.log("celdaActual: " + user.getCurrentCell());
-      console.log("valor: " + valor);
-      console.log("haLlegado: " + haLlegado);
 
 
-
-
-      //Movemos al usuario a la nueva celda
-      user.setCurrCell(nuevaCelda);
-
-      console.log("celdaActualPostDado: " + user.getCurrentCell());
-
-      console.log("================================================== ")
-
-      //Comprobar estado de la nueva celda --> tablero.execute(nuevaCelda)
-      let {nueva, turno, penalizacion, caidoOca, caidoCalavera } = this.tablero.execute(nuevaCelda);
-      console.log({nueva, turno, penalizacion, caidoOca, caidoCalavera })
-      console.log("================================================== ")
-      //Comprobar estadísticas
-      if (caidoOca) {
-        user.sumaOca();
-      }
-      else if (caidoCalavera) {
-        user.sumaCalavera();
-      }
-
-      //estadoCelda => [proximaCleda (si es especial), tiraOtraVez, penalizacion]
-
-      //Si hay penalización se le añade al jugador
-      if (penalizacion > 0) {
-        user.turnosPendientes = penalizacion;
-      }
-
-      //Si se tiene que mover (punete, oca..)
-      if (nueva != user.getCurrentCell()) {
-        user.setCurrCell(nueva);
-      }
-
-
-      // console.log("Fin de turno del jugador: " + user.nickname);
-      // console.log("Celda actual: " + user.getCurrentCell());
-      // console.log("Dados: " + valor);
-
-
-      //Enviamos mensaje con el estado actual de la partida
-      //Buscamos cada jugador de la partida y los ordenamos por su posición
-      //                -->Estado de partida<--
-      let users = this.room.getPlayers();
-      // console.log(users);
-      let players = Object.values(users);
-
-      let usersOrdenados = players.sort((a, b) => {
-        return b.getCurrentCell() - a.getCurrentCell();
-      });
-
-      //printPlayer para cada miembro del diccionario
-      for (let i = 0; i < usersOrdenados.length; i++) {
-        usersOrdenados[i].printPlayerInfo();
-      }
-
-      //objeto con nicknames y posiciones
-  
-      //para cada usuario ordenado nos guardamos su celda actual y su nickname
-      // for (let i = 0; i < usersOrdenados.length; i++) {
-      //   posiciones.nickname = usersOrdenados[i].nickname;
-      //   posiciones.pos = usersOrdenados[i].getCurrentCell();
-      // }
-
-      let posiciones = {};
-      let nuevasPos = usersOrdenados.map((user) => {
-        return posiciones = {nickname: user.nickname, celda: user.getCurrentCell()};
-      });
+    //nuevaCelda, celda calculado con el numero del dado
+    //proximaCelda, tras comprobar el estado de nuevaCelda, puede ser la misma u otra celda segun el tipo
+    //tiraOtraVez, si es true, el jugador tira otra vez
+    console.log("celdaActual: " + user.getCurrentCell());
+    console.log("valor: " + valor);
+    console.log("haLlegado: " + haLlegado);
 
 
 
-      
 
-      //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
-      this.socketServer.to(this.room.roomId).emit("estadoPartida", {
-        posiciones: nuevasPos,
-      });
-      //             -->Estado de partida<--
+    //Movemos al usuario a la nueva celda
+    user.setCurrCell(nuevaCelda);
 
-      //Si se tira otra vez no se pasa de turno
-      if (!turno) {
-        this.sigTurno();
-      }
+    console.log("celdaActualPostDado: " + user.getCurrentCell());
 
-      
-      return { dice: valor, afterDice:nuevaCelda, rollAgain:turno, finalCell:nueva };
+    console.log("================================================== ")
 
+    //Comprobar estado de la nueva celda --> tablero.execute(nuevaCelda)
+    let {nueva, turno, penalizacion, caidoOca, caidoCalavera } = this.tablero.execute(nuevaCelda);
+    console.log({nueva, turno, penalizacion, caidoOca, caidoCalavera })
+    console.log("================================================== ")
+    //Comprobar estadísticas
+    if (caidoOca) {
+      user.sumaOca();
     }
 
+    else if (caidoCalavera) {
+      user.sumaCalavera();
+    }
+
+    //estadoCelda => [proximaCleda (si es especial), tiraOtraVez, penalizacion]
+
+    //Si hay penalización se le añade al jugador
+    if (penalizacion > 0) {
+      user.turnosPendientes = penalizacion;
+    }
+
+    //Si se tiene que mover (punete, oca..)
+    if (nueva != user.getCurrentCell()) {
+      //comprobar si ha llegado al final
+      if (nueva == 63) {
+        //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
+        //Buscamos cada jugador de la partida y los ordenamos por su posición
+
+        user.setCurrCell(nueva);
+
+
+        let users = this.room.getPlayers();
+        // console.log(users);
+        let players = Object.values(users);
+
+        let usersOrdenados = players.sort((a, b) => {
+          return b.getCurrentCell() - a.getCurrentCell();
+        });
+
+        let posiciones = {};
+        let nuevasPos = usersOrdenados.map((user) => {
+          return posiciones = {nickname: user.nickname, celda: user.getCurrentCell()};
+        });
+
+        //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
+        this.socketServer.to(this.room.roomId).emit("finPartida", {
+          ganador: user.nickname,
+          posiciones: nuevasPos,
+        });
+
+        this.finalPartida = true;
+
+        this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
+          message: "(～￣▽￣)～El usuario " + user.getNickname() + " ha ganado la partida",
+        });
+        
+        return { dice: valor, afterDice:nuevaCelda, rollAgain:false, finalCell:nuevaCelda };
+
+      }
+    }
+
+
+    // console.log("Fin de turno del jugador: " + user.nickname);
+    // console.log("Celda actual: " + user.getCurrentCell());
+    // console.log("Dados: " + valor);
+
+
+    //Enviamos mensaje con el estado actual de la partida
+    //Buscamos cada jugador de la partida y los ordenamos por su posición
+    //                -->Estado de partida<--
+    let users = this.room.getPlayers();
+    // console.log(users);
+    let players = Object.values(users);
+
+    let usersOrdenados = players.sort((a, b) => {
+      return b.getCurrentCell() - a.getCurrentCell();
+    });
+
+    //printPlayer para cada miembro del diccionario
+    for (let i = 0; i < usersOrdenados.length; i++) {
+      usersOrdenados[i].printPlayerInfo();
+    }
+
+    //objeto con nicknames y posiciones
+
+    //para cada usuario ordenado nos guardamos su celda actual y su nickname
+    // for (let i = 0; i < usersOrdenados.length; i++) {
+    //   posiciones.nickname = usersOrdenados[i].nickname;
+    //   posiciones.pos = usersOrdenados[i].getCurrentCell();
+    // }
+
+    let posiciones = {};
+    let nuevasPos = usersOrdenados.map((user) => {
+      return posiciones = {nickname: user.nickname, celda: user.getCurrentCell()};
+    });
+
+
+
+    
+
+    //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
+    this.socketServer.to(this.room.roomId).emit("estadoPartida", {
+      posiciones: nuevasPos,
+    });
+    //             -->Estado de partida<--
+
+    //Si se tira otra vez no se pasa de turno
+    if (!turno) {
+      this.sigTurno();
+    }
+    else{
+      //mensaje a toda la sala de vuelve a tirar
+      this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
+        message: "( ͡ಠ ʖ̯ ͡ಠ)! El jugador " + user.nickname + " vuelve a tirar",
+      });
+    }
+
+    
+    return { dice: valor, afterDice:nuevaCelda, rollAgain:turno, finalCell:nueva };
+
   }
+
 
   turnoActual() {
     return this.currentTurn;
@@ -352,12 +405,7 @@ class GameController {
   comenzarTurno(user) {
     //Comprobar si es el turno
     if (this.ordenTurnos[this.currentTurn] != user.nickname) {
-      throw new Error("No es tu turno");
-      // return;
-    }
-    //Si es el turno del usuario no puede empezar el turno (ya lo ha hecho)
-    else if (this.ackTurno) {
-      throw new Error("Ya has empezado el turno");
+      return {};
       // return;
     }
 
