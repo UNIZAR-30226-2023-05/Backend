@@ -294,11 +294,12 @@ class GameController {
     //Si se tiene que mover (punete, oca..)
     if (nueva != user.getCurrentCell()) {
       //comprobar si ha llegado al final
+      user.setCurrCell(nueva);
       if (nueva == 63) {
         //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
         //Buscamos cada jugador de la partida y los ordenamos por su posición
 
-        user.setCurrCell(nueva);
+        //user.setCurrCell(nueva);
 
         let users = this.room.getPlayers();
         // console.log(users);
