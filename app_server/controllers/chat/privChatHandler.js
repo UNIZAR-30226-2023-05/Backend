@@ -25,6 +25,7 @@ const privChatHandler = (socket, privChatController) => {
     /**
      * receiver-sender is the chat between the two users
      */
+    console.log("Me piden los mensajes entre ", receiver, " y ", sender);
     privChatController
       .recoverChat(receiver, sender)
       .then((messages) => {
