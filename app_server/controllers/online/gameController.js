@@ -335,8 +335,8 @@ class GameController {
         return {
           dice: valor,
           afterDice: nuevaCelda,
-          rollAgain: false,
-          finalCell: nuevaCelda,
+          rollAgain: turno,
+          finalCell: nueva,
         };
       }
     }
