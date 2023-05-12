@@ -58,38 +58,44 @@ class PrivChatController {
       //We send the message to the receiver
       receiverSocket.emit("privMessage", msg);
     }
-    // //We store the message in the database (prisma)
-    // //We create the message
+    //We store the message in the database (prisma)
+    //We create the message
 
     //Search for the id by the nickname
-    // const userSender = await this.prisma.usuario.findUnique({
-    //     where: {
-    //         nickname: sender,
-    //     },
-    // });
-    // const send_id = user.id;
-    // console.log("id: ",id);
+    const userSender = await this.prisma.usuario.findUnique({
+        where: {
+            nickname: sender,
+        },
+    });
+    const send_id = userSender.id_usuario;
+    console.log("send_id: ",send_id);
 
-    // const userReceiver = await this.prisma.usuario.findUnique({
-    //     where: {
-    //         nickname: receiver,
-    //     },
-    // });
-    // const rec_id = user.id;
-    // console.log("id: ",id);
+    const userReceiver = await this.prisma.usuario.findUnique({
+        where: {
+            nickname: receiver,
+        },
+    });
+    const rec_id = userReceiver.id_usuario;
+    console.log("rec_id: ",rec_id);
 
-    // const message = await this.prisma.mensaje.create({
-    //     data: {
-    //         //id: autoincremental
-    //         fecha_hora : msg.date,
-    //         contenido : msg.message,
-    //         //id_usuario_emisor
-    //         //id_usuario_receptor
-    //         destinatario : rec_id,
-    //         emisor : send_id,
-    //     },
-    // });
-    // console.log("Nuevo mensaje almacenado: ",message);
+    const dateTimeString = msg.time.toLocaleString();
+    const fechaMsg = dateTimeString.substring(0,10);
+    const horaMsg = dateTimeString.substring(11,19);
+
+    const message = await this.prisma.mensaje.create({
+        data: {
+            //id: autoincremental
+            //fecha_hora : msg.date,
+            fecha: fechaMsg,
+            hora: horaMsg,
+            contenido : msg.message,
+            //id_usuario_emisor
+            //id_usuario_receptor
+            emisor : send_id,
+            destinatario : rec_id,
+        },
+    });
+    console.log("Nuevo mensaje almacenado: ",message);
   }
 
   //Function to recover the chat
