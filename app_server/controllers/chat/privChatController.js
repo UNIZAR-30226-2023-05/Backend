@@ -79,7 +79,7 @@ class PrivChatController {
     console.log("rec_id: ",rec_id);
 
     const dateTimeString = msg.time.toLocaleString();
-    const fechaMsg = dateTimeString.substring(0,10);
+    const fechaMsg = dateTimeString.substring(0,9);
     const horaMsg = dateTimeString.substring(11,19);
 
     const message = await this.prisma.mensaje.create({
