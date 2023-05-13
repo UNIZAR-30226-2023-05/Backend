@@ -219,6 +219,25 @@ class Room {
   isRoomFull() {
     return this.numPlayers == Object.keys(this.players).length;
   }
+
+  servDelRoom(io) {
+    //SERVIDOR ELIMINA SALA
+    io.to(this.roomId).emit("destroyingRoom", this.roomId);
+    //1. Eliminamos a todos los jugadores de la sala
+    for (let player in this.players) {
+      // console.log("Eliminando jugador " + player);
+      //evitamos borrarse a si mismo y que se borre a los jugadores de la sala únicamente
+      if (this.isPlayerInRoom(this.players[player])) {
+        console.log("Eliminando jugador " + player);
+        this.players[player].socket.leave(this.roomId);
+        delete this.players[player];
+      }
+    }
+
+    //2. Eliminamos controlador de juego de la sala
+    delete this.gameController;
+  
+  }
 }
 
 module.exports = Room;

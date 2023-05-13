@@ -123,6 +123,18 @@ const gameHandler = (socket, roomController, io) => {
     }
 
     if (finalCell === 63) {
+
+      //Tratamiento de final de partida
+      //Se envía el evento de final de partida a todos los jugadores de la sala
+      io.to(roomId).emit("serverRoomMessage", {
+        message: "Partida finalizada, se va a cerrar la sala en 10 segundos",
+      });
+
+      //Se cierra la sala en 10 segundos
+      setTimeout(() => {
+        roomController.servDelRoom(roomId,io);
+      }, 10000);
+
       callback({
         message: "Has ganado",
         status: "ok",

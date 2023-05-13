@@ -37,6 +37,17 @@ class RoomController {
     return this.activeRooms[roomId].roomName;
   }
 
+  //server delete room
+  servDelRoom(roomId,io) {
+    //Se elimina la sala del diccionario
+    //NO SE DECREMENTA EL ID
+    //Antes de nada, se eliminan a todos los jugadores de la sala
+    //io.to(roomId).emit("destroyingRoom", roomId);
+    this.activeRooms[roomId].servDelRoom(io);
+    delete this.activeRooms[roomId];
+  }
+
+
   deleteRoom(user, roomId, io) {
     //Se elimina la sala del diccionario
     //NO SE DECREMENTA EL ID
@@ -113,7 +124,7 @@ class RoomController {
 
   //show all tremovePlayerhe rooms
   showAllRooms() {
-    console.log("Mostrando todas las salas");
+    // console.log("Mostrando todas las salas");
     for (let room in this.activeRooms) {
       console.log("Sala: " + this.activeRooms[room].roomName);
     }
