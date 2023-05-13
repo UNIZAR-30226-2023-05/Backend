@@ -246,7 +246,7 @@ const roomHandler = (socket, roomController, io) => {
       `El jugador ${user.nickname} ha destruido la sala`,
       io
     );
-
+    io.to(roomId).emit("destroyingRoom", roomId);
     roomController.deleteRoom(user, roomID, io);
     roomController.showAllRooms();
 

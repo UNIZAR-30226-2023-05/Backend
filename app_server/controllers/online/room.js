@@ -144,6 +144,7 @@ class Room {
       "serverRoomMessage",
       `[${this.roomName}]` + message
     );
+    //io.to(this.roomId).emit("destroyingRoom", this.roomId);
   }
 
   //eliminar jugador de la sala (PENDING)

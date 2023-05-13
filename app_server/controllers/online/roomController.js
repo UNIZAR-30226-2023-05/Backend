@@ -41,7 +41,7 @@ class RoomController {
     //Se elimina la sala del diccionario
     //NO SE DECREMENTA EL ID
     //Antes de nada, se eliminan a todos los jugadores de la sala
-    io.to(roomId).emit("destroyingRoom", roomId);
+    //io.to(roomId).emit("destroyingRoom", roomId);
     this.activeRooms[roomId].delRoom(user);
     delete this.activeRooms[roomId];
   }
@@ -111,7 +111,7 @@ class RoomController {
     return this.activeRooms[roomId] != undefined;
   }
 
-  //show all the rooms
+  //show all tremovePlayerhe rooms
   showAllRooms() {
     console.log("Mostrando todas las salas");
     for (let room in this.activeRooms) {
