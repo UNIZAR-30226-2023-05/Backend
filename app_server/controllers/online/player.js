@@ -13,7 +13,7 @@ class Player {
   constructor(nickname, socket) {
     this.nickname = nickname;
     this.socket = socket;
-    this.currentCell = 0; // rectángulo inicial
+    this.currentCell = 1; // rectángulo inicial
     this.turnosPendientes = 0;
   }
 
