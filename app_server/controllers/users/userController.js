@@ -312,7 +312,7 @@ async function getLogrosHandler(req, res, next) {
       where: { usuario: id_usuario },
     })
     .then(async function (datos) {
-      console.log("Datos: " + datos);
+      //console.log("Datos: " + datos);
       if (datos === null) {
         datos = {
           juegaunapartida: false,
@@ -323,7 +323,7 @@ async function getLogrosHandler(req, res, next) {
           caeenseisseises: false,
         };
 
-        console.log("No hay logros para este usuario" + datos);
+        //console.log("No hay logros para este usuario" + datos);
       }
 
       res.statusCode = StatusCodes.OK;
@@ -475,6 +475,17 @@ async function getEstadisticasHandler(req, res, next) {
       where: { usuario: id_usuario },
     })
     .then(async function (datos) {
+      if (datos === null) {
+        datos = {
+          vecesoca: "0",
+          vecesseis: "0",
+          partidasjugadas: "0",
+          partidasganadas: "0",
+          vecescalavera: "0"
+        };
+
+        //console.log("No hay logros para este usuario" + datos);
+      }
       res.statusCode = StatusCodes.OK;
       res.send({
         ok: true,
