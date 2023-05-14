@@ -136,7 +136,6 @@ const testSalas = () => {
     });
 
     describe("Test creación de salas", () => {
-    describe("Test creación de salas", () => {
       beforeAll((done) => {
         usuarios = simFrontend(5, done);
       });
@@ -573,6 +572,6 @@ const testSalas = () => {
       //Fin por ahora de los test de salas
     });
   });
-};
+}
 
 module.exports = { testSalas };
