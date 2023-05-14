@@ -101,6 +101,14 @@ const gameHandler = (socket, roomController, io) => {
       return;
     }
 
+    if (gameController.hasGameFinished()){
+      callback({
+        message: "La partida ha terminado",
+        status: "error",
+      });
+      return;
+    }
+
     //Comenzar turno
     let { dice, afterDice, rollAgain, finalCell } =
       gameController.comenzarTurno(player);
@@ -124,6 +132,8 @@ const gameHandler = (socket, roomController, io) => {
 
     if (finalCell === 63) {
 
+      
+
       //Tratamiento de final de partida
       //Se envía el evento de final de partida a todos los jugadores de la sala
       io.to(roomId).emit("serverRoomMessage", {
@@ -132,6 +142,8 @@ const gameHandler = (socket, roomController, io) => {
 
       //Se cierra la sala en 10 segundos
       setTimeout(() => {
+        //Destuir el controlador de la partida
+        roomController.destroyGameController(roomId);
         roomController.servDelRoom(roomId,io);
       }, 10000);
 
