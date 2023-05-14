@@ -49,14 +49,16 @@ class PrivChatController {
     //We check if the receiver is connected
     console.log("receiver: ", receiver);
     console.log("sender: ", sender);
-    if (this.sessionStorage.isConnected(receiver)) {
+    if (this.sessionStorage.isConnected({ nickname: receiver })) {
+        //console.log("Sesion storage: ", this.sessionStorage);
       //If the receiver is connected, we send the message to the receiver
       //We get the socket of the receiverW
-      let receiverSocket = this.sessionStorage.getSocket(receiver);
+      let receiverSocket = this.sessionStorage.getSocket({ nickname: receiver });
 
       console.log("receiverSocket: ", receiverSocket);
       //We send the message to the receiver
       receiverSocket.emit("privMessage", msg);
+      console.log("Mensaje enviado con evento a ", receiver);
     }
     //We store the message in the database (prisma)
     //We create the message
@@ -121,8 +123,12 @@ class PrivChatController {
                 },
             ],
         },
+        // Ordenarlos por id
+        orderBy: {
+            id_mensaje: "asc",
+        },
     });
-    console.log("Mensajes recuperados: ",messages);
+    //console.log("Mensajes recuperados: ",messages);
     return messages;
   }
 }
