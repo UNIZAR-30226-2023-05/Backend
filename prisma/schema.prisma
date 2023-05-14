@@ -19,9 +19,9 @@ model amigos {
 
 model estadisticasacumuladas {
   usuario                                         Int     @id
-  vecescaido                                      Int
-  tiros                                           Int
-  veces6                                          Int
+  vecesoca                                        Int
+  vecesseis                                       Int
+  partidasjugadas                                 Int
   partidasganadas                                 Int
   vecescalavera                                   Int
   usuario_estadisticasacumuladas_usuarioTousuario usuario @relation("estadisticasacumuladas_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: Cascade)
@@ -31,6 +31,17 @@ model ficha {
   id_ficha Int   @id @default(autoincrement())
   id_skin  Int?
   skin     skin? @relation(fields: [id_skin], references: [id_skin], onDelete: Cascade)
+}
+
+model logros {
+  usuario                         Int     @id
+  juegaunapartida                 Boolean
+  ganaunapartida                  Boolean
+  ganadiezpartidas                Boolean
+  ganacincuentapartidas           Boolean
+  caeendiezocas                   Boolean
+  caeenseisseises                 Boolean
+  usuario_logros_usuarioTousuario usuario @relation("logros_usuarioTousuario", fields: [usuario], references: [id_usuario], onDelete: Cascade)
 }
 
 model mensaje {
@@ -87,6 +98,7 @@ model usuario {
   amigos_amigos_id_usuario1Tousuario                             amigos[]                @relation("amigos_id_usuario1Tousuario")
   amigos_amigos_id_usuario2Tousuario                             amigos[]                @relation("amigos_id_usuario2Tousuario")
   estadisticasacumuladas_estadisticasacumuladas_usuarioTousuario estadisticasacumuladas? @relation("estadisticasacumuladas_usuarioTousuario")
+  logros_logros_usuarioTousuario                                 logros?                 @relation("logros_usuarioTousuario")
   mensaje_mensaje_destinatarioTousuario                          mensaje[]               @relation("mensaje_destinatarioTousuario")
   mensaje_mensaje_emisorTousuario                                mensaje[]               @relation("mensaje_emisorTousuario")
   posee_posee_usuarioTousuario                                   posee[]                 @relation("posee_usuarioTousuario")

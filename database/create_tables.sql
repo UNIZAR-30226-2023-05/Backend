@@ -32,34 +32,6 @@ CREATE TABLE Solicitud(
     PRIMARY KEY (id_usuario_envia, id_usuario_recibe)
 );
 
--- Tabla de Sala
-CREATE TABLE Sala(
-    id_sala serial,
-    modo INTEGER NOT NULL, -- 0 clásico, 1 alternativo
-    nombre VARCHAR(50) NOT NULL,
-
-    PRIMARY KEY (id_sala)
-);
-
--- Tabla de Forma Parte
-CREATE TABLE FormaParte(
-    usuario INTEGER,
-    sala INTEGER,
-    
-    FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (sala) REFERENCES Sala(id_sala) ON UPDATE CASCADE ON DELETE CASCADE,
-    PRIMARY KEY (usuario, sala)
-);
-
--- Tabla de Partida
-CREATE TABLE Partida(
-    id_partida serial,
-    id_sala INTEGER,
-
-    PRIMARY KEY (id_partida),
-    FOREIGN KEY (id_sala) REFERENCES Sala(id_sala) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
 -- Tabla de skin
 CREATE TABLE Skin(
     id_skin serial,
@@ -97,70 +69,44 @@ CREATE TABLE Posee(
     PRIMARY KEY (usuario, id_skin)
 );
 
--- Tabla chat
-CREATE TABLE Chat(
-    id_chat serial,
-
-    PRIMARY KEY (id_chat)
-);
-
 -- Tabla de mensaje
 CREATE TABLE Mensaje(
     id_mensaje serial,
     fecha VARCHAR(10) NOT NULL, -- estilo DD/MM/AAAA
     hora VARCHAR(8) NOT NULL, -- estilo HH:MM:SS
     contenido TEXT NOT NULL,
-    chat INTEGER NOT NULL, -- pertenece a un chat
-    remitente INTEGER NOT NULL, --remitente
+    emisor INTEGER NOT NULL, --emisor
+    destinatario INTEGER NOT NULL, --destinatario
 
-    FOREIGN KEY (chat) REFERENCES Chat(id_chat) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (remitente) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (emisor) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (destinatario) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (id_mensaje)
-);
-
--- Tabla de privado
-CREATE TABLE chatPrivado(
-    id_chatPrivado INTEGER,
-    usuario1 INTEGER,
-    usuario2 INTEGER,
-        
-    FOREIGN KEY (id_chatPrivado) REFERENCES Chat(id_chat) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (usuario1) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (usuario2) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
-    PRIMARY KEY (id_chatPrivado)
-);
-
--- Tabla de partida
-CREATE TABLE chatPartida(
-    id_chatPartida INTEGER,
-    id_partida INTEGER,
-    
-    FOREIGN KEY (id_chatPartida) REFERENCES Chat(id_chat) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (id_partida) REFERENCES Partida(id_partida) ON UPDATE CASCADE ON DELETE CASCADE,
-    PRIMARY KEY (id_chatPartida)
 );
 
 -- Tabla de estadisticasAcumuladas 
 CREATE TABLE EstadisticasAcumuladas(
     usuario INTEGER, -- usuario al que pertenecen las estadísticas
-    vecesCaido INTEGER NOT NULL, -- veces que ha caído en la oca
-    tiros INTEGER NOT NULL,
-    veces6 INTEGER NOT NULL, -- veces que ha tocado 6
-    partidasGanadas INTEGER NOT NULL, 
+    vecesOca INTEGER NOT NULL, -- veces que ha caído en la oca
+    vecesSeis INTEGER NOT NULL, -- veces que ha tocado 6
+    partidasJugadas INTEGER NOT NULL, -- número de partidas jugadas
+    partidasGanadas INTEGER NOT NULL, -- número de partidas ganadas
     vecesCalavera INTEGER NOT NULL, -- veces que ha caído en la calavera
 
     FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (usuario)
 );
 
--- Tabla situacion (N:M)
-CREATE TABLE Situacion(
+-- Tabla de logros. Cada logro es un booleano que indica si el usuario lo ha conseguido o no.
+-- True lo ha conseguido, false no lo ha conseguido.
+CREATE TABLE Logros(
     usuario INTEGER,
-    id_partida INTEGER,
-    casilla INTEGER NOT NULL,
-    turno INTEGER NOT NULL, -- booleano
-    
+    juegaUnaPartida BOOLEAN NOT NULL,
+    ganaUnaPartida BOOLEAN NOT NULL,
+    ganaDiezPartidas BOOLEAN NOT NULL,
+    ganaCincuentaPartidas BOOLEAN NOT NULL,
+    caeEnDiezOcas BOOLEAN NOT NULL,
+    caeEnSeisSeises BOOLEAN NOT NULL,
+
     FOREIGN KEY (usuario) REFERENCES Usuario(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (id_partida) REFERENCES Partida(id_partida) ON UPDATE CASCADE ON DELETE CASCADE,
-    PRIMARY KEY (usuario, id_partida)
-);
+    PRIMARY KEY (usuario)
+)

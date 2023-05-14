@@ -1,14 +1,11 @@
-
-
-var Message = require('./Message');
+var Message = require("./Message");
 
 /**
  * @param {*} socket
  * @param {*} privChatController
  */
 
-const privChatHandler = (socket,privChatController) => {
-
+const privChatHandler = (socket, privChatController) => {
   function sendMessageHandler(sender, receiver, message, callback) {
     //generar mensaje
     const msg = new Message(sender, receiver, message);
@@ -28,7 +25,21 @@ const privChatHandler = (socket,privChatController) => {
     /**
      * receiver-sender is the chat between the two users
      */
-    privChatController.getMessages(sender, receiver, callback);
+    console.log("Me piden los mensajes entre ", receiver, " y ", sender);
+    privChatController
+      .recoverChat(receiver, sender)
+      .then((messages) => {
+        callback({
+          messages: messages,
+          status: "ok",
+        });
+      })
+      .catch((err) => {
+        callback({
+          status: "error",
+          error: err,
+        });
+      });
   }
 
   //Listeners
