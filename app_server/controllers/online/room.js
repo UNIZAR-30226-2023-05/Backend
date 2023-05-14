@@ -269,6 +269,10 @@ class Room {
     return players;
     
   }
+
+  isBot(nickname) {
+    return this.bots[nickname] != undefined;
+  }
 }
 
 module.exports = Room;

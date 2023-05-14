@@ -65,7 +65,7 @@ class GameController {
 
   //Para saber si el que tiene el turno es un bot
   isBot(nickname) {
-    return this.room.bots[nickname] != undefined;
+    return this.room.isBot(nickname);
   }
 
   //Comienzo de partida
@@ -153,7 +153,7 @@ class GameController {
       });
 
       //si es su turno otra vez, tirar otra vez
-      while (rollAgain) {
+      if (rollAgain === true) {
         let { dice, afterDice, rollAgain, finalCell } = this.comenzarTurno(bot);
 
         //habrá que comprobar si ha ganado la partida
@@ -226,20 +226,6 @@ class GameController {
         finalCell: finalCell,
       });
 
-      while (rollAgain) {
-        let { dice, afterDice, rollAgain, finalCell } = this.comenzarTurno(bot);
-
-        //habrá que comprobar si ha ganado la partida
-
-        //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
-        this.socketServer.to(this.room.roomId).emit("botTurno", {
-          nickname: botNickname,
-          dice: dice,
-          afterDice: afterDice,
-          rollAgain: rollAgain,
-          finalCell: finalCell,
-        });
-      }
     } else {
       //Es turno del usuario
       //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
@@ -317,6 +303,9 @@ class GameController {
         message: "⊙﹏⊙∥ El usuario " + user.getNickname() + " está penalizado",
       });
 
+      //siguiendo el turno del usuario
+      this.sigTurno();
+
       return {
         dice: 0,
         afterDice: user.getCurrentCell(),
@@ -340,7 +329,7 @@ class GameController {
       user.setCurrCell(nuevaCelda);
       //Se envía un mensaje a todos los jugadores de la sala con el ganador con las posiciones de los jugadores
       //Buscamos cada jugador de la partida y los ordenamos por su posición
-      let users = this.room.getPlayers();
+      let users = this.room.getAllPlayers();
       // console.log(users);
       let players = Object.values(users);
 
@@ -415,7 +404,8 @@ class GameController {
     console.log({ nueva, turno, penalizacion, caidoOca, caidoCalavera });
     console.log("================================================== ");
     //Comprobar estadísticas
-    if (!this.isBot(user)) {
+    if (!this.isBot(user.nickname)) {
+      // console.log(user.nickname);
       if (caidoOca) {
         user.sumaOca();
       } else if (caidoCalavera) {
@@ -440,7 +430,7 @@ class GameController {
 
         //user.setCurrCell(nueva);
 
-        let users = this.room.getPlayers();
+        let users = this.room.getAllPlayers();
         // console.log(users);
         let players = Object.values(users);
 
@@ -533,6 +523,13 @@ class GameController {
       this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
         message: "( ͡ಠ ʖ̯ ͡ಠ)! El jugador " + user.nickname + " vuelve a tirar",
       });
+
+
+      if (this.isBot(user.nickname)) {
+        this.currentTurnTimeout = setTimeout(() => {
+          this.comenzarTurno(user);
+        }, 500);
+      }
     }
 
     return {

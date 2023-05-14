@@ -3,10 +3,6 @@
 
 class NPC {
 
-    currentCell;
-    turnosPendientes;
-    
-
 
     constructor(nickname) {
         this.nickname = nickname;
