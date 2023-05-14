@@ -11,6 +11,7 @@ class Room {
   numPlayers;
   roomLeader; //jugador que ha creado la sala
   players; //objeto con los jugadores de la sala (id, player(objeto de la clase Player))
+  bots; //objeto con los bots de la sala (id, bot(objeto de la clase NPC))
   startTime = config.startTime;
 
   gameController; //objeto de la clase GameController
@@ -37,6 +38,8 @@ class Room {
     this.roomLeader = user.nickname;
 
     this.gameController = undefined;
+
+    this.bots = {}; //Diccionario vacío
   }
 
   //--Métodos--
@@ -243,6 +246,28 @@ class Room {
     console.log("Eliminando game controller");
     delete this.gameController;
 
+  }
+
+  addBot(bot) {
+    this.bots[bot.nickname] = bot;
+  }
+
+  getBot(botNickname) {
+    return this.bots[botNickname];
+  }
+
+  getAllPlayers() {
+    let players = [];
+    for (let player in this.players) {
+      players.push(this.players[player]);
+    }
+
+    for (let bot in this.bots) {
+      players.push(this.bots[bot]);
+    }
+
+    return players;
+    
   }
 }
 

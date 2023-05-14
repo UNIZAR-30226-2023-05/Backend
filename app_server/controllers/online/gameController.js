@@ -4,6 +4,7 @@
 const predefinidos = require("../../../game_logic/predefinidos");
 const { Console } = require("winston/lib/winston/transports");
 const { config } = require("../../../config");
+const NPC = require("./npc");
 
 // const { shufflePlayers } = require("../../utils/eleccionTurno");
 
@@ -12,6 +13,15 @@ class GameController {
   room; //objeto de la clase Room
   roomLeader;
   tiempoDeTurno;
+  possibleBotNicknames = [
+    "Iker__Bot",
+    "Jaime__Bot",
+    "Leonor__Bot",
+    "Carlota__Bot",
+    "Felix__Bot",
+    "Pablo__Bot",
+    "Marina__Bot",
+  ];
 
   //--Constructor--//
   constructor(room, tiempoDeTurno, socketServer) {
@@ -53,6 +63,11 @@ class GameController {
 
   // }
 
+  //Para saber si el que tiene el turno es un bot
+  isBot(nickname) {
+    return this.room.bots[nickname] != undefined;
+  }
+
   //Comienzo de partida
   empezarPartida() {
     //Llamara a sigTurno() cuando se acabe el tiempo de turno
@@ -67,12 +82,44 @@ class GameController {
     // console.log(users);
     let roomID = this.room.getRoomId();
 
-    const numUsuarios = Object.keys(users).length;
+    let numUsuarios = Object.keys(users).length;
 
-    const shufflePlayers = Object.values(users).sort(() => Math.random() - 0.5);
+    let numBots = this.room.numPlayers - numUsers;
+    let idxUsed = [];
+
+    for (let i = 0; i < numBots; i++) {
+      //Indice aleatorio para elegir el nickname del bot
+      let index = Math.floor(Math.random() * this.possibleBotNicknames.length);
+      while (idxUsed.includes(index)) {
+        index = Math.floor(Math.random() * this.possibleBotNicknames.length);
+      }
+
+      idxUsed.push(index);
+
+      let nickname = this.possibleBotNicknames[index];
+      //check if nickname is already in use in other bot
+
+      //Instanciar bot y añadirlo a la sala
+      let bot = new NPC(nickname);
+      console.log("Instanciado bot " + nickname);
+      console.log(bot);
+      //Se añade a la lista
+      this.room.addBot(bot);
+    }
+
+    const players = this.room.getAllPlayers();
+
+    // console.log(users);
+    roomID = this.room.getRoomId();
+
+    const numPlayers = Object.keys(players).length;
+
+    const shufflePlayers = Object.values(players).sort(
+      () => Math.random() - 0.5
+    );
 
     //Nos quedamos con los nicknames de los jugadores
-    for (let i = 0; i < numUsuarios; i++) {
+    for (let i = 0; i < numPlayers; i++) {
       this.ordenTurnos.push(shufflePlayers[i].getNickname());
     }
 
@@ -85,8 +132,45 @@ class GameController {
       tiempo: this.tiempoDeTurno,
     });
 
-    console.log("Turnos barajados");
     this.start = true;
+
+
+    if (this.isBot(this.ordenTurnos[0])) {
+      let botNickname = this.ordenTurnos[this.currentTurn];
+      let bot = this.room.getBot(botNickname);
+
+      let { dice, afterDice, rollAgain, finalCell } = this.comenzarTurno(bot);
+
+      //habrá que comprobar si ha ganado la partida
+
+      //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
+      this.socketServer.to(this.room.roomId).emit("botTurno", {
+        nickname: botNickname,
+        dice: dice,
+        afterDice: afterDice,
+        rollAgain: rollAgain,
+        finalCell: finalCell,
+      });
+
+      //si es su turno otra vez, tirar otra vez
+      while (rollAgain) {
+        let { dice, afterDice, rollAgain, finalCell } = this.comenzarTurno(bot);
+
+        //habrá que comprobar si ha ganado la partida
+
+        //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
+        this.socketServer.to(this.room.roomId).emit("botTurno", {
+          nickname: botNickname,
+          dice: dice,
+          afterDice: afterDice,
+          rollAgain: rollAgain,
+          finalCell: finalCell,
+        });
+      }
+    }
+
+    console.log("Turnos barajados");
+    // this.start = true;
 
     //Llamar a sigTurno()?
   }
@@ -121,10 +205,49 @@ class GameController {
     this.ackTurno = false; //ack para saber si es el turno del usuario
     this.currentTurn = (this.currentTurn + 1) % this.ordenTurnos.length; //turno actual
     //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
-    this.socketServer.to(this.room.roomId).emit("sigTurno", {
-      turno: this.ordenTurnos[this.currentTurn],
-      tiempo: this.tiempoDeTurno,
-    });
+    //Comprobar si es turno del bot o del usuario
+    if (this.isBot(this.ordenTurnos[this.currentTurn])) {
+      //Es turno del bot
+      console.log("Es turno del bot");
+      //Llamar a la función del bot
+      let botNickname = this.ordenTurnos[this.currentTurn];
+      let bot = this.room.getBot(botNickname);
+
+      //escribir mensaje en el chat de la sala diciendo que le toca al bot
+
+      let { dice, afterDice, rollAgain, finalCell } = this.comenzarTurno(bot);
+
+      //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
+      this.socketServer.to(this.room.roomId).emit("botTurno", {
+        nickname: botNickname,
+        dice: dice,
+        afterDice: afterDice,
+        rollAgain: rollAgain,
+        finalCell: finalCell,
+      });
+
+      while (rollAgain) {
+        let { dice, afterDice, rollAgain, finalCell } = this.comenzarTurno(bot);
+
+        //habrá que comprobar si ha ganado la partida
+
+        //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
+        this.socketServer.to(this.room.roomId).emit("botTurno", {
+          nickname: botNickname,
+          dice: dice,
+          afterDice: afterDice,
+          rollAgain: rollAgain,
+          finalCell: finalCell,
+        });
+      }
+    } else {
+      //Es turno del usuario
+      //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
+      this.socketServer.to(this.room.roomId).emit("sigTurno", {
+        turno: this.ordenTurnos[this.currentTurn],
+        tiempo: this.tiempoDeTurno,
+      });
+    }
 
     //console.log("sigTurno");
   }
@@ -206,8 +329,10 @@ class GameController {
     let { valor, nuevaCelda, haLlegado } = this.tirarDados(user);
 
     //Si le ha tocado un 6, se suma la estadística
-    if (valor == 6) {
-      user.sumaSeis();
+    if (!this.isBot(user.nickname)) {
+      if (valor == 6) {
+        user.sumaSeis();
+      }
     }
 
     //Comprobar si ha llegado al final
@@ -244,22 +369,22 @@ class GameController {
 
       // Actualizar estadísticas de los jugadores
       // TODO: Comprobar acceso a campos, probablemente esté mal
-      for (let pl in users) {
-        if (pl != user.nickname) {
-          this.players;
-          // Perdedores
-          users[pl].actualizarEstadisticas(false);
-        } else {
-          // Ganador
-          users[pl].actualizarEstadisticas(true);
+      if (!this.isBot(user.nickname)) {
+        for (let pl in users) {
+          if (pl != user.nickname) {
+            this.players;
+            // Perdedores
+            users[pl].actualizarEstadisticas(false);
+          } else {
+            // Ganador
+            users[pl].actualizarEstadisticas(true);
+          }
         }
       }
 
       this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
         message:
-          "(❁´◡`❁) El usuario " +
-          user.getNickname() +
-          " ha ganado la partida",
+          "(❁´◡`❁) El usuario " + user.getNickname() + " ha ganado la partida",
       });
 
       return {
@@ -290,10 +415,12 @@ class GameController {
     console.log({ nueva, turno, penalizacion, caidoOca, caidoCalavera });
     console.log("================================================== ");
     //Comprobar estadísticas
-    if (caidoOca) {
-      user.sumaOca();
-    } else if (caidoCalavera) {
-      user.sumaCalavera();
+    if (!this.isBot(user)) {
+      if (caidoOca) {
+        user.sumaOca();
+      } else if (caidoCalavera) {
+        user.sumaCalavera();
+      }
     }
 
     //estadoCelda => [proximaCleda (si es especial), tiraOtraVez, penalizacion]
@@ -363,7 +490,7 @@ class GameController {
     //Enviamos mensaje con el estado actual de la partida
     //Buscamos cada jugador de la partida y los ordenamos por su posición
     //                -->Estado de partida<--
-    let users = this.room.getPlayers();
+    let users = this.room.getAllPlayers();
     // console.log(users);
     let players = Object.values(users);
 
@@ -372,9 +499,9 @@ class GameController {
     });
 
     //printPlayer para cada miembro del diccionario
-    for (let i = 0; i < usersOrdenados.length; i++) {
-      usersOrdenados[i].printPlayerInfo();
-    }
+    // for (let i = 0; i < usersOrdenados.length; i++) {
+    //   usersOrdenados[i].printPlayerInfo();
+    // }
 
     //objeto con nicknames y posiciones
 
