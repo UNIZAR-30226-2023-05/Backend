@@ -68,6 +68,10 @@ class RoomController {
     this.activeRooms[roomId].addGameController(gameController);
   }
 
+  destroyGameController(roomId) {
+    this.activeRooms[roomId].destroyGameController();
+  }
+
   leaveRoom(roomId, player, io) {
     //Se elimina el jugador de la sala
     let nicknames = this.activeRooms[roomId].leaveRoom(player, io);

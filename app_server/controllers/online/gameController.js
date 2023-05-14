@@ -30,7 +30,7 @@ class GameController {
 
     this.finalPartida = false; //ack para saber si la partida ha terminado
 
-    this.currentTurn = 0; //turno actual
+    this.currentTurn = 0; //turno actualfinalPartida
     this.ordenTurnos = []; //orden de turnos
   }
 
@@ -94,12 +94,14 @@ class GameController {
   sigTurno() {
     //Si no ha empezado la partida no se puede pasar de turno
     if (!this.start) {
-      throw new Error("La partida no ha empezado");
+      console.log("La partida no ha empezado");
+      return;
     }
 
     //Si la partida ha terminado no se puede pasar de turno
     if (this.finalPartida) {
-      throw new Error("La partida ha terminado");
+      // console.log("La partida ha terminado");
+      return;
     }
 
     //Control de tiempo de turno
@@ -111,6 +113,7 @@ class GameController {
     //Se queda "durmiendo" hasta que pase el tiempo o el usuario haga un movimiento -> clearTimeout(this.currentTurnTimeout);
     this.currentTurnTimeout = setTimeout(() => {
       this.sigTurno();
+      //Meter mensaje de que se ha acabado el tiempo de turno si se desea
     }, this.tiempoDeTurno * 1000);
 
     //console.log("sigTurno");
@@ -131,15 +134,21 @@ class GameController {
     return this.start;
   }
 
+  hasGameFinished() {
+    return this.finalPartida;
+  }
+
   tirarDados(user) {
     //Si no ha empezado la partida no se puede tirar dados
     if (!this.start) {
-      throw new Error("La partida no ha empezado");
+      console.log("La partida no ha empezado");
+      return;
     }
 
     //Si la partida ha terminado no se puede tirar dados
     if (this.finalPartida) {
-      throw new Error("La partida ha terminado");
+      // console.log("La partida ha terminado");
+      return;
     }
 
     //El usuario tira un dado y y devuelve la celda en la que cae
@@ -230,6 +239,9 @@ class GameController {
 
       this.finalPartida = true;
 
+      // Eliminar timeout
+      this.currentTurnTimeout = null;
+
       // Actualizar estadísticas de los jugadores
       // TODO: Comprobar acceso a campos, probablemente esté mal
       for (let pl in users) {
@@ -245,7 +257,7 @@ class GameController {
 
       this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
         message:
-          "(～￣▽￣)～El usuario " +
+          "(❁´◡`❁) El usuario " +
           user.getNickname() +
           " ha ganado la partida",
       });
@@ -323,11 +335,14 @@ class GameController {
           posiciones: nuevasPos,
         });
 
+        // Eliminar timeout
+        this.currentTurnTimeout = null;
+
         this.finalPartida = true;
 
         this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
           message:
-            "(～￣▽￣)～El usuario " +
+            "(❁´◡`❁) El usuario " +
             user.getNickname() +
             " ha ganado la partida",
         });

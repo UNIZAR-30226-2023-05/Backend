@@ -234,9 +234,15 @@ class Room {
       }
     }
 
-    //2. Eliminamos controlador de juego de la sala
+    console.log("Eliminando sala " + this.roomId);
+    //2. Eliminamos la sala
+    delete this.roomId;
+  }
+
+  destroyGameController() {
+    console.log("Eliminando game controller");
     delete this.gameController;
-  
+
   }
 }
 
