@@ -376,6 +376,20 @@ class GameController {
           "(❁´◡`❁) El usuario " + user.getNickname() + " ha ganado la partida",
       });
 
+      if(this.isBot(user.nickname)){
+        this.socketServer.to(roomId).emit("serverRoomMessage", {
+          message: "Partida finalizada, se va a cerrar la sala en 10 segundos",
+        });
+        setTimeout(() => {
+          //Destuir el controlador de la partida
+          console.log("Destruyendo partida");
+
+          this.room.roomController.quitFromDict(this.room.roomId);
+          this.room.servDeleteRoom(this.socketServer);
+        }, 10000);
+
+      }
+
       return {
         dice: valor,
         afterDice: nuevaCelda,
@@ -463,6 +477,21 @@ class GameController {
             user.getNickname() +
             " ha ganado la partida",
         });
+
+        if(this.isBot(user.nickname)){
+          this.socketServer.to(roomId).emit("serverRoomMessage", {
+            message: "Partida finalizada, se va a cerrar la sala en 10 segundos",
+          });
+          setTimeout(() => {
+            //Destuir el controlador de la partida
+            console.log("Destruyendo partida");
+  
+            this.room.roomController.quitFromDict(this.room.roomId);
+            this.room.servDeleteRoom(this.socketServer);
+          }, 10000);
+  
+        }
+     
 
         return {
           dice: valor,

@@ -14,10 +14,11 @@ class Room {
   bots; //objeto con los bots de la sala (id, bot(objeto de la clase NPC))
   startTime = config.startTime;
 
-  gameController; //objeto de la clase GameController
+  gameController; //objeto de la clase GameControllerç
+  roomController; //objeto de la clase RoomController
 
   //--Constructor--
-  constructor(user, roomName, players, gamemode, roomId) {
+  constructor(user, roomName, players, gamemode, roomId,roomController) {
     this.roomName = roomName;
     this.roomId = roomId;
     //Que no supere los límites
@@ -39,7 +40,10 @@ class Room {
 
     this.gameController = undefined;
 
+    this.roomController = roomController;
+
     this.bots = {}; //Diccionario vacío
+
   }
 
   //--Métodos--
@@ -223,7 +227,7 @@ class Room {
     return this.numPlayers == Object.keys(this.players).length;
   }
 
-  servDelRoom(io) {
+  servDeleteRoom(io) {
     //SERVIDOR ELIMINA SALA
     io.to(this.roomId).emit("destroyingRoom", this.roomId);
     //1. Eliminamos a todos los jugadores de la sala
@@ -238,7 +242,7 @@ class Room {
     }
 
     console.log("Eliminando sala " + this.roomId);
-    //2. Eliminamos la sala
+    //2. Eliminamos la sala entera
     delete this.roomId;
   }
 
