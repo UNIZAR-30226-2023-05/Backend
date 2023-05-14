@@ -39,6 +39,7 @@ class Room {
     this.gameController = undefined;
   }
 
+
   //--Métodos--
 
   //Unir jugador X a esta sala (player es un objeto de la clase Player)
@@ -82,6 +83,8 @@ class Room {
     if (this.players[player.nickname] == undefined) {
       throw new Error("El jugador no está en la sala");
     } else {
+      //Se desconecta al jugador de la sala
+      this.players[player.nickname].socket.leave(this.roomId);
       //Se desconecta al jugador de la sala
       this.players[player.nickname].socket.leave(this.roomId);
       delete this.players[player.nickname];
@@ -196,6 +199,7 @@ class Room {
           delete this.players[player];
         }
 
+
         // else
         // {
         //   //console...
@@ -212,6 +216,7 @@ class Room {
   printPlayers() {
     // console.log("Jugadores en la sala " + this.roomId + ":");
     for (let player in this.players) {
+      console.log(this.players[player].nickname);
       console.log(this.players[player].nickname);
     }
   }

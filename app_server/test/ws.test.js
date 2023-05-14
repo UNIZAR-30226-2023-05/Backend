@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { testSalas } = require("./ttsFunctions/webSock");
 
 //Tests de /websock
