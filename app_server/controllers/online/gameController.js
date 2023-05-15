@@ -360,7 +360,8 @@ class GameController {
       // TODO: Comprobar acceso a campos, probablemente esté mal
       if (!this.isBot(user.nickname)) {
         console.log("Actualizando estadísticas de " + user.nickname);
-        for (let pl in users) {
+        let jugadores = this.room.getOnlyPlayers();
+        for (let pl in jugadores) {
           if (pl != user.nickname) {
             this.players;
             // Perdedores
