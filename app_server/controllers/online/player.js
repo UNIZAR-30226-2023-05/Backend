@@ -1,3 +1,6 @@
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 // Clase player
 class Player {
   //Por ahora no necesitamos nada mas
