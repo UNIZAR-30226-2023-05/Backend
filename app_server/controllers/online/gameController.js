@@ -359,19 +359,26 @@ class GameController {
       // Actualizar estadísticas de los jugadores
       // TODO: Comprobar acceso a campos, probablemente esté mal
       
-      console.log("Actualizando estadísticas de " + user.nickname);
+      console.log("Ha ganado " + user.nickname);
       let jugadores = this.room.getOnlyPlayers();
-      for (let pl in jugadores) {
+      let valJugador = Object.values(jugadores);
+      // console.log("Jugadores: " + valJugador);
+      //recorremos el array de objetos de jugadores
+      for (let pl in valJugador) {
+        console.log("pl: " + valJugador[pl]);
         if (pl != user.nickname) {
           this.players;
           // Perdedores
-          users[pl].actWualizarEstadisticas(false);
+          console.log("[perdedor]Se actualizan las estadísticas de " + valJugador[pl].nickname);
+          // users[pl].actualizarEstadisticas(false);
         } else {
           // Ganador
-          users[pl].actualizarEstadisticas(true);
+
+          //si el ganador es un bot no se actualizan las estadísticas
+          console.log("[ganador]Se actualizan las estadísticas de " + user.nickname);
+            // users[pl].actualizarEstadisticas(true);
         }
       }
-      
 
       this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
         message:
@@ -472,6 +479,27 @@ class GameController {
         this.currentTurnTimeout = null;
 
         this.finalPartida = true;
+
+        console.log("Ha ganado " + user.nickname);
+        let jugadores = this.room.getOnlyPlayers();
+        let valJugador = Object.values(jugadores);
+        // console.log("Jugadores: " + valJugador);
+        //recorremos el array de objetos de jugadores
+        for (let pl in valJugador) {
+          console.log("pl: " + valJugador[pl]);
+          if (pl != user.nickname) {
+            this.players;
+            // Perdedores
+            console.log("[perdedor]Se actualizan las estadísticas de " + valJugador[pl].nickname);
+            // users[pl].actualizarEstadisticas(false);
+          } else {
+            // Ganador
+
+            //si el ganador es un bot no se actualizan las estadísticas
+            console.log("[ganador]Se actualizan las estadísticas de " + user.nickname);
+              // users[pl].actualizarEstadisticas(true);
+          }
+        }
 
         this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
           message:
