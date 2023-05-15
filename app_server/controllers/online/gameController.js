@@ -3,9 +3,6 @@
 
 const predefinidos = require("../../../game_logic/predefinidos");
 const { Console } = require("winston/lib/winston/transports");
-const { config } = require("../../../config");
-
-// const { shufflePlayers } = require("../../utils/eleccionTurno");
 
 class GameController {
   //--Atributos de clase--//
