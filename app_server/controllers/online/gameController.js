@@ -491,7 +491,7 @@ class GameController {
             this.players;
             // Perdedores
             console.log("[perdedor]Se actualizan las estadísticas de " + valJugador[pl].nickname);
-            // users[pl].actualizarEstadisticas(false);
+            // valJugador[pl].actualizarEstadisticas(false);
           } else {
             // Ganador
 
