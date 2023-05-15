@@ -305,7 +305,7 @@ class GameController {
 
       //siguiendo el turno del usuario
       this.sigTurno();
-
+      
       return {
         dice: 0,
         afterDice: user.getCurrentCell(),
