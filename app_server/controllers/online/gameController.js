@@ -359,6 +359,7 @@ class GameController {
       // Actualizar estadísticas de los jugadores
       // TODO: Comprobar acceso a campos, probablemente esté mal
       if (!this.isBot(user.nickname)) {
+        console.log("Actualizando estadísticas de " + user.nickname);
         for (let pl in users) {
           if (pl != user.nickname) {
             this.players;
@@ -599,20 +600,36 @@ class GameController {
 
   
   playerAbandona(user) {
-    //si un jugador quita de los turnos y si es su turno se pasa al siguiente
-    this.ordenTurnos = this.ordenTurnos.filter((nick) => nick != user.nickname);
+    //Crear bot en el caso de que abandone alguien.
+
+    //con el nombre del usuario que abandona creamos un bot
+    let botName = "bot--" + user.nickname;
+
+    console.log("Instanciando bot " + botName);
+
+    let bot = new NPC(botName);
+    this.room.addBot(bot);
+    // console.log("Instanciado bot " + nickname);
+
+    //Añadimos el bot a los turnos
+    this.ordenTurnos.push(botName);
     
-    if (this.ordenTurnos[this.currentTurn] == user.nickname) {
-      this.sigTurno();
-    }
 
     this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
       message: "(┬┬﹏┬┬) El jugador " + user.nickname + " ha abandonado la partida",
     });
 
-    //Crear bot en el caso de que abandone alguien.
+    //se salta el turno en caso de que sea el turno del jugador que abandona
+    if (this.ordenTurnos[this.currentTurn] == user.nickname) {
+      this.sigTurno();
+    }
 
-    //Control de  unir a un jugador en caso de unirse en mitad de una partida en juego? --> prohibirselo (solamente se una a la sala)
+    //se saca al jugador de la lista de turnos y se añade el bot
+    this.ordenTurnos = this.ordenTurnos.filter((turno) => {
+      return turno != user.nickname;
+    });
+
+    
 
   }
 }
