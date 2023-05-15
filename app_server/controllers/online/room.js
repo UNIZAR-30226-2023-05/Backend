@@ -264,6 +264,16 @@ class Room {
     return this.bots[botNickname];
   }
 
+  getOnlyPlayers() {
+    let players = [];
+    for (let player in this.players) {
+      players.push(this.players[player]);
+    }
+
+    return players;
+  }
+  
+
   getAllPlayers() {
     let players = [];
     for (let player in this.players) {
