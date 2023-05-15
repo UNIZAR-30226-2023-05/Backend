@@ -358,20 +358,20 @@ class GameController {
 
       // Actualizar estadísticas de los jugadores
       // TODO: Comprobar acceso a campos, probablemente esté mal
-      if (!this.isBot(user.nickname)) {
-        console.log("Actualizando estadísticas de " + user.nickname);
-        let jugadores = this.room.getOnlyPlayers();
-        for (let pl in jugadores) {
-          if (pl != user.nickname) {
-            this.players;
-            // Perdedores
-            users[pl].actualizarEstadisticas(false);
-          } else {
-            // Ganador
-            users[pl].actualizarEstadisticas(true);
-          }
+      
+      console.log("Actualizando estadísticas de " + user.nickname);
+      let jugadores = this.room.getOnlyPlayers();
+      for (let pl in jugadores) {
+        if (pl != user.nickname) {
+          this.players;
+          // Perdedores
+          users[pl].actWualizarEstadisticas(false);
+        } else {
+          // Ganador
+          users[pl].actualizarEstadisticas(true);
         }
       }
+      
 
       this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
         message:
