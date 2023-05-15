@@ -105,20 +105,20 @@ class RoomController {
   isPlayerInAnyRoomBySocket(socket) {
     for (let room in this.activeRooms) {
       if (this.activeRooms[room].isPlayerInRoomBySocket(socket)) {
-        return true;
+        return this.activeRooms[room].roomId;
       }
     }
-    return false;
+    return undefined;
   }
 
   //Buscar jugador en alguna sala
   isPlayerInAnyRoom(player) {
     for (let room in this.activeRooms) {
       if (this.activeRooms[room].isPlayerInRoom(player)) {
-        return true;
+        return this.activeRooms[room].roomId;
       }
     }
-    return false;
+    return undefined;
   }
 
   isRoomIdInUse(roomId) {

@@ -58,9 +58,11 @@ const roomHandler = (socket, roomController, io) => {
     }
 
     //El jugador ya está en una sala?
-    if (roomController.isPlayerInAnyRoom(leader)) {
+    let idR = roomController.isPlayerInAnyRoom(leader);
+    if (idR !== undefined) {
       callback({
         message: "Ya estás en una sala",
+        sala: idR,
         status: "error",
       });
       return;
@@ -102,9 +104,12 @@ const roomHandler = (socket, roomController, io) => {
       });
       return;
     }
-    if (roomController.isPlayerInAnyRoomBySocket(socket)) {
+
+    let idR = roomController.isPlayerInAnyRoomBySocket(socket);
+    if (idR !== undefined) {
       callback({
         message: "Ya estás en otra sala",
+        sala: idR,
         status: "error",
       });
       return;
