@@ -370,13 +370,13 @@ class GameController {
           this.players;
           // Perdedores
           console.log("[perdedor]Se actualizan las estadísticas de " + valJugador[pl].nickname);
-          // users[pl].actualizarEstadisticas(false);
+          // valJugador[pl].actualizarEstadisticas(false);
         } else {
           // Ganador
 
           //si el ganador es un bot no se actualizan las estadísticas
           console.log("[ganador]Se actualizan las estadísticas de " + user.nickname);
-            // users[pl].actualizarEstadisticas(true);
+            // valJugador[pl].actualizarEstadisticas(true);
         }
       }
 
