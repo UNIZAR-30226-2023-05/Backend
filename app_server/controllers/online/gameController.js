@@ -596,6 +596,25 @@ class GameController {
       finalCell: finalCell,
     };
   }
+
+  
+  playerAbandona(user) {
+    //si un jugador quita de los turnos y si es su turno se pasa al siguiente
+    this.ordenTurnos = this.ordenTurnos.filter((nick) => nick != user.nickname);
+    
+    if (this.ordenTurnos[this.currentTurn] == user.nickname) {
+      this.sigTurno();
+    }
+
+    this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
+      message: "(┬┬﹏┬┬) El jugador " + user.nickname + " ha abandonado la partida",
+    });
+
+    //Crear bot en el caso de que abandone alguien.
+
+    //Control de  unir a un jugador en caso de unirse en mitad de una partida en juego? --> prohibirselo (solamente se una a la sala)
+
+  }
 }
 
 module.exports = { GameController };

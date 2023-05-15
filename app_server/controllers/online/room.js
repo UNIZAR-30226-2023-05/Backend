@@ -187,6 +187,10 @@ class Room {
     return this.roomLeader == player.nickname;
   }
 
+  theGameExists() {
+    return this.gameController != undefined;
+  }
+
   delRoom(user) {
     // this.printPlayers();
     if (this.isLeader(user)) {
