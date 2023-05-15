@@ -481,7 +481,7 @@ async function getEstadisticasHandler(req, res, next) {
           vecesseis: "0",
           partidasjugadas: "0",
           partidasganadas: "0",
-          vecescalavera: "0"
+          vecescalavera: "0",
         };
 
         //console.log("No hay logros para este usuario" + datos);

@@ -39,7 +39,6 @@ class Room {
     this.gameController = undefined;
   }
 
-
   //--Métodos--
 
   //Unir jugador X a esta sala (player es un objeto de la clase Player)
@@ -183,6 +182,12 @@ class Room {
     return this.roomLeader == player.nickname;
   }
 
+  // Game exists?
+  theGameExists() {
+    return this.gameController != undefined;
+  }
+
+  // Delete room
   delRoom(user) {
     // this.printPlayers();
     if (this.isLeader(user)) {
@@ -198,7 +203,6 @@ class Room {
           this.players[player].socket.leave(this.roomId);
           delete this.players[player];
         }
-
 
         // else
         // {
@@ -247,7 +251,6 @@ class Room {
   destroyGameController() {
     console.log("Eliminando game controller");
     delete this.gameController;
-
   }
 }
 

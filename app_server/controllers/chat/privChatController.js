@@ -50,10 +50,12 @@ class PrivChatController {
     console.log("receiver: ", receiver);
     console.log("sender: ", sender);
     if (this.sessionStorage.isConnected({ nickname: receiver })) {
-        //console.log("Sesion storage: ", this.sessionStorage);
+      //console.log("Sesion storage: ", this.sessionStorage);
       //If the receiver is connected, we send the message to the receiver
       //We get the socket of the receiverW
-      let receiverSocket = this.sessionStorage.getSocket({ nickname: receiver });
+      let receiverSocket = this.sessionStorage.getSocket({
+        nickname: receiver,
+      });
 
       console.log("receiverSocket: ", receiverSocket);
       //We send the message to the receiver
@@ -65,39 +67,39 @@ class PrivChatController {
 
     //Search for the id by the nickname
     const userSender = await this.prisma.usuario.findUnique({
-        where: {
-            nickname: sender,
-        },
+      where: {
+        nickname: sender,
+      },
     });
     const send_id = userSender.id_usuario;
-    console.log("send_id: ",send_id);
+    console.log("send_id: ", send_id);
 
     const userReceiver = await this.prisma.usuario.findUnique({
-        where: {
-            nickname: receiver,
-        },
+      where: {
+        nickname: receiver,
+      },
     });
     const rec_id = userReceiver.id_usuario;
-    console.log("rec_id: ",rec_id);
+    console.log("rec_id: ", rec_id);
 
     const dateTimeString = msg.time.toLocaleString();
-    const fechaMsg = dateTimeString.substring(0,9);
-    const horaMsg = dateTimeString.substring(11,19);
+    const fechaMsg = dateTimeString.substring(0, 9);
+    const horaMsg = dateTimeString.substring(11, 19);
 
     const message = await this.prisma.mensaje.create({
-        data: {
-            //id: autoincremental
-            //fecha_hora : msg.date,
-            fecha: fechaMsg,
-            hora: horaMsg,
-            contenido : msg.message,
-            //id_usuario_emisor
-            //id_usuario_receptor
-            emisor : send_id,
-            destinatario : rec_id,
-        },
+      data: {
+        //id: autoincremental
+        //fecha_hora : msg.date,
+        fecha: fechaMsg,
+        hora: horaMsg,
+        contenido: msg.message,
+        //id_usuario_emisor
+        //id_usuario_receptor
+        emisor: send_id,
+        destinatario: rec_id,
+      },
     });
-    console.log("Nuevo mensaje almacenado: ",message);
+    console.log("Nuevo mensaje almacenado: ", message);
   }
 
   //Function to recover the chat
@@ -111,22 +113,22 @@ class PrivChatController {
         */
     console.log("Se va a intentar recuperar los mensajes");
     const messages = await this.prisma.mensaje.findMany({
-        where: {
-            OR: [
-                {
-                    emisor: user,
-                    destinatario: otherUser,
-                },
-                {
-                    emisor: otherUser,
-                    destinatario: user,
-                },
-            ],
-        },
-        // Ordenarlos por id
-        orderBy: {
-            id_mensaje: "asc",
-        },
+      where: {
+        OR: [
+          {
+            emisor: user,
+            destinatario: otherUser,
+          },
+          {
+            emisor: otherUser,
+            destinatario: user,
+          },
+        ],
+      },
+      // Ordenarlos por id
+      orderBy: {
+        id_mensaje: "asc",
+      },
     });
     //console.log("Mensajes recuperados: ",messages);
     return messages;

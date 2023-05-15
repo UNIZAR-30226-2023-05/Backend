@@ -38,7 +38,7 @@ class RoomController {
   }
 
   //server delete room
-  servDelRoom(roomId,io) {
+  servDelRoom(roomId, io) {
     //Se elimina la sala del diccionario
     //NO SE DECREMENTA EL ID
     //Antes de nada, se eliminan a todos los jugadores de la sala
@@ -46,7 +46,6 @@ class RoomController {
     this.activeRooms[roomId].servDelRoom(io);
     delete this.activeRooms[roomId];
   }
-
 
   deleteRoom(user, roomId, io) {
     //Se elimina la sala del diccionario

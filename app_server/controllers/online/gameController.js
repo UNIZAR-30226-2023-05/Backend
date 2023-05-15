@@ -257,9 +257,7 @@ class GameController {
 
       this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
         message:
-          "(❁´◡`❁) El usuario " +
-          user.getNickname() +
-          " ha ganado la partida",
+          "(❁´◡`❁) El usuario " + user.getNickname() + " ha ganado la partida",
       });
 
       return {
@@ -442,6 +440,26 @@ class GameController {
       rollAgain: rollAgain,
       finalCell: finalCell,
     };
+  }
+
+  playerAbandona(user) {
+    //si un jugador quita de los turnos y si es su turno se pasa al siguiente
+    this.ordenTurnos = this.ordenTurnos.filter((nick) => nick != user.nickname);
+
+    this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
+      message:
+        "(┬┬﹏┬┬) El jugador " + user.nickname + " ha abandonado la partida",
+    });
+
+    //Si era su turno se pasa al siguiente
+    if (this.ordenTurnos[this.currentTurn] == user.nickname) {
+      this.sigTurno();
+    }
+
+    // Se saca al jugador de la lista de turnos
+    this.ordenTurnos = this.ordenTurnos.filter((turno) => {
+      return turno != user.nickname;
+    });
   }
 }
 
