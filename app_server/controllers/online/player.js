@@ -57,7 +57,7 @@ class Player {
   async actualizarEstadisticas(haGanado) {
     // Se asume que el jugador existe
     try {
-      let partidasGanadas = 0;
+      let partidasganadas = 0;
       // Obtener id de usuario
       const user = await prisma.usuario.findUnique({
         where: { nickname: this.nickname },
@@ -71,9 +71,9 @@ class Player {
       });
 
       if (haGanado) {
-        partidasGanadas = 1;
+        partidasganadas = 1;
       } else {
-        partidasGanadas = 0;
+        partidasganadas = 0;
       }
 
       // Actualizar estadísticas
@@ -85,7 +85,7 @@ class Player {
             vecesoca: this.estadisticas.vecesOca,
             vecesseis: this.estadisticas.vecesSeis,
             partidasjugadas: 1,
-            partidasganadas: partidasGanadas,
+            partidasganadas: partidasganadas,
             vecescalavera: this.estadisticas.vecesCalavera,
           },
         });
@@ -112,6 +112,10 @@ class Player {
           },
         });
       }
+
+      console.log("Estadísticas actualizadas");
+      console.log(this.estadisticas);
+      console.log("Ha ganado?: " + partidasganadas);
 
       // Comprobar logros
       // Obtener datos de estadísticas
