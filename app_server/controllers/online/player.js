@@ -57,6 +57,7 @@ class Player {
   async actualizarEstadisticas(haGanado) {
     // Se asume que el jugador existe
     try {
+      let partidasGanadas = 0;
       // Obtener id de usuario
       const user = await prisma.usuario.findUnique({
         where: { nickname: this.nickname },
