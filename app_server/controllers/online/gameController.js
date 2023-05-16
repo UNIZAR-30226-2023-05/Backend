@@ -293,8 +293,8 @@ class GameController {
       user.turnosPendientes--;
 
       // Sumar 1 al turno
-      this.currentTurn = (this.currentTurn + 1) % this.ordenTurnos.length; //turno actual
-
+      // this.currentTurn = (this.currentTurn + 1) % this.ordenTurnos.length; //turno actual
+      this.sigTurno();
       //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
       this.socketServer.to(this.room.roomId).emit("sigTurno", {
         turno: this.ordenTurnos[this.currentTurn],
@@ -306,7 +306,7 @@ class GameController {
       });
 
       //siguiendo el turno del usuario
-      this.sigTurno();
+      
       
       return {
         dice: 0,
