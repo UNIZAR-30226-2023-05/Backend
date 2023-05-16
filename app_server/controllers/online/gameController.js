@@ -109,10 +109,12 @@ class GameController {
 
     const players = this.room.getAllPlayers();
 
-    // console.log(users);
+    console.log("Jugadores de la partida = " + players);
     roomID = this.room.getRoomId();
 
     const numPlayers = Object.keys(players).length;
+
+    console.log("Numero de jugadores = " + numPlayers);
 
     const shufflePlayers = Object.values(players).sort(
       () => Math.random() - 0.5
