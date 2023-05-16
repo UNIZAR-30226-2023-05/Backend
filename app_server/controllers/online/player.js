@@ -82,11 +82,11 @@ class Player {
         await prisma.estadisticasacumuladas.create({
           data: {
             usuario: id_usuario,
-            veces_oca: this.estadisticas.vecesOca,
-            veces_seis: this.estadisticas.vecesSeis,
-            partidasJugadas: 1,
-            partidasGanadas: partidasGanadas,
-            veces_calavera: this.estadisticas.vecesCalavera,
+            vecesoca: this.estadisticas.vecesOca,
+            vecesseis: this.estadisticas.vecesSeis,
+            partidasjugadas: 1,
+            partidasganadas: partidasGanadas,
+            vecescalavera: this.estadisticas.vecesCalavera,
           },
         });
       } else {
@@ -94,20 +94,20 @@ class Player {
         await prisma.estadisticasacumuladas.update({
           where: { usuario: id_usuario },
           data: {
-            vecesOca: {
-              increment: this.estadisticas.vecesOca,
+            vecesoca: {
+              increment: this.estadisticas.vecesoca,
             },
-            vecesSeis: {
-              increment: this.estadisticas.vecesSeis,
+            vecesseis: {
+              increment: this.estadisticas.vecesseis,
             },
-            partidasJugadas: {
+            partidasjugadas: {
               increment: 1,
             },
-            partidasGanadas: {
-              increment: partidasGanadas,
+            partidasganadas: {
+              increment: partidasganadas,
             },
-            vecesCalavera: {
-              increment: this.estadisticas.vecesCalavera,
+            vecescalavera: {
+              increment: this.estadisticas.vecescalavera,
             },
           },
         });
@@ -123,11 +123,11 @@ class Player {
       const datalogros = {
         usuario: id_usuario,
         juegaunapartida: true,
-        ganaunapartida: estadisticas.partidasGanadas >= 1,
-        ganadiezpartidas: estadisticas.partidasGanadas >= 10,
-        ganacincuentapartidas: estadisticas.partidasGanadas >= 50,
-        caeendiezocas: estadisticas.vecesOca >= 10,
-        caeenseisseises: estadisticas.vecesSeis >= 6,
+        ganaunapartida: estadisticas.partidasganadas >= 1,
+        ganadiezpartidas: estadisticas.partidasganadas >= 10,
+        ganacincuentapartidas: estadisticas.partidasganadas >= 50,
+        caeendiezocas: estadisticas.vecesoca >= 10,
+        caeenseisseises: estadisticas.vecesseis >= 6,
       };
 
       // Ver si tiene registro en logros
