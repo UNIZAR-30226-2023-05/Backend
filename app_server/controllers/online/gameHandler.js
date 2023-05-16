@@ -29,6 +29,9 @@ const gameHandler = (socket, roomController, io) => {
       return;
     }
 
+    //si la sala esta activa pero su objeto no existe, la eliminamos de salas activas
+    // roomController.printRooms();
+
     //2. Obtener el objeto Room
     let room = roomController.getRoom(roomId);
 
@@ -64,7 +67,7 @@ const gameHandler = (socket, roomController, io) => {
   function turnHandler(roomId, callback) {
     roomId = parseInt(roomId);
     //Comprobar que la sala existe
-    if (!roomController.isRoomIdInUse(roomId)) {
+    if (!roomController.isRoomActive(roomId)) {
       callback({
         message: "La sala no existe",
         status: "error",
@@ -101,7 +104,8 @@ const gameHandler = (socket, roomController, io) => {
       return;
     }
 
-    if (gameController.hasGameFinished()) {
+    if (gameController.hasGameFinished()){
+
       callback({
         message: "La partida ha terminado",
         status: "error",
