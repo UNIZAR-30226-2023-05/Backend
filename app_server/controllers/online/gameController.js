@@ -136,7 +136,6 @@ class GameController {
 
     this.start = true;
 
-
     if (this.isBot(this.ordenTurnos[0])) {
       let botNickname = this.ordenTurnos[this.currentTurn];
       let bot = this.room.getBot(botNickname);
@@ -227,7 +226,6 @@ class GameController {
         rollAgain: rollAgain,
         finalCell: finalCell,
       });
-
     } else {
       //Es turno del usuario
       //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
@@ -306,8 +304,7 @@ class GameController {
       });
 
       //siguiendo el turno del usuario
-      
-      
+
       return {
         dice: 0,
         afterDice: user.getCurrentCell(),
@@ -360,7 +357,7 @@ class GameController {
 
       // Actualizar estadísticas de los jugadores
       // TODO: Comprobar acceso a campos, probablemente esté mal
-      
+
       console.log("Ha ganado " + user.nickname);
       let jugadores = this.room.getOnlyPlayers();
       let valJugador = Object.values(jugadores);
@@ -371,14 +368,19 @@ class GameController {
         if (pl != user.nickname) {
           this.players;
           // Perdedores
-          console.log("[perdedor]Se actualizan las estadísticas de " + valJugador[pl].nickname);
+          console.log(
+            "[perdedor]Se actualizan las estadísticas de " +
+              valJugador[pl].nickname
+          );
           valJugador[pl].actualizarEstadisticas(false);
         } else {
           // Ganador
 
           //si el ganador es un bot no se actualizan las estadísticas
-          console.log("[ganador]Se actualizan las estadísticas de " + user.nickname);
-            valJugador[pl].actualizarEstadisticas(true);
+          console.log(
+            "[ganador]Se actualizan las estadísticas de " + user.nickname
+          );
+          valJugador[pl].actualizarEstadisticas(true);
         }
       }
 
@@ -387,7 +389,7 @@ class GameController {
           "(❁´◡`❁) El usuario " + user.getNickname() + " ha ganado la partida",
       });
 
-      if(this.isBot(user.nickname)){
+      if (this.isBot(user.nickname)) {
         this.socketServer.to(roomId).emit("serverRoomMessage", {
           message: "Partida finalizada, se va a cerrar la sala en 10 segundos",
         });
@@ -398,7 +400,6 @@ class GameController {
           this.room.roomController.quitFromDict(this.room.roomId);
           this.room.servDeleteRoom(this.socketServer);
         }, 10000);
-
       }
 
       return {
@@ -492,14 +493,19 @@ class GameController {
           if (pl != user.nickname) {
             this.players;
             // Perdedores
-            console.log("[perdedor]Se actualizan las estadísticas de " + valJugador[pl].nickname);
+            console.log(
+              "[perdedor]Se actualizan las estadísticas de " +
+                valJugador[pl].nickname
+            );
             valJugador[pl].actualizarEstadisticas(false);
           } else {
             // Ganador
 
             //si el ganador es un bot no se actualizan las estadísticas
-            console.log("[ganador]Se actualizan las estadísticas de " + user.nickname);
-              users[pl].actualizarEstadisticas(true);
+            console.log(
+              "[ganador]Se actualizan las estadísticas de " + user.nickname
+            );
+            users[pl].actualizarEstadisticas(true);
           }
         }
 
@@ -510,20 +516,19 @@ class GameController {
             " ha ganado la partida",
         });
 
-        if(this.isBot(user.nickname)){
+        if (this.isBot(user.nickname)) {
           this.socketServer.to(roomId).emit("serverRoomMessage", {
-            message: "Partida finalizada, se va a cerrar la sala en 10 segundos",
+            message:
+              "Partida finalizada, se va a cerrar la sala en 10 segundos",
           });
           setTimeout(() => {
             //Destuir el controlador de la partida
             console.log("Destruyendo partida");
-  
+
             this.room.roomController.quitFromDict(this.room.roomId);
             this.room.servDeleteRoom(this.socketServer);
           }, 10000);
-  
         }
-     
 
         return {
           dice: valor,
@@ -585,7 +590,6 @@ class GameController {
         message: "( ͡ಠ ʖ̯ ͡ಠ)! El jugador " + user.nickname + " vuelve a tirar",
       });
 
-
       if (this.isBot(user.nickname)) {
         this.currentTurnTimeout = setTimeout(() => {
           this.comenzarTurno(user);
@@ -629,9 +633,18 @@ class GameController {
     };
   }
 
-  
   playerAbandona(user) {
     //Crear bot en el caso de que abandone alguien.
+    let miTurno = false
+    //comprobar si es el turno del jugador que abandona
+    if (this.ordenTurnos[this.currentTurn] == user.nickname) {
+      miTurno = true;
+    }
+
+    this.ordenTurnos = this.ordenTurnos.filter((turno) => {
+      return turno != user.nickname;
+    });
+
 
     //con el nombre del usuario que abandona creamos un bot
     let botName = "bot--" + user.nickname;
@@ -646,22 +659,53 @@ class GameController {
     this.ordenTurnos.push(botName);
 
     //se salta el turno en caso de que sea el turno del jugador que abandona
-    this.sigTurno();
-    
 
     this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
-      message: "(┬┬﹏┬┬) El jugador " + user.nickname + " ha abandonado la partida",
+      message:
+        "(┬┬﹏┬┬) El jugador " + user.nickname + " ha abandonado la partida",
     });
-
-    
 
     //se saca al jugador de la lista de turnos y se añade el bot
-    this.ordenTurnos = this.ordenTurnos.filter((turno) => {
-      return turno != user.nickname;
-    });
+    //comprobar si el que tiene el turno ahora es bot
+    
+    if (miTurno) {
+      if (this.isBot(this.ordenTurnos[this.currentTurn])){
+        let botNickname = this.ordenTurnos[this.currentTurn];
+        let bot = this.room.getBot(botNickname);
+
+        let { dice, afterDice, rollAgain, finalCell } = this.comenzarTurno(bot);
+
+        //habrá que comprobar si ha ganado la partida
+
+        //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
+        this.socketServer.to(this.room.roomId).emit("botTurno", {
+          nickname: botNickname,
+          dice: dice,
+          afterDice: afterDice,
+          rollAgain: rollAgain,
+          finalCell: finalCell,
+        });
+
+        //si es su turno otra vez, tirar otra vez
+        if (rollAgain === true) {
+          let { dice, afterDice, rollAgain, finalCell } = this.comenzarTurno(bot);
+
+          //habrá que comprobar si ha ganado la partida
+
+          //Enviar mensaje a todos los jugadores de la sala con el nuevo turno
+          this.socketServer.to(this.room.roomId).emit("botTurno", {
+            nickname: botNickname,
+            dice: dice,
+            afterDice: afterDice,
+            rollAgain: rollAgain,
+            finalCell: finalCell,
+          });
+        }
+
+      }
+    }
 
     
-
   }
 }
 
