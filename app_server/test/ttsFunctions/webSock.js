@@ -11,6 +11,7 @@
 const io = require("socket.io-client");
 const { usrToken } = require("../../middleware/auth");
 
+
 //Puerto
 const port = process.env.PORT || 5001;
 
@@ -36,6 +37,7 @@ function simFrontend(n, done) {
     socket.on("connect", () => {
       numUsers++;
 
+
       if (numUsers == n) {
         done();
       }
@@ -60,12 +62,20 @@ function simFrontend(n, done) {
   }
 
   // usuarios[0].emit("eliminarSalas");
+  // usuarios[0].emit("eliminarSalas");
   return usuarios;
 }
 
 //Desconectamos a todos los usuarios
 function desconectarGente(usuarios) {
   for (let user in usuarios) {
+    // console.log("Desconectando a " + usuarios[user].nickname);
+    // usuarios[user].emit("closeSession", usuarios[user].nickname, (data) => {
+    //   if (data.ok == true) {
+    //     console.log(data.message);
+    //   }
+    // });
+
     // console.log("Desconectando a " + usuarios[user].nickname);
     // usuarios[user].emit("closeSession", usuarios[user].nickname, (data) => {
     //   if (data.ok == true) {
@@ -85,8 +95,10 @@ function unirUsuariosSala(usuarios, sala, n, done) {
     usuarios[i].emit("joinRoom", sala, user, (data) => {
       if (data.status == "error") {
         // console.log(data.message);
+        // console.log(data.message);
         throw data.message;
       } else {
+        // console.log(data.message);
         // console.log(data.message);
         numConnected++;
       }
@@ -560,6 +572,6 @@ const testSalas = () => {
       //Fin por ahora de los test de salas
     });
   });
-};
+}
 
 module.exports = { testSalas };

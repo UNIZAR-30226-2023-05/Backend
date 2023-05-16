@@ -1,16 +1,13 @@
-FROM node
+FROM node:18.14.2
 
-#copiar <origem> <destino>
-COPY ./package.json .
-COPY ./package-lock.json .
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
 
 COPY . .
 
-#Antes de exponer el puerto instalar las dependencias y generar el cliente de prisma
-RUN npm install && npx prisma generate
+EXPOSE 4000
 
-#Exponer el puerto del servidor para ser consumido por otros
-EXPOSE 5000
-
-#Ejecutar el comando para iniciar el servidor (para iniciar el backend)
-CMD npm run start
+CMD ["npm", "start"]

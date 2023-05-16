@@ -91,6 +91,8 @@ class Room {
     } else {
       //Se desconecta al jugador de la sala
       this.players[player.nickname].socket.leave(this.roomId);
+      //Se desconecta al jugador de la sala
+      this.players[player.nickname].socket.leave(this.roomId);
       delete this.players[player.nickname];
       let nicknames = [];
       for (let ply in this.players) {
@@ -187,10 +189,12 @@ class Room {
     return this.roomLeader == player.nickname;
   }
 
+  // Game exists
   theGameExists() {
     return this.gameController != undefined;
   }
 
+  // Delete room
   delRoom(user) {
     // this.printPlayers();
     if (this.isLeader(user)) {
@@ -224,6 +228,7 @@ class Room {
     // console.log("Jugadores en la sala " + this.roomId + ":");
     for (let player in this.players) {
       console.log(this.players[player].nickname);
+      console.log(this.players[player].nickname);
     }
   }
 
@@ -253,7 +258,6 @@ class Room {
   destroyGameController() {
     console.log("Eliminando game controller");
     delete this.gameController;
-
   }
 
   addBot(bot) {

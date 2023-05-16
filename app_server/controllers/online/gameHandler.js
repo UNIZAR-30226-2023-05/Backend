@@ -135,9 +135,6 @@ const gameHandler = (socket, roomController, io) => {
     }
 
     if (finalCell === 63) {
-
-      
-
       //Tratamiento de final de partida
       //Se envía el evento de final de partida a todos los jugadores de la sala
       io.to(roomId).emit("serverRoomMessage", {
@@ -148,7 +145,7 @@ const gameHandler = (socket, roomController, io) => {
       setTimeout(() => {
         //Destuir el controlador de la partida
         roomController.destroyGameController(roomId);
-        roomController.servDelRoom(roomId,io);
+        roomController.servDelRoom(roomId, io);
       }, 10000);
 
       callback({

@@ -128,6 +128,16 @@ const roomHandler = (socket, roomController, io) => {
       return;
     }
 
+    //La sala está llena?
+    if (roomController.isRoomFull(roomID)) {
+      callback({
+        message: "La sala está llena",
+        status: "error",
+      });
+
+      return;
+    }
+
     //La partida ya ha empezado?
     //...
 
@@ -261,6 +271,8 @@ const roomHandler = (socket, roomController, io) => {
     );
     io.to(roomId).emit("destroyingRoom", roomId);
     roomController.deleteRoom(user, roomID, io);
+    roomController.showAllRooms();
+
     roomController.showAllRooms();
 
     callback({
