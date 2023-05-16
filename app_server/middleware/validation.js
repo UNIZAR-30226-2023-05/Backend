@@ -23,15 +23,7 @@ const prisma = new PrismaClient();
 async function registerValidation(req, res, next) {
   //Creamos un objeto de validacion
   const schema = Joi.object({
-    nickname: Joi.string().min(3).max(50).required().forbidden(
-      "Iker__Bot",
-      "Jaime__Bot",
-      "Leonor__Bot",
-      "Carlota__Bot",
-      "Felix__Bot",
-      "Pablo__Bot",
-      "Marina__Bot"
-    ),
+    nickname: Joi.string().min(3).max(50).required(),
     //.email() comprueba que el string sea un email valido
     email: Joi.string().email().required(),
     password: Joi.string()
@@ -66,8 +58,16 @@ async function registerValidation(req, res, next) {
         },
       })
       .then(async function (usernameInUse) {
+        //Comprobamos que el nombre de usuario no sea el de uno de los bots
+        if( nickname == "Iker__Bot" || nickname == "Jaime__Bot" || nickname == "Leonor__Bot" || nickname == "Carlota__Bot" || nickname == "Felix__Bot" || nickname == "Pablo__Bot" || nickname == "Marina__Bot"){
+          res.statusCode = StatusCodes.CONFLICT;
+          res.send({
+            ok: false,
+            msg: "Lo sentimos, el nombre de usuario no esta disponible.",
+          });
+        }
         //Si no es nulo, el nombre de usuario esta en uso
-        if (usernameInUse !== null) {
+        else if (usernameInUse !== null) {
           res.statusCode = StatusCodes.CONFLICT;
           res.send({
             ok: false,
