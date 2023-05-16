@@ -364,8 +364,8 @@ class GameController {
       // console.log("Jugadores: " + valJugador);
       //recorremos el array de objetos de jugadores
       for (let pl in valJugador) {
-        console.log("pl: " + valJugador[pl]);
-        if (pl != user.nickname) {
+        console.log("pl: " + valJugador[pl].nickname);
+        if (valJugador[pl].nickname != user.nickname) {
           this.players;
           // Perdedores
           console.log(

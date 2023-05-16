@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: backendps
-        image: uk.icr.io/backendps/backendps@sha256:662afdff73c18cddb2535cfb17042bc2bdc08e76c0ef62e252dbeed789179ed9
+        image: uk.icr.io/backendps/backendps@sha256:86fd83788f1a51e6043f5ef9372214cb7373660cdc0d79d66b6ad6ebca912411
         ports:
         - containerPort: 4000
         env:

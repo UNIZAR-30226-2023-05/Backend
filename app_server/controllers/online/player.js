@@ -70,6 +70,8 @@ class Player {
         where: { usuario: id_usuario },
       });
 
+      console.log("Registro de estadisticas: " + estadisticas);
+
       if (haGanado) {
         partidasganadas = 1;
       } else {
@@ -95,10 +97,10 @@ class Player {
           where: { usuario: id_usuario },
           data: {
             vecesoca: {
-              increment: this.estadisticas.vecesoca,
+              increment: estadisticas.vecesoca,
             },
             vecesseis: {
-              increment: this.estadisticas.vecesseis,
+              increment: estadisticas.vecesseis,
             },
             partidasjugadas: {
               increment: 1,
@@ -107,7 +109,7 @@ class Player {
               increment: partidasganadas,
             },
             vecescalavera: {
-              increment: this.estadisticas.vecescalavera,
+              increment: estadisticas.vecescalavera,
             },
           },
         });
