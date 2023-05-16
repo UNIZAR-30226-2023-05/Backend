@@ -104,8 +104,7 @@ const gameHandler = (socket, roomController, io) => {
       return;
     }
 
-    if (gameController.hasGameFinished()){
-
+    if (gameController.hasGameFinished()) {
       callback({
         message: "La partida ha terminado",
         status: "error",

@@ -13,7 +13,7 @@ class RoomController {
   activeRooms = {}; //Diccionario de salas activas
 
   createRoom(user, roomName, numPlayers, gamemode) {
-    let room = new Room(user, roomName, numPlayers, gamemode, this.id,this);
+    let room = new Room(user, roomName, numPlayers, gamemode, this.id, this);
 
     //Se añade la sala al diccionario
     this.activeRooms[room.roomId] = room;
@@ -48,14 +48,13 @@ class RoomController {
   }
 
   quitFromDict(roomId) {
-    console.log("Sala a eliminar: " + roomId)
-    console.log(this.activeRooms[roomId])
+    console.log("Sala a eliminar: " + roomId);
+    console.log(this.activeRooms[roomId]);
     //buscar la sala en el diccionario y eliminarla
     delete this.activeRooms[roomId];
-    console.log(this.activeRooms[roomId])
-    console.log("Sala eliminada del diccionario");  
+    console.log(this.activeRooms[roomId]);
+    console.log("Sala eliminada del diccionario");
   }
-
 
   deleteRoom(user, roomId, io) {
     //Se elimina la sala del diccionario

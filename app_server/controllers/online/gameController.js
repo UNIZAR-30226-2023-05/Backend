@@ -635,7 +635,7 @@ class GameController {
 
   playerAbandona(user) {
     //Crear bot en el caso de que abandone alguien.
-    let miTurno = false
+    let miTurno = false;
     //comprobar si es el turno del jugador que abandona
     if (this.ordenTurnos[this.currentTurn] == user.nickname) {
       miTurno = true;
@@ -644,7 +644,6 @@ class GameController {
     this.ordenTurnos = this.ordenTurnos.filter((turno) => {
       return turno != user.nickname;
     });
-
 
     //con el nombre del usuario que abandona creamos un bot
     let botName = "bot--" + user.nickname;
@@ -667,9 +666,9 @@ class GameController {
 
     //se saca al jugador de la lista de turnos y se añade el bot
     //comprobar si el que tiene el turno ahora es bot
-    
+
     if (miTurno) {
-      if (this.isBot(this.ordenTurnos[this.currentTurn])){
+      if (this.isBot(this.ordenTurnos[this.currentTurn])) {
         let botNickname = this.ordenTurnos[this.currentTurn];
         let bot = this.room.getBot(botNickname);
 
@@ -688,7 +687,8 @@ class GameController {
 
         //si es su turno otra vez, tirar otra vez
         if (rollAgain === true) {
-          let { dice, afterDice, rollAgain, finalCell } = this.comenzarTurno(bot);
+          let { dice, afterDice, rollAgain, finalCell } =
+            this.comenzarTurno(bot);
 
           //habrá que comprobar si ha ganado la partida
 
@@ -701,11 +701,8 @@ class GameController {
             finalCell: finalCell,
           });
         }
-
       }
     }
-
-    
   }
 }
 

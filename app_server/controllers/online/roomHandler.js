@@ -212,13 +212,13 @@ const roomHandler = (socket, roomController, io) => {
     if (!roomController.isPlayerLeader(roomID, delPlayer)) {
       // socket.leave(roomID); --> ya se hace en leaveRoom
 
-      
       //si la partida ha empezado, se eliminará al jugador de la partida
       if (roomController.activeRooms[roomID].theGameExists()) {
         //Se elimina al jugador de la partida
-        roomController.activeRooms[roomID].gameController.playerAbandona(delPlayer);
+        roomController.activeRooms[roomID].gameController.playerAbandona(
+          delPlayer
+        );
       }
-
 
       //Se elimina el jugador de la sala
       let nicknames = roomController.leaveRoom(roomID, delPlayer, io);

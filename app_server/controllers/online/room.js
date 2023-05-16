@@ -18,7 +18,7 @@ class Room {
   roomController; //objeto de la clase RoomController
 
   //--Constructor--
-  constructor(user, roomName, players, gamemode, roomId,roomController) {
+  constructor(user, roomName, players, gamemode, roomId, roomController) {
     this.roomName = roomName;
     this.roomId = roomId;
     //Que no supere los límites
@@ -43,7 +43,6 @@ class Room {
     this.roomController = roomController;
 
     this.bots = {}; //Diccionario vacío
-
   }
 
   //--Métodos--
@@ -276,7 +275,6 @@ class Room {
 
     return players;
   }
-  
 
   getAllPlayers() {
     let players = [];
@@ -289,7 +287,6 @@ class Room {
     }
 
     return players;
-    
   }
 
   isBot(nickname) {
