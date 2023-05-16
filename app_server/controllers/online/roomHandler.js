@@ -187,9 +187,9 @@ const roomHandler = (socket, roomController, io) => {
     }
 
     //No esta en ninguna sala? --> Se han tenido que hacer mas funciones pero es mas cuestión de casos posibles
-    if (!roomController.isPlayerInAnyRoomBySocket(socket)) {
+    if (roomController.isPlayerInAnyRoomBySocket(socket) === undefined) {
       callback({
-        message: "No estás en la sala",
+        message: "No estas en ninguna sala",
         status: "error",
       });
       return;

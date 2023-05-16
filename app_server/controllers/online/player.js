@@ -142,7 +142,7 @@ class Player {
         });
 
         // Cobrar logros conseguidos
-        cobrarLogrosNuevos(id_usuario, datalogros);
+        await cobrarLogrosNuevos(id_usuario, datalogros);
       } else {
         // Si tiene registro, se actualiza
         await prisma.logros.update({
@@ -151,7 +151,7 @@ class Player {
         });
 
         // Cobrar logros conseguidos
-        cobrarLogrosActualizado(id_usuario, logros, datalogros);
+        await cobrarLogrosActualizado(id_usuario, logros, datalogros);
       }
     } catch (error) {
       console.log(error);

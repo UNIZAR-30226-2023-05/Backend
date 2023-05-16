@@ -644,16 +644,16 @@ class GameController {
 
     //Añadimos el bot a los turnos
     this.ordenTurnos.push(botName);
+
+    //se salta el turno en caso de que sea el turno del jugador que abandona
+    this.sigTurno();
     
 
     this.socketServer.to(this.room.roomId).emit("serverRoomMessage", {
       message: "(┬┬﹏┬┬) El jugador " + user.nickname + " ha abandonado la partida",
     });
 
-    //se salta el turno en caso de que sea el turno del jugador que abandona
-    if (this.ordenTurnos[this.currentTurn] == user.nickname) {
-      this.sigTurno();
-    }
+    
 
     //se saca al jugador de la lista de turnos y se añade el bot
     this.ordenTurnos = this.ordenTurnos.filter((turno) => {
