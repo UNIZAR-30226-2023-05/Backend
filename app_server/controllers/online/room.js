@@ -11,12 +11,14 @@ class Room {
   numPlayers;
   roomLeader; //jugador que ha creado la sala
   players; //objeto con los jugadores de la sala (id, player(objeto de la clase Player))
+  bots; //objeto con los bots de la sala (id, bot(objeto de la clase NPC))
   startTime = config.startTime;
 
-  gameController; //objeto de la clase GameController
+  gameController; //objeto de la clase GameControllerç
+  roomController; //objeto de la clase RoomController
 
   //--Constructor--
-  constructor(user, roomName, players, gamemode, roomId) {
+  constructor(user, roomName, players, gamemode, roomId,roomController) {
     this.roomName = roomName;
     this.roomId = roomId;
     //Que no supere los límites
@@ -37,6 +39,11 @@ class Room {
     this.roomLeader = user.nickname;
 
     this.gameController = undefined;
+
+    this.roomController = roomController;
+
+    this.bots = {}; //Diccionario vacío
+
   }
 
   //--Métodos--
@@ -182,7 +189,7 @@ class Room {
     return this.roomLeader == player.nickname;
   }
 
-  // Game exists?
+  // Game exists
   theGameExists() {
     return this.gameController != undefined;
   }
@@ -229,7 +236,7 @@ class Room {
     return this.numPlayers == Object.keys(this.players).length;
   }
 
-  servDelRoom(io) {
+  servDeleteRoom(io) {
     //SERVIDOR ELIMINA SALA
     io.to(this.roomId).emit("destroyingRoom", this.roomId);
     //1. Eliminamos a todos los jugadores de la sala
@@ -244,13 +251,49 @@ class Room {
     }
 
     console.log("Eliminando sala " + this.roomId);
-    //2. Eliminamos la sala
+    //2. Eliminamos la sala entera
     delete this.roomId;
   }
 
   destroyGameController() {
     console.log("Eliminando game controller");
     delete this.gameController;
+  }
+
+  addBot(bot) {
+    this.bots[bot.nickname] = bot;
+  }
+
+  getBot(botNickname) {
+    return this.bots[botNickname];
+  }
+
+  getOnlyPlayers() {
+    let players = [];
+    for (let player in this.players) {
+      players.push(this.players[player]);
+    }
+
+    return players;
+  }
+  
+
+  getAllPlayers() {
+    let players = [];
+    for (let player in this.players) {
+      players.push(this.players[player]);
+    }
+
+    for (let bot in this.bots) {
+      players.push(this.bots[bot]);
+    }
+
+    return players;
+    
+  }
+
+  isBot(nickname) {
+    return this.bots[nickname] != undefined;
   }
 }
 
