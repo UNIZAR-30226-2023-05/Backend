@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./server.js",
+    "start": "prisma generate && node ./server.js",
     "postinstall": "prisma generate",
     "test:user": "jest --testMatch='**/app_server/test/**/user.test.js' --runInBand",
     "test:social": "jest --testMatch='**/app_server/test/**/social.test.js' --runInBand",
