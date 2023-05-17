@@ -364,10 +364,11 @@ class GameController {
       // console.log("Jugadores: " + valJugador);
       //recorremos el array de objetos de jugadores
       for (let jugador of valJugador) {
-        console.log("pl: " + jugador.nickname);
-        if (jugador.nickname !== user.nickname) {
+        nicknameJugador = jugador.nickname;
+        console.log("Jugador: " + nicknameJugador);
+        if (nicknameJugador != user.nickname) {
           // Perdedores
-          console.log("[perdedor]Se actualizan las estadísticas de " + jugador.nickname);
+          console.log("[perdedor]Se actualizan las estadísticas de " + nicknameJugador);
           jugador.actualizarEstadisticas(false);
         } else {
           // Ganador

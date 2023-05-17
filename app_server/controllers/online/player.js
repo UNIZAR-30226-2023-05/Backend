@@ -97,10 +97,10 @@ class Player {
           where: { usuario: id_usuario },
           data: {
             vecesoca: {
-              increment: estadisticas.vecesoca,
+              increment: this.estadisticas.vecesOca,
             },
             vecesseis: {
-              increment: estadisticas.vecesseis,
+              increment: this.estadisticas.vecesSeis,
             },
             partidasjugadas: {
               increment: 1,
@@ -109,7 +109,7 @@ class Player {
               increment: partidasganadas,
             },
             vecescalavera: {
-              increment: estadisticas.vecescalavera,
+              increment: this.estadisticas.vecesCalavera,
             },
           },
         });
