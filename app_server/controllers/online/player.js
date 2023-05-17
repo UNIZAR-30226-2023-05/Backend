@@ -72,7 +72,7 @@ class Player {
 
       console.log("Registro de estadisticas: " + estadisticas);
 
-      if (haGanado) {
+      if (haGanado === true) {
         partidasganadas = 1;
       } else {
         partidasganadas = 0;
