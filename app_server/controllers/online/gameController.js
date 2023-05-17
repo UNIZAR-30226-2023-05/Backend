@@ -486,16 +486,14 @@ class GameController {
         let valJugador = Object.values(jugadores);
         // console.log("Jugadores: " + valJugador);
         //recorremos el array de objetos de jugadores
-        for (let pl in valJugador) {
-          console.log("pl: " + valJugador[pl]);
-          if (pl != user.nickname) {
-            this.players;
+        let nicknameJugador;
+        for (let jugador of valJugador) {
+          nicknameJugador = jugador.nickname;
+          console.log("Jugador: " + nicknameJugador);
+          if (nicknameJugador != user.nickname) {
             // Perdedores
-            console.log(
-              "[perdedor]Se actualizan las estadísticas de " +
-                valJugador[pl].nickname
-            );
-            valJugador[pl].actualizarEstadisticas(false);
+            console.log("[perdedor]Se actualizan las estadísticas de " + nicknameJugador);
+            jugador.actualizarEstadisticas(false);
           } else {
             // Ganador
 
@@ -503,7 +501,7 @@ class GameController {
             console.log(
               "[ganador]Se actualizan las estadísticas de " + user.nickname
             );
-            users[pl].actualizarEstadisticas(true);
+            valJugador[pl].actualizarEstadisticas(true);
           }
         }
 
