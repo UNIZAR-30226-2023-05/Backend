@@ -378,7 +378,7 @@ class GameController {
           console.log(
             "[ganador]Se actualizan las estadísticas de " + user.nickname
           );
-          valJugador[pl].actualizarEstadisticas(true);
+          jugador.actualizarEstadisticas(true);
         }
       }
 
@@ -501,7 +501,7 @@ class GameController {
             console.log(
               "[ganador]Se actualizan las estadísticas de " + user.nickname
             );
-            valJugador[pl].actualizarEstadisticas(true);
+            jugador.actualizarEstadisticas(true);
           }
         }
 
