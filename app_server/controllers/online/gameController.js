@@ -363,6 +363,7 @@ class GameController {
       let valJugador = Object.values(jugadores);
       // console.log("Jugadores: " + valJugador);
       //recorremos el array de objetos de jugadores
+      let nicknameJugador;
       for (let jugador of valJugador) {
         nicknameJugador = jugador.nickname;
         console.log("Jugador: " + nicknameJugador);
