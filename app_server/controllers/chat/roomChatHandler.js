@@ -1,3 +1,8 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\chat\roomChatController.js
+ * Descripción: Handler de la comunicación a través del chat de sala.
+ */
 /**
  * @param {*} socket
  */

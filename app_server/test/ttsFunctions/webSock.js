@@ -1,16 +1,18 @@
-//Test para comprobar:
-//1. OpenSession de un usuario
-//2. CloseSession de un usuario
-//3. Crear Sala
-//4. Unirse a una sala
-//5. Mandar mensaje a la sala
-//6. Mandar mensaje a un usuario
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\test\ttsFunctions\socialTest.js
+ * Descripción: Tests para comprobar:
+  1. OpenSession de un usuario
+  2. CloseSession de un usuario
+  3. Crear Sala
+  4. Unirse a una sala
+  5. Mandar mensaje a la sala
+  6. Mandar mensaje a un usuario
 
-//Y mas adelante casos erróneos
-
+  Y mas adelante casos erróneos
+ */
 const io = require("socket.io-client");
 const { usrToken } = require("../../middleware/auth");
-
 
 //Puerto
 const port = process.env.PORT || 5001;
@@ -36,7 +38,6 @@ function simFrontend(n, done) {
 
     socket.on("connect", () => {
       numUsers++;
-
 
       if (numUsers == n) {
         done();
@@ -572,6 +573,6 @@ const testSalas = () => {
       //Fin por ahora de los test de salas
     });
   });
-}
+};
 
 module.exports = { testSalas };

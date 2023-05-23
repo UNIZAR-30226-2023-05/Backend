@@ -1,5 +1,8 @@
-//clase de objeto Room
-
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\online\room.js
+ * Descripción: Clase de objeto Room.
+ */
 //fichero de configuración
 const config = require("../../../config.js");
 

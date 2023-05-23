@@ -1,6 +1,9 @@
-/* Controlador de partida para cada sala (suponiendo que la lógica de juego ya 
-    está implementada). */
-
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\online\gameController.js
+ * Descripción: Controlador de partida para cada sala (suponiendo que la lógica
+ * de juego ya está implementada).
+ */
 const predefinidos = require("../../../game_logic/predefinidos");
 const { Console } = require("winston/lib/winston/transports");
 const { config } = require("../../../config");
@@ -369,7 +372,9 @@ class GameController {
         console.log("Jugador: " + nicknameJugador);
         if (nicknameJugador != user.nickname) {
           // Perdedores
-          console.log("[perdedor]Se actualizan las estadísticas de " + nicknameJugador);
+          console.log(
+            "[perdedor]Se actualizan las estadísticas de " + nicknameJugador
+          );
           jugador.actualizarEstadisticas(false);
         } else {
           // Ganador
@@ -492,7 +497,9 @@ class GameController {
           console.log("Jugador: " + nicknameJugador);
           if (nicknameJugador != user.nickname) {
             // Perdedores
-            console.log("[perdedor]Se actualizan las estadísticas de " + nicknameJugador);
+            console.log(
+              "[perdedor]Se actualizan las estadísticas de " + nicknameJugador
+            );
             jugador.actualizarEstadisticas(false);
           } else {
             // Ganador

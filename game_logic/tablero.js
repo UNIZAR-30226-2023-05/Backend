@@ -1,3 +1,8 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: game_logic\tablero.js
+ * Descripción: Clase Tablero correspondiente al tablero del juego de la Oca.
+ */
 // Clase Tablero
 class Tablero {
   constructor(celdas) {

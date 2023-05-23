@@ -1,3 +1,9 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\online\player.js
+ * Descripción: Clase Player con sus atributos y métodos correspondientes para el
+ * juego.
+ */
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 

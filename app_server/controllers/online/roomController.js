@@ -1,4 +1,8 @@
-//clase para crear una sala, borrar, unirse, etc
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\online\roomController.js
+ * Descripción: Controlador para crear una sala, borrar, unirse, etc
+ */
 
 //player
 const Player = require("./player");

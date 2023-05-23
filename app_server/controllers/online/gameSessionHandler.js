@@ -1,3 +1,8 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\online\gameSessionHandler.js
+ * Descripción: Handler de la tabla de conexiones de usuarios.
+ */
 /**
  *
  * @param {*} socket

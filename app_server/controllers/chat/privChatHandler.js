@@ -1,3 +1,9 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\chat\privChatHandler.js
+ * Descripción: Handler de la comunicación privada entre amigos a través del chat.
+ */
+
 var Message = require("./Message");
 
 /**

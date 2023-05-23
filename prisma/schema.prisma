@@ -1,5 +1,9 @@
+// * Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+//  * Fecha: Mayo 2023
+//  * Path: prisma\schema.prisma
+//  * Descripción: Archivo generado por Prisma para la base de datos.
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native"]
 }
 

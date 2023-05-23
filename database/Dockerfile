@@ -1,3 +1,7 @@
+#  * Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+#  * Fecha: Mayo 2023
+#  * Path: database\Dockerfile
+#  * Descripción: Instrucciones para construir la imagen de Docker
 FROM node
 
 #copiar <origem> <destino>

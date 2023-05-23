@@ -1,3 +1,9 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\users\socialController.js
+ * Descripción: Controlador para el sistema de amigos.
+ */
+
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 

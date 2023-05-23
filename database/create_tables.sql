@@ -1,5 +1,8 @@
--- Tablas para la base de datos del juego de la oca
-
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: database\create_tables.sql
+ * Descripción: Tablas para la base de datos del juego de la oca.
+ */
 -- Tabla de usuario
 CREATE TABLE Usuario(
     id_usuario serial,

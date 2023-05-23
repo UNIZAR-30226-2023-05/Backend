@@ -1,7 +1,11 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\middleware\auth.js
+ * Descripción: Módulo para la autenticación de usuarios.
+ */
+
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
-
-//...
 
 // Función para generar el token
 function usrToken(email, nickname) {
