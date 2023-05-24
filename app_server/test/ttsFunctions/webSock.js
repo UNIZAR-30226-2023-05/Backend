@@ -485,7 +485,7 @@ const testSalas = () => {
           expect(data).toHaveProperty("status");
           expect(data).toHaveProperty("message");
           //Verificamos que el mensaje sea el correcto
-          expect(data.message).toBe("No estás en la sala");
+          expect(data.message).toBe("No estas en ninguna sala");
           expect(data.status).toBe("error");
           done();
         });

@@ -5,11 +5,12 @@
   "scripts": {
     "start": "node ./server.js",
     "postinstall": "prisma generate",
-    "test:user": "jest --testMatch='**/app_server/test/**/user.test.js' --runInBand",
-    "test:social": "jest --testMatch='**/app_server/test/**/social.test.js' --runInBand",
-    "test:ws": "jest --testMatch='**/app_server/test/**/ws.test.js' --runInBand",
-    "test:tablero": "jest --testMatch='**/app_server/test/**/tablero.test.js' --runInBand",
-    "test": "npm run test:user && npm run test:social && npm run test:ws && npm run test:tablero"
+    "test:user": "jest --testMatch='**/app_server/test/**/user.test.js' --runInBand --coverage",
+    "test:social": "jest --testMatch='**/app_server/test/**/social.test.js' --runInBand --coverage",
+    "test:ws": "jest --testMatch='**/app_server/test/**/ws.test.js' --runInBand --coverage",
+    "test:tablero": "jest --testMatch='**/app_server/test/**/tablero.test.js' --runInBand --coverage",
+    "test:global": "jest --testMatch='**/app_server/test/**/global.test.js' --runInBand --coverage",
+    "test": "npm run test:global"
   },
   "dependencies": {
     "@prisma/client": "^4.11.0",
