@@ -1,3 +1,8 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: game_logic\predefinidos.js
+ * Descripción: Definición del tablero clásico con sus celdas predefinidas.
+ */
 var Tablero = require("./tablero.js");
 var Celda = require("./celda.js");
 

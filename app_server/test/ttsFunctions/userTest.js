@@ -1,3 +1,8 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\test\ttsFunctions\userTest.js
+ * Descripción: Tests para validar el funcionamiento del sistema de usuarios.
+ */
 const register =
   require("../../controllers/users/userController").registerHandler;
 const login = require("../../controllers/users/userController").loginHandler;

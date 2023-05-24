@@ -1,3 +1,8 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\test\ttsFunctions\tableroTest.js
+ * Descripción: Tests para validar el funcionamiento del tablero.
+ */
 const predefinidos = require("../../../game_logic/predefinidos");
 
 const tablero = predefinidos.tableroClasico();

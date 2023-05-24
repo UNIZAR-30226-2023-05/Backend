@@ -1,3 +1,8 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\utils\eleccionTurno.js
+ * Descripción: Funciones para barajar los usuarios antes de comenzar una partida.
+ */
 function shufflePlayers(users, numUsers) {
   let ordenTurnos = [];
 

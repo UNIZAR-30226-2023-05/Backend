@@ -1,6 +1,9 @@
-/* Controlador de partida para cada sala (suponiendo que la lógica de juego ya 
-    está implementada). */
-
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\online\gameController.js
+ * Descripción: Controlador de partida para cada sala (suponiendo que la lógica
+ * de juego ya está implementada).
+ */
 const predefinidos = require("../../../game_logic/predefinidos");
 const { Console } = require("winston/lib/winston/transports");
 const { config } = require("../../../config");
@@ -363,16 +366,16 @@ class GameController {
       let valJugador = Object.values(jugadores);
       // console.log("Jugadores: " + valJugador);
       //recorremos el array de objetos de jugadores
-      for (let pl in valJugador) {
-        console.log("pl: " + valJugador[pl]);
-        if (pl != user.nickname) {
-          this.players;
+      let nicknameJugador;
+      for (let jugador of valJugador) {
+        nicknameJugador = jugador.nickname;
+        console.log("Jugador: " + nicknameJugador);
+        if (nicknameJugador != user.nickname) {
           // Perdedores
           console.log(
-            "[perdedor]Se actualizan las estadísticas de " +
-              valJugador[pl].nickname
+            "[perdedor]Se actualizan las estadísticas de " + nicknameJugador
           );
-          valJugador[pl].actualizarEstadisticas(false);
+          jugador.actualizarEstadisticas(false);
         } else {
           // Ganador
 
@@ -380,7 +383,7 @@ class GameController {
           console.log(
             "[ganador]Se actualizan las estadísticas de " + user.nickname
           );
-          valJugador[pl].actualizarEstadisticas(true);
+          jugador.actualizarEstadisticas(true);
         }
       }
 
@@ -488,16 +491,16 @@ class GameController {
         let valJugador = Object.values(jugadores);
         // console.log("Jugadores: " + valJugador);
         //recorremos el array de objetos de jugadores
-        for (let pl in valJugador) {
-          console.log("pl: " + valJugador[pl]);
-          if (pl != user.nickname) {
-            this.players;
+        let nicknameJugador;
+        for (let jugador of valJugador) {
+          nicknameJugador = jugador.nickname;
+          console.log("Jugador: " + nicknameJugador);
+          if (nicknameJugador != user.nickname) {
             // Perdedores
             console.log(
-              "[perdedor]Se actualizan las estadísticas de " +
-                valJugador[pl].nickname
+              "[perdedor]Se actualizan las estadísticas de " + nicknameJugador
             );
-            valJugador[pl].actualizarEstadisticas(false);
+            jugador.actualizarEstadisticas(false);
           } else {
             // Ganador
 
@@ -505,7 +508,7 @@ class GameController {
             console.log(
               "[ganador]Se actualizan las estadísticas de " + user.nickname
             );
-            users[pl].actualizarEstadisticas(true);
+            jugador.actualizarEstadisticas(true);
           }
         }
 
@@ -635,7 +638,7 @@ class GameController {
 
   playerAbandona(user) {
     //Crear bot en el caso de que abandone alguien.
-    let miTurno = false
+    let miTurno = false;
     //comprobar si es el turno del jugador que abandona
     if (this.ordenTurnos[this.currentTurn] == user.nickname) {
       miTurno = true;
@@ -644,7 +647,6 @@ class GameController {
     this.ordenTurnos = this.ordenTurnos.filter((turno) => {
       return turno != user.nickname;
     });
-
 
     //con el nombre del usuario que abandona creamos un bot
     let botName = "bot--" + user.nickname;
@@ -667,9 +669,9 @@ class GameController {
 
     //se saca al jugador de la lista de turnos y se añade el bot
     //comprobar si el que tiene el turno ahora es bot
-    
+
     if (miTurno) {
-      if (this.isBot(this.ordenTurnos[this.currentTurn])){
+      if (this.isBot(this.ordenTurnos[this.currentTurn])) {
         let botNickname = this.ordenTurnos[this.currentTurn];
         let bot = this.room.getBot(botNickname);
 
@@ -688,7 +690,8 @@ class GameController {
 
         //si es su turno otra vez, tirar otra vez
         if (rollAgain === true) {
-          let { dice, afterDice, rollAgain, finalCell } = this.comenzarTurno(bot);
+          let { dice, afterDice, rollAgain, finalCell } =
+            this.comenzarTurno(bot);
 
           //habrá que comprobar si ha ganado la partida
 
@@ -701,11 +704,8 @@ class GameController {
             finalCell: finalCell,
           });
         }
-
       }
     }
-
-    
   }
 }
 

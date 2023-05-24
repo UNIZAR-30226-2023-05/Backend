@@ -1,6 +1,10 @@
-//Controlador de las salas. Se importará el controlador (con socket) y cuando se quiera inciar una sala se llamará a la función roomController
-//Se importará en app.js
-
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\online\roomHandler.js
+ * Descripción: Handler de las salas. Se importará el controlador (con socket) y
+ * cuando se quiera inciar una sala se llamará a la función roomController.
+ * Se importará en app.js.
+ */
 const Player = require("./player");
 
 /**
@@ -212,13 +216,13 @@ const roomHandler = (socket, roomController, io) => {
     if (!roomController.isPlayerLeader(roomID, delPlayer)) {
       // socket.leave(roomID); --> ya se hace en leaveRoom
 
-      
       //si la partida ha empezado, se eliminará al jugador de la partida
       if (roomController.activeRooms[roomID].theGameExists()) {
         //Se elimina al jugador de la partida
-        roomController.activeRooms[roomID].gameController.playerAbandona(delPlayer);
+        roomController.activeRooms[roomID].gameController.playerAbandona(
+          delPlayer
+        );
       }
-
 
       //Se elimina el jugador de la sala
       let nicknames = roomController.leaveRoom(roomID, delPlayer, io);

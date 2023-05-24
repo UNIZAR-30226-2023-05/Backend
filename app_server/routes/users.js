@@ -1,3 +1,8 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\routes\users.js
+ * Descripción: Fichero de rutas para el sistema de usuarios.
+ */
 var express = require("express");
 
 var userRouter = express.Router();

@@ -1,3 +1,8 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: game_logic\celda.js
+ * Descripción: Clase Celda para representar las celdas del tablero de la Oca.
+ */
 // Clase celda
 class Celda {
   constructor(id, nueva, turno, penalizacion, caidoOca, caidoCalavera) {

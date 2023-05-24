@@ -1,3 +1,9 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\routes\social.js
+ * Descripción: Fichero de rutas para el sistema de amigos.
+ */
+
 var express = require("express");
 
 var socialRouter = express.Router();

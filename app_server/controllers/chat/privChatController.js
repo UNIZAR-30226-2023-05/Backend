@@ -1,5 +1,8 @@
-//Path: app_server\controllers\chat\privChatController.js
-
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\chat\privChatController.js
+ * Descripción: Controlador del chat privado entre amigos.
+ */
 //1.0 privChatController
 
 const { PrismaClient } = require("@prisma/client");

@@ -1,6 +1,9 @@
-//Class message
-//Path: app_server\models\chat\message.js
-
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\models\chat\message.js
+ * Descripción: Clase Message con sus atributos y métodos necesarios, utilizada
+ * para el sistema de mensajería a través del chat.
+ */
 class Message {
   constructor(sender, receiver, message) {
     this.sender = sender;

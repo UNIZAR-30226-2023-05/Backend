@@ -1,4 +1,8 @@
-#Documentación para la API de Proyecto Backend
+#  * Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+#  * Fecha: Mayo 2023
+#  * Path: public\swagger.yaml
+#  * Descripción: Documentación para la api del back-end del proyecto de la Oca Loca.
+
 openapi: 3.0.0
 info:
   title: Proyecto Backend
@@ -6,7 +10,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://backendps.vercel.app/ 
+  - url: https://backendps.vercel.app/
     description: Local server
 
 tags:
@@ -14,7 +18,6 @@ tags:
     description: Endpoints para el manejo de la información relacionada con los usuarios
 
 paths:
-
   /users/{id_usuario}:
     get:
       tags:
@@ -28,17 +31,16 @@ paths:
           required: true
           description: Id del usuario que se desea consultar información
       responses:
-        '200':
+        "200":
           description: Usuario existente
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
-
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /users/register:
     post:
@@ -52,18 +54,18 @@ paths:
         content:
           row/json:
             schema:
-              $ref: '#/components/schemas/regUsuario'
+              $ref: "#/components/schemas/regUsuario"
       responses:
-        '201':
+        "201":
           description: Usuario registrado
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
     get:
       tags:
         - Usuario
@@ -75,19 +77,19 @@ paths:
           row/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/nickname'
-                - $ref: '#/components/schemas/email'
+                - $ref: "#/components/schemas/nickname"
+                - $ref: "#/components/schemas/email"
       responses:
-        '200':
+        "200":
           description: Usuario existente
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
     put:
       tags:
         - Usuario
@@ -99,13 +101,13 @@ paths:
           row/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/idUsuario'
+                - $ref: "#/components/schemas/idUsuario"
                 - anyOf:
-                  - $ref: '#/components/schemas/nickname'
-                  - $ref: '#/components/schemas/password'
-                  - $ref: '#/components/schemas/monedas'
-                  - $ref: '#/components/schemas/profilephoto'
-  
+                    - $ref: "#/components/schemas/nickname"
+                    - $ref: "#/components/schemas/password"
+                    - $ref: "#/components/schemas/monedas"
+                    - $ref: "#/components/schemas/profilephoto"
+
   /users/userid:
     put:
       tags:
@@ -118,19 +120,19 @@ paths:
           row/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/nickname'
-                - $ref: '#/components/schemas/email'
+                - $ref: "#/components/schemas/nickname"
+                - $ref: "#/components/schemas/email"
       responses:
-        '200':
+        "200":
           description: Usuario existente
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /users/register/{id_usuario}:
     delete:
@@ -145,17 +147,16 @@ paths:
           required: true
           description: Id del usuario que se desea eliminar
       responses:
-        '200':
+        "200":
           description: Usuario eliminado correctamente
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
-
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /users/login:
     post:
@@ -169,18 +170,18 @@ paths:
         content:
           row/json:
             schema:
-              $ref: '#/components/schemas/logUsuario'
+              $ref: "#/components/schemas/logUsuario"
       responses:
-        '200':
+        "200":
           description: Usuario logueado
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /users/logros/{id_usuario}:
     get:
@@ -195,16 +196,16 @@ paths:
           required: true
           description: Id del usuario del que se desean consultar los logros.
       responses:
-        '200':
+        "200":
           description: Logros recuperados.
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /users/ranking/partidas:
     get:
@@ -212,16 +213,16 @@ paths:
         - Usuario
       summary: Obtener ranking según partidas ganadas
       responses:
-        '200':
+        "200":
           description: Ranking de los 10 jugadores que han ganado más partidas.
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /users/ranking/ocas:
     get:
@@ -229,16 +230,16 @@ paths:
         - Usuario
       summary: Ranking de los 10 jugadores que han caído más veces en la oca.
       responses:
-        '200':
+        "200":
           description: Ranking de los 10 jugadores que han caído más veces en la oca.
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /users/estadisticas/{id_usuario}:
     get:
@@ -253,16 +254,16 @@ paths:
           required: true
           description: Id del usuario del que se desean consultar las estadísticas.
       responses:
-        '200':
+        "200":
           description: Estadísticas recuperadas
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /social/friends:
     post:
@@ -270,24 +271,25 @@ paths:
         - Social
       summary: Enviar o aceptar solicitud de amistad
       requestBody:
-        description: Se necesita el usuario que envía una solicitud y el que la recibe.
+        description:
+          Se necesita el usuario que envía una solicitud y el que la recibe.
           Para aceptar una solicitud que ya existe debe enviarse una solicitud inversa.
         required: true
         content:
           row/json:
             schema:
-              $ref: '#/components/schemas/friendRequest'
+              $ref: "#/components/schemas/friendRequest"
       responses:
-        '200':
+        "200":
           description: Solicitud enviada correctamente. / Se añaden como amigos porque existía solicitud inversa.
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
     delete:
       tags:
         - Social
@@ -298,18 +300,18 @@ paths:
         content:
           row/json:
             schema:
-              $ref: '#/components/schemas/friendRequest'
+              $ref: "#/components/schemas/friendRequest"
       responses:
-        '200':
+        "200":
           description: Se ha rechazado y eliminado la solicitud de amistad.
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /social/friends/{id_usuario}:
     put:
@@ -324,16 +326,16 @@ paths:
           required: true
           description: Id del usuario del que se desean consultar las solicitudes pendientes.
       responses:
-        '200':
+        "200":
           description: Solicitudes para el usuario {solicitudes}
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
     get:
       tags:
         - Social
@@ -346,19 +348,18 @@ paths:
           required: true
           description: Id del usuario del que se desean consultar los amigos.
       responses:
-        '200':
+        "200":
           description: Amigos del usuario {amigos}
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
 components:
-
   responses:
     BadRequest:
       description: Bad Request
@@ -368,8 +369,7 @@ components:
       description: Not Found
     InternalError:
       description: Internal Error
-      
-  
+
   schemas:
     regUsuario:
       type: object
@@ -397,7 +397,7 @@ components:
 
     email:
       type: object
-      properties:  
+      properties:
         email:
           type: string
           description: Email del usuario
@@ -425,7 +425,7 @@ components:
           type: integer
           minimum: 0
           description: Saldo de monedas ingame del usuario
-          
+
     profilephoto:
       type: object
       properties:
@@ -444,7 +444,7 @@ components:
         password:
           type: string
           description: Contraseña del usuario
-    
+
     friendRequest:
       type: object
       properties:

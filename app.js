@@ -1,3 +1,8 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app.js
+ * Descripción: Archivo principal del back-end del proyecto de la Oca.
+ */
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient(); // Prisma Client
 var http = require("http");

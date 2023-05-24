@@ -1,5 +1,8 @@
-//Tabla de conexiones
-
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\online\gameSessionController.js
+ * Descripción: Controlador de la tabla de conexiones de usuarios.
+ */
 class GameSessionController {
   sessions; //tabla "diccionario" de sesiones
 

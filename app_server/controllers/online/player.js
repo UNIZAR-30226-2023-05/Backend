@@ -1,3 +1,9 @@
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\online\player.js
+ * Descripción: Clase Player con sus atributos y métodos correspondientes para el
+ * juego.
+ */
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
@@ -57,7 +63,7 @@ class Player {
   async actualizarEstadisticas(haGanado) {
     // Se asume que el jugador existe
     try {
-      let partidasGanadas = 0;
+      let partidasganadas = 0;
       // Obtener id de usuario
       const user = await prisma.usuario.findUnique({
         where: { nickname: this.nickname },
@@ -70,10 +76,12 @@ class Player {
         where: { usuario: id_usuario },
       });
 
-      if (haGanado) {
-        partidasGanadas = 1;
+      console.log("Registro de estadisticas: " + estadisticas);
+
+      if (haGanado === true) {
+        partidasganadas = 1;
       } else {
-        partidasGanadas = 0;
+        partidasganadas = 0;
       }
 
       // Actualizar estadísticas
@@ -85,7 +93,7 @@ class Player {
             vecesoca: this.estadisticas.vecesOca,
             vecesseis: this.estadisticas.vecesSeis,
             partidasjugadas: 1,
-            partidasganadas: partidasGanadas,
+            partidasganadas: partidasganadas,
             vecescalavera: this.estadisticas.vecesCalavera,
           },
         });
@@ -95,10 +103,10 @@ class Player {
           where: { usuario: id_usuario },
           data: {
             vecesoca: {
-              increment: this.estadisticas.vecesoca,
+              increment: this.estadisticas.vecesOca,
             },
             vecesseis: {
-              increment: this.estadisticas.vecesseis,
+              increment: this.estadisticas.vecesSeis,
             },
             partidasjugadas: {
               increment: 1,
@@ -107,11 +115,15 @@ class Player {
               increment: partidasganadas,
             },
             vecescalavera: {
-              increment: this.estadisticas.vecescalavera,
+              increment: this.estadisticas.vecesCalavera,
             },
           },
         });
       }
+
+      console.log("Estadísticas actualizadas");
+      console.log(this.estadisticas);
+      console.log("Ha ganado?: " + partidasganadas);
 
       // Comprobar logros
       // Obtener datos de estadísticas

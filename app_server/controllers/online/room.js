@@ -1,5 +1,8 @@
-//clase de objeto Room
-
+/* Autores: Iker Morán, Jaime Berruete, Leonor Murphy
+ * Fecha: Mayo 2023
+ * Path: app_server\controllers\online\room.js
+ * Descripción: Clase de objeto Room.
+ */
 //fichero de configuración
 const config = require("../../../config.js");
 
@@ -18,7 +21,7 @@ class Room {
   roomController; //objeto de la clase RoomController
 
   //--Constructor--
-  constructor(user, roomName, players, gamemode, roomId,roomController) {
+  constructor(user, roomName, players, gamemode, roomId, roomController) {
     this.roomName = roomName;
     this.roomId = roomId;
     //Que no supere los límites
@@ -43,7 +46,6 @@ class Room {
     this.roomController = roomController;
 
     this.bots = {}; //Diccionario vacío
-
   }
 
   //--Métodos--
@@ -276,7 +278,6 @@ class Room {
 
     return players;
   }
-  
 
   getAllPlayers() {
     let players = [];
@@ -289,7 +290,6 @@ class Room {
     }
 
     return players;
-    
   }
 
   isBot(nickname) {
